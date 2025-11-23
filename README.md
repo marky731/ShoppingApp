@@ -83,7 +83,7 @@ mysql -u root -p < database/schema.sql
 **Backend API:**
 ```bash
 cd src/ShoppingApp.API
-dotnet run --urls="http://localhost:5001"
+dotnet run
 ```
 The API will be available at `http://localhost:5001`
 

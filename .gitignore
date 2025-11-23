@@ -59,6 +59,13 @@ appsettings.Production.json
 *.db
 *.sqlite
 
+# Node.js
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
 # Logs
 logs/
 *.log
