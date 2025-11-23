@@ -23,13 +23,13 @@
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Unit Tests | ⏳ NOT STARTED | 0% |
-| Integration Tests | 🟡 IN PROGRESS | 30% |
+| Integration Tests | ⏳ NOT STARTED | 0% |
 
 ---
 
 ## API Testing Results 
 
-All Phase 3 endpoints tested successfully on 2024-11-23:
+All Phase 3 endpoints tested successfully on 2025-11-23:
 
 | Endpoint | Method | Status | Notes |
 |----------|--------|--------|-------|
@@ -42,13 +42,13 @@ All Phase 3 endpoints tested successfully on 2024-11-23:
 | `/api/categories` | GET | ✅ Pass | Hierarchical with subcategories |
 | `/api/categories/{id}` | GET | ✅ Pass | Single category details |
 
-### Test Data in Database (Local Only)
-> **Note**: This test data exists only in the original developer's local database. Each developer must set up their own MySQL instance and create test data.
+### Test Data in Database
+Run `mysql -u root -p < database/sample_data.sql` to populate test data.
 
-- Users: 1 customer (john@example.com / Test1234), 1 seller
-- Shop: TechShop (approved)
-- Categories: Electronics → Phones, Laptops; Clothing
-- Products: iPhone 15, Samsung Galaxy S24, MacBook Pro
+- Users: 1 customer (john@example.com / Test1234), 1 seller (seller@example.com / Test1234)
+- Shop: Minimal Shop (approved)
+- Categories: 5 parent (Electronics, Clothing, Home, Beauty, Accessories) + 6 subcategories
+- Products: 20 products with Unsplash images across all categories
 
 ### Issues Fixed During Testing
 - Added snake_case column naming convention for MySQL
@@ -76,7 +76,7 @@ All Phase 3 endpoints tested successfully on 2024-11-23:
 
 ### Phase 3: Core Backend ✅
 
-#### Entities Created (14 total):
+#### Entities Created (16 total):
 - [x] Role, User, Address
 - [x] Shop, Category, Product, ProductImage
 - [x] CartItem, Favorite
@@ -249,6 +249,8 @@ These are in the SQL schema but not in C# models:
 3. No input validation middleware
 4. No global exception handling
 5. No API versioning
+6. **Logout doesn't clear cart** - Cart persists in localStorage after logout (should clear or associate with user)
+7. No proper logout mechanism with backend (just clears frontend token)
 
 ### Database Notes
 - Schema created but **NOT APPLIED** to MySQL yet
@@ -281,13 +283,13 @@ These are in the SQL schema but not in C# models:
 
 ## Session History
 
-### Session 1 (2024-11-23)
+### Session 1 (2025-11-23)
 - Analyzed and optimized use_cases_draft.md and db_design_draft.md
 - Added missing use cases (Cancel Order, Track Order, Returns, etc.)
 - Enhanced database schema (timestamps, new fields, 7 new tables)
 - Created optimization_notes.md
 
-### Session 2 (2024-11-23)
+### Session 2 (2025-11-23)
 - Created full project structure
 - Implemented 28-table MySQL schema
 - Created 14 entity models
@@ -298,7 +300,7 @@ These are in the SQL schema but not in C# models:
 - Refactored to layered architecture
 - Created .gitignore, README.md, PLAN.md
 
-### Session 3 (2024-11-23)
+### Session 3 (2025-11-23)
 - Created Vue.js 3 frontend with Vite
 - Implemented minimalist e-commerce design (MINIMALSHOP theme)
 - Built all core components (Header, Footer, ProductCard, HeroSection)
@@ -306,3 +308,20 @@ These are in the SQL schema but not in C# models:
 - Set up Pinia stores for auth and cart state management
 - Integrated with backend APIs via Axios
 - Frontend runs at http://localhost:5173
+
+### Session 4 (2025-11-23)
+- Fixed Bootstrap CSS conflict with dropdown menus (renamed classes to avoid override)
+- Fixed category filtering to include products from subcategories (backend ProductRepository)
+- Fixed AppHeader.vue to properly use nested API response structure
+- Cleaned up duplicate categories in database
+- Created idempotent sample_data.sql with auto-increment reset
+- Added 12 more products (total 20 products with Unsplash images)
+- Replaced emojis with Bootstrap Icons (bi-heart, bi-cart3, bi-person, bi-bell, bi-search)
+- Centralized API URL configuration using .env.development
+- Changed default backend port to 5001 (avoiding macOS AirPlay conflict on 5000)
+- Noted bugs: logout doesn't clear cart, no proper backend logout endpoint
+
+### Session 5 (2025-11-23)
+- Created cross-platform setup scripts (setup.sh for macOS/Linux, setup.ps1 for Windows)
+- Scripts check prerequisites, install dependencies, and guide database setup
+- Updated README.md with Quick Setup section

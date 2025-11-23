@@ -15,12 +15,15 @@ A multi-seller e-commerce marketplace platform built with ASP.NET Core Web API a
 ```
 ShoppingApp/
 ├── database/
-│   └── schema.sql              # MySQL database schema (28 tables)
+│   ├── schema.sql              # MySQL database schema (28 tables)
+│   └── sample_data.sql         # Optional test data
 ├── project_specs/              # Design documents
 │   ├── use_cases_draft.md
 │   ├── db_design_draft.md
 │   ├── tech_stack.md
 │   └── optimization_notes.md
+├── setup.sh                    # Setup script (macOS/Linux)
+├── setup.ps1                   # Setup script (Windows)
 └── src/
     ├── ShoppingApp.Web/             # Frontend (Vue 3)
     │   ├── src/
@@ -58,6 +61,24 @@ ShoppingApp/
 - .NET 9.0 SDK
 - MySQL Server 8.0+
 
+### Quick Setup (Recommended)
+
+Setup scripts are available to automatically install dependencies and configure the database:
+
+**macOS/Linux:**
+```bash
+./setup.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+.\setup.ps1
+```
+
+The scripts will check prerequisites, install all dependencies, and guide you through database setup (with optional sample data).
+
+
+
 ### Database Setup
 
 > **Note**: Each developer needs their own local MySQL instance. The database is not shared - you must create it locally and populate test data yourself.
@@ -76,7 +97,10 @@ ShoppingApp/
 mysql -u root -p < database/schema.sql
 ```
 
-3. The schema creates empty tables with seeded roles (customer, seller, admin). You'll need to add test data for products, categories, etc.
+3. The schema creates empty tables with seeded roles (customer, seller, admin). You can optionally populate test data:
+```bash
+mysql -u root -p shopping_app < database/sample_data.sql
+```
 
 ### Running the Application
 
@@ -177,15 +201,6 @@ See `project_specs/db_design_draft.md` for detailed schema.
 - **Admin** - User management, category management, review moderation
 
 ## Development
-
-### Adding New Features
-
-1. Add entity to `ShoppingApp.Core/Entities/`
-2. Add repository interface to `ShoppingApp.Core/Interfaces/Repositories/`
-3. Implement repository in `ShoppingApp.Infrastructure/Repositories/`
-4. Register in `IUnitOfWork` and `UnitOfWork`
-5. Create DTOs in `ShoppingApp.API/Models/DTOs/`
-6. Create controller in `ShoppingApp.API/Controllers/`
 
 ### Building
 
