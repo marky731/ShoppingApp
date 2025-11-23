@@ -14,6 +14,17 @@ DELETE FROM Shops WHERE shop_name = 'Minimal Shop';
 DELETE FROM Categories WHERE category_name IN ('Phones', 'Laptops', 'Bags', 'Shoes', 'Kitchen', 'Watches');
 DELETE FROM Categories WHERE category_name IN ('Electronics', 'Clothing', 'Home', 'Beauty', 'Accessories') AND parent_category_id IS NULL;
 
+-- Reset auto-increment for consistent IDs (only if tables are empty)
+SET @cat_count = (SELECT COUNT(*) FROM Categories);
+SET @prod_count = (SELECT COUNT(*) FROM Products);
+SET @shop_count = (SELECT COUNT(*) FROM Shops);
+
+-- Reset Categories auto-increment if empty
+SET @reset_cat = IF(@cat_count = 0, 'ALTER TABLE Categories AUTO_INCREMENT = 1', 'SELECT 1');
+PREPARE stmt FROM @reset_cat;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- Create a test seller user (password: Test1234)
 INSERT INTO Users (role_id, first_name, last_name, email, password_hash, phone, is_active, created_at, updated_at)
 VALUES (2, 'Shop', 'Owner', 'seller@example.com', '$2a$11$rBNr.RqLvXqhQsKfLdkFEuPHLG2V.vVJI7V8wZBqQKBz1ZKxGqKZG', '555-0100', 1, NOW(), NOW())

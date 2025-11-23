@@ -54,24 +54,24 @@ const handleLogout = () => {
 
       <div class="header-icons">
         <RouterLink to="/favorites" class="header-icon" title="Favorites">
-          ♡
+          <i class="bi bi-heart"></i>
         </RouterLink>
         <RouterLink to="/cart" class="header-icon" title="Cart">
-          🛒
+          <i class="bi bi-cart3"></i>
           <span v-if="cartCount > 0" class="badge-count">{{ cartCount }}</span>
         </RouterLink>
         <template v-if="isLoggedIn">
-          <button class="header-icon" title="Account" @click="handleLogout">
-            👤
+          <button class="header-icon" title="Logout" @click="handleLogout">
+            <i class="bi bi-person-fill"></i>
           </button>
         </template>
         <template v-else>
           <RouterLink to="/login" class="header-icon" title="Login">
-            👤
+            <i class="bi bi-person"></i>
           </RouterLink>
         </template>
         <button class="header-icon" title="Notifications">
-          🔔
+          <i class="bi bi-bell"></i>
         </button>
       </div>
     </div>
@@ -100,7 +100,7 @@ const handleLogout = () => {
       </ul>
 
       <div class="search-box">
-        <span class="search-icon">🔍</span>
+        <i class="bi bi-search search-icon"></i>
         <input
           v-model="searchQuery"
           type="text"
