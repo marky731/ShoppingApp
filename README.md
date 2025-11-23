@@ -4,6 +4,7 @@ A multi-seller e-commerce marketplace platform built with ASP.NET Core Web API a
 
 ## Tech Stack
 
+- **Frontend**: Vue 3, Vite, Pinia, Vue Router, Bootstrap 5
 - **Backend**: ASP.NET Core 9.0 Web API
 - **Database**: MySQL with Entity Framework Core
 - **Authentication**: JWT Bearer tokens
@@ -21,6 +22,15 @@ ShoppingApp/
 │   ├── tech_stack.md
 │   └── optimization_notes.md
 └── src/
+    ├── ShoppingApp.Web/             # Frontend (Vue 3)
+    │   ├── src/
+    │   │   ├── components/         # Vue components
+    │   │   ├── views/              # Page views
+    │   │   ├── stores/             # Pinia stores
+    │   │   ├── services/           # API services
+    │   │   └── router/             # Vue Router
+    │   └── package.json
+    │
     ├── ShoppingApp.Core/           # Domain Layer
     │   ├── Entities/               # Domain models
     │   └── Interfaces/
@@ -44,6 +54,7 @@ ShoppingApp/
 
 ### Prerequisites
 
+- Node.js 18+ (for frontend)
 - .NET 9.0 SDK
 - MySQL Server 8.0+
 
@@ -69,12 +80,20 @@ mysql -u root -p < database/schema.sql
 
 ### Running the Application
 
+**Backend API:**
 ```bash
 cd src/ShoppingApp.API
 dotnet run
 ```
-
 The API will be available at `http://localhost:5000`
+
+**Frontend:**
+```bash
+cd src/ShoppingApp.Web
+npm install
+npm run dev
+```
+The frontend will be available at `http://localhost:5173`
 
 ## API Endpoints
 
@@ -190,5 +209,5 @@ JWT settings in `appsettings.json`:
 
 ## Contributing
 
-See `PLAN.md` for current development status and roadmap.
+See `PROGRESS.md` for current development status and roadmap.
 
