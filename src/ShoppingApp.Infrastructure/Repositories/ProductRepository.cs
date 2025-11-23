@@ -35,9 +35,11 @@ public class ProductRepository : Repository<Product>, IProductRepository
                 (p.Brand != null && p.Brand.ToLower().Contains(searchLower)));
         }
 
-        // Filters
+        // Filters - include products from subcategories
         if (categoryId.HasValue)
-            query = query.Where(p => p.CategoryId == categoryId.Value);
+            query = query.Where(p =>
+                p.CategoryId == categoryId.Value ||
+                p.Category.ParentCategoryId == categoryId.Value);
 
         if (minPrice.HasValue)
             query = query.Where(p => p.Price >= minPrice.Value);

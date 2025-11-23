@@ -9,16 +9,25 @@ const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 
-const categories = ref([])
+const allCategories = ref([])
 const searchQuery = ref('')
 
 const isLoggedIn = computed(() => authStore.isAuthenticated)
 const cartCount = computed(() => cartStore.totalItems)
 
+// Get parent categories with their subcategories (API returns nested data)
+const categoriesWithSubs = computed(() => {
+  const parents = allCategories.value.filter(c => !c.parentCategoryId)
+  return parents.slice(0, 7).map(parent => ({
+    ...parent,
+    subcategories: parent.subCategories || []
+  }))
+})
+
 onMounted(async () => {
   try {
     const response = await categoriesAPI.getAll()
-    categories.value = response.data.filter(c => !c.parentCategoryId)
+    allCategories.value = response.data
   } catch (error) {
     console.error('Failed to load categories:', error)
   }
@@ -72,10 +81,21 @@ const handleLogout = () => {
         <li>
           <RouterLink to="/products">All Categories</RouterLink>
         </li>
-        <li v-for="category in categories" :key="category.categoryId">
+        <li
+          v-for="category in categoriesWithSubs"
+          :key="category.categoryId"
+          class="nav-category-dropdown"
+        >
           <RouterLink :to="{ name: 'category', params: { id: category.categoryId } }">
             {{ category.categoryName }}
           </RouterLink>
+          <ul v-if="category.subcategories.length > 0" class="subcategory-menu">
+            <li v-for="sub in category.subcategories" :key="sub.categoryId">
+              <RouterLink :to="{ name: 'category', params: { id: sub.categoryId } }">
+                {{ sub.categoryName }}
+              </RouterLink>
+            </li>
+          </ul>
         </li>
       </ul>
 
