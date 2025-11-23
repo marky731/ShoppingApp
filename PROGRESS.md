@@ -2,14 +2,28 @@
 
 ## Project Status Overview
 
+### Backend
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 1: Project Setup | ✅ COMPLETE | 100% |
 | Phase 2: Database Layer | ✅ COMPLETE | 100% |
-| Phase 3: Core Backend (Auth & Products) | ✅ COMPLETE & TESTED | 100% |
+| Phase 3: Core APIs (Auth & Products) | ✅ COMPLETE | 100% |
 | Phase 4: Shopping Flow APIs | ⏳ NOT STARTED | 0% |
 | Phase 5: Seller & Admin APIs | ⏳ NOT STARTED | 0% |
-| Phase 6: Testing | 🟡 IN PROGRESS | 30% |
+
+### Frontend
+| Phase | Status | Progress |
+|-------|--------|----------|
+| Phase 1: Project Setup (Vue 3) | ✅ COMPLETE | 100% |
+| Phase 2: Core Components & Views | ✅ COMPLETE | 100% |
+| Phase 3: Shopping Flow UI | ⏳ NOT STARTED | 0% |
+| Phase 4: Seller & Admin UI | ⏳ NOT STARTED | 0% |
+
+### Testing
+| Phase | Status | Progress |
+|-------|--------|----------|
+| Unit Tests | ⏳ NOT STARTED | 0% |
+| Integration Tests | 🟡 IN PROGRESS | 30% |
 
 ---
 
@@ -84,6 +98,39 @@ All Phase 3 endpoints tested successfully on 2024-11-23:
 - [x] `GET /api/products/slug/{slug}` - Product by slug
 - [x] `GET /api/categories` - All categories
 - [x] `GET /api/categories/{id}` - Category by ID
+
+### Phase 3.5: Frontend (Vue.js) ✅
+
+- [x] Created Vue 3 project with Vite
+- [x] Installed dependencies (Vue Router, Pinia, Axios, Bootstrap 5)
+- [x] Set up folder structure (components, views, services, stores)
+- [x] Implemented minimalist design theme (MINIMALSHOP style)
+
+#### Components Created:
+- [x] `AppHeader` - Navigation with categories, search, cart/favorites icons
+- [x] `AppFooter` - Simple footer with links
+- [x] `ProductCard` - Product display with add to cart
+- [x] `HeroSection` - Landing page hero
+
+#### Views Created:
+- [x] `HomeView` - Hero + featured products grid
+- [x] `ProductsView` - Product listing with filters & pagination
+- [x] `ProductDetailView` - Single product page
+- [x] `LoginView` / `RegisterView` - Auth forms
+- [x] `CartView` - Shopping cart (local storage)
+- [x] `FavoritesView` - Placeholder for Phase 4
+
+#### State Management:
+- [x] Auth store (Pinia) - login, register, token management
+- [x] Cart store (Pinia) - local cart functionality
+
+#### Running the Frontend:
+```bash
+cd src/ShoppingApp.Web
+npm install
+npm run dev
+# Runs at http://localhost:5173
+```
 
 ---
 
@@ -250,3 +297,12 @@ These are in the SQL schema but not in C# models:
 - Built Categories API
 - Refactored to layered architecture
 - Created .gitignore, README.md, PLAN.md
+
+### Session 3 (2024-11-23)
+- Created Vue.js 3 frontend with Vite
+- Implemented minimalist e-commerce design (MINIMALSHOP theme)
+- Built all core components (Header, Footer, ProductCard, HeroSection)
+- Created views for Home, Products, ProductDetail, Login, Register, Cart
+- Set up Pinia stores for auth and cart state management
+- Integrated with backend APIs via Axios
+- Frontend runs at http://localhost:5173
