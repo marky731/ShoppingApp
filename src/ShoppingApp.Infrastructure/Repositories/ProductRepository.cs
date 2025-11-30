@@ -76,6 +76,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(p => p.Shop)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .Where(p => p.ProductId == id && p.IsActive)
             .FirstOrDefaultAsync();
     }
@@ -86,6 +87,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(p => p.Shop)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .Where(p => p.Slug == slug && p.IsActive)
             .FirstOrDefaultAsync();
     }

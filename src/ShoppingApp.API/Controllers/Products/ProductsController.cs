@@ -98,8 +98,10 @@ public class ProductsController : ControllerBase
             {
                 ShopId = product.Shop.ShopId,
                 ShopName = product.Shop.ShopName,
+                Description = product.Shop.Description,
                 LogoImageUrl = product.Shop.LogoImageUrl,
-                AverageRating = product.Shop.AverageRating
+                AverageRating = product.Shop.AverageRating,
+                TotalSales = product.Shop.TotalSales
             },
             Category = new CategoryDto
             {
@@ -107,7 +109,14 @@ public class ProductsController : ControllerBase
                 CategoryName = product.Category.CategoryName,
                 ParentCategoryId = product.Category.ParentCategoryId
             },
-            Images = product.Images.Select(i => i.ImageUrl).ToList()
+            Images = product.Images.Select(i => i.ImageUrl).ToList(),
+            Specifications = product.Specifications.Select(s => new ProductSpecificationDto
+            {
+                SpecificationId = s.SpecificationId,
+                SpecName = s.SpecName,
+                SpecValue = s.SpecValue,
+                DisplayOrder = s.DisplayOrder
+            }).ToList()
         };
     }
 }

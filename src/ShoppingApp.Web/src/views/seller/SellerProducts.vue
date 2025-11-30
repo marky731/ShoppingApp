@@ -21,7 +21,8 @@ const productForm = ref({
   stockQuantity: 0,
   categoryId: null,
   brand: '',
-  mainImageUrl: ''
+  mainImageUrl: '',
+  specifications: []
 })
 
 onMounted(async () => {
@@ -69,9 +70,26 @@ const openAddForm = () => {
     stockQuantity: 0,
     categoryId: categories.value[0]?.categoryId || null,
     brand: '',
-    mainImageUrl: ''
+    mainImageUrl: '',
+    specifications: []
   }
   showForm.value = true
+}
+
+const addSpecification = () => {
+  productForm.value.specifications.push({
+    specName: '',
+    specValue: '',
+    displayOrder: productForm.value.specifications.length
+  })
+}
+
+const removeSpecification = (index) => {
+  productForm.value.specifications.splice(index, 1)
+  // Update display order
+  productForm.value.specifications.forEach((spec, i) => {
+    spec.displayOrder = i
+  })
 }
 
 const openEditForm = async (product) => {
@@ -83,7 +101,12 @@ const openEditForm = async (product) => {
     stockQuantity: product.stockQuantity,
     categoryId: product.categoryId,
     brand: product.brand || '',
-    mainImageUrl: product.mainImageUrl || ''
+    mainImageUrl: product.mainImageUrl || '',
+    specifications: (product.specifications || []).map(spec => ({
+      specName: spec.specName,
+      specValue: spec.specValue,
+      displayOrder: spec.displayOrder
+    }))
   }
   showForm.value = true
 }
@@ -179,6 +202,38 @@ const formatPrice = (price) => `$${price.toFixed(2)}`
           <div class="form-group full-width">
             <label>Description</label>
             <textarea v-model="productForm.description" rows="3"></textarea>
+          </div>
+
+          <!-- Specifications Section -->
+          <div class="form-group full-width specifications-section">
+            <div class="specs-header">
+              <label>Specifications</label>
+              <button type="button" class="add-spec-btn" @click="addSpecification">
+                <i class="bi bi-plus-lg"></i> Add Specification
+              </button>
+            </div>
+            <div v-if="productForm.specifications.length === 0" class="no-specs">
+              No specifications added. Click "Add Specification" to add technical details.
+            </div>
+            <div v-else class="specs-list">
+              <div v-for="(spec, index) in productForm.specifications" :key="index" class="spec-row">
+                <input
+                  v-model="spec.specName"
+                  type="text"
+                  placeholder="Name (e.g., Display, Battery)"
+                  class="spec-name-input"
+                />
+                <input
+                  v-model="spec.specValue"
+                  type="text"
+                  placeholder="Value (e.g., 6.1-inch OLED)"
+                  class="spec-value-input"
+                />
+                <button type="button" class="remove-spec-btn" @click="removeSpecification(index)" title="Remove">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -461,5 +516,104 @@ const formatPrice = (price) => `$${price.toFixed(2)}`
 .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Specifications Section */
+.specifications-section {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.specs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.specs-header label {
+  margin-bottom: 0 !important;
+}
+
+.add-spec-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.add-spec-btn:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.no-specs {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+  padding: 1rem;
+  text-align: center;
+  background: var(--light-gray);
+  border-radius: 8px;
+}
+
+.specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spec-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.spec-name-input {
+  flex: 0 0 35%;
+}
+
+.spec-value-input {
+  flex: 1;
+}
+
+.remove-spec-btn {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.remove-spec-btn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+@media (max-width: 576px) {
+  .spec-row {
+    flex-wrap: wrap;
+  }
+
+  .spec-name-input,
+  .spec-value-input {
+    flex: 1 1 100%;
+  }
+
+  .remove-spec-btn {
+    margin-left: auto;
+  }
 }
 </style>

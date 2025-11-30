@@ -24,6 +24,7 @@ public class AppDbContext : DbContext
     public DbSet<ReviewResponse> ReviewResponses => Set<ReviewResponse>();
     public DbSet<Discount> Discounts => Set<Discount>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<ProductSpecification> ProductSpecifications => Set<ProductSpecification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -146,6 +147,19 @@ public class AppDbContext : DbContext
 
             entity.HasOne(e => e.Product)
                 .WithMany(p => p.Images)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ProductSpecification
+        modelBuilder.Entity<ProductSpecification>(entity =>
+        {
+            entity.HasKey(e => e.SpecificationId);
+            entity.Property(e => e.SpecName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.SpecValue).HasMaxLength(500).IsRequired();
+
+            entity.HasOne(e => e.Product)
+                .WithMany(p => p.Specifications)
                 .HasForeignKey(e => e.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

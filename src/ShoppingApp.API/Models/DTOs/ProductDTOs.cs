@@ -32,14 +32,25 @@ public class ProductDetailDto
     public ShopSummaryDto Shop { get; set; } = null!;
     public CategoryDto Category { get; set; } = null!;
     public List<string> Images { get; set; } = new();
+    public List<ProductSpecificationDto> Specifications { get; set; } = new();
+}
+
+public class ProductSpecificationDto
+{
+    public int SpecificationId { get; set; }
+    public string SpecName { get; set; } = string.Empty;
+    public string SpecValue { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
 }
 
 public class ShopSummaryDto
 {
     public int ShopId { get; set; }
     public string ShopName { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public string? LogoImageUrl { get; set; }
     public decimal AverageRating { get; set; }
+    public int TotalSales { get; set; }
 }
 
 public class CategoryDto

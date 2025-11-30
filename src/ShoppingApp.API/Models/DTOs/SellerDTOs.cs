@@ -68,6 +68,7 @@ public class SellerProductDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<string> Images { get; set; } = new();
+    public List<ProductSpecificationDto> Specifications { get; set; } = new();
 }
 
 public class CreateProductRequest
@@ -99,6 +100,21 @@ public class CreateProductRequest
     public string? Model { get; set; }
 
     public List<string>? AdditionalImages { get; set; }
+
+    public List<SpecificationInput>? Specifications { get; set; }
+}
+
+public class SpecificationInput
+{
+    [Required]
+    [StringLength(100)]
+    public string SpecName { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(500)]
+    public string SpecValue { get; set; } = string.Empty;
+
+    public int DisplayOrder { get; set; } = 0;
 }
 
 public class UpdateProductRequest
@@ -132,6 +148,8 @@ public class UpdateProductRequest
     public bool IsActive { get; set; } = true;
 
     public List<string>? AdditionalImages { get; set; }
+
+    public List<SpecificationInput>? Specifications { get; set; }
 }
 
 // Seller Order DTOs

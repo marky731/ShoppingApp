@@ -112,6 +112,16 @@ CREATE TABLE ProductImages (
     FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
 );
 
+-- 8b. ProductSpecifications (custom key-value specifications for products)
+CREATE TABLE ProductSpecifications (
+    specification_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    spec_name VARCHAR(100) NOT NULL,
+    spec_value VARCHAR(500) NOT NULL,
+    display_order INT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
+);
+
 -- 9. Attributes
 CREATE TABLE Attributes (
     attribute_id INT AUTO_INCREMENT PRIMARY KEY,

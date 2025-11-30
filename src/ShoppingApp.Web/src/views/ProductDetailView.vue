@@ -15,6 +15,21 @@ const quantity = ref(1)
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)
 
+// Image Gallery
+const selectedImageIndex = ref(0)
+const allImages = computed(() => {
+  if (!product.value) return []
+  const images = []
+  if (product.value.mainImageUrl) {
+    images.push(product.value.mainImageUrl)
+  }
+  if (product.value.images && product.value.images.length > 0) {
+    images.push(...product.value.images.filter(img => img !== product.value.mainImageUrl))
+  }
+  return images.length > 0 ? images : ['/placeholder.png']
+})
+const selectedImage = computed(() => allImages.value[selectedImageIndex.value] || '/placeholder.png')
+
 // Reviews
 const reviews = ref(null)
 const reviewsLoading = ref(false)
@@ -177,22 +192,51 @@ const renderStars = (rating) => {
     <div v-else-if="product" class="product-detail">
       <div class="row">
         <div class="col-md-6">
-          <div class="product-image-wrapper">
-            <img
-              :src="product.mainImageUrl || '/placeholder.png'"
-              :alt="product.productName"
-              class="img-fluid"
-              style="max-height: 500px; object-fit: contain; width: 100%;"
-            />
-            <button
-              v-if="isAuthenticated"
-              class="favorite-btn-detail"
-              :class="{ active: isFavorite }"
-              @click="toggleFavorite"
-              :disabled="favoriteLoading"
-            >
-              <i :class="isFavorite ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-            </button>
+          <!-- Image Gallery -->
+          <div class="product-gallery">
+            <div class="main-image-wrapper">
+              <img
+                :src="selectedImage"
+                :alt="product.productName"
+                class="main-image"
+              />
+              <button
+                v-if="isAuthenticated"
+                class="favorite-btn-detail"
+                :class="{ active: isFavorite }"
+                @click="toggleFavorite"
+                :disabled="favoriteLoading"
+              >
+                <i :class="isFavorite ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+              </button>
+              <!-- Navigation arrows for mobile -->
+              <button
+                v-if="allImages.length > 1"
+                class="gallery-nav prev"
+                @click="selectedImageIndex = (selectedImageIndex - 1 + allImages.length) % allImages.length"
+              >
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button
+                v-if="allImages.length > 1"
+                class="gallery-nav next"
+                @click="selectedImageIndex = (selectedImageIndex + 1) % allImages.length"
+              >
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+            <!-- Thumbnail strip -->
+            <div v-if="allImages.length > 1" class="thumbnail-strip">
+              <button
+                v-for="(img, index) in allImages"
+                :key="index"
+                class="thumbnail"
+                :class="{ active: index === selectedImageIndex }"
+                @click="selectedImageIndex = index"
+              >
+                <img :src="img" :alt="`${product.productName} - Image ${index + 1}`" />
+              </button>
+            </div>
           </div>
         </div>
         <div class="col-md-6">
@@ -214,11 +258,8 @@ const renderStars = (rating) => {
             <strong>Brand:</strong> {{ product.brand }}
           </div>
 
-          <div v-if="product.shop" class="shop-link-container">
-            Sold by:
-            <router-link :to="`/shop/${product.shop.shopId}`" class="shop-link">
-              {{ product.shop.shopName }}
-            </router-link>
+          <div v-if="product.model" style="margin-bottom: 0.5rem;">
+            <strong>Model:</strong> {{ product.model }}
           </div>
 
           <p style="margin-bottom: 1.5rem; line-height: 1.6;">
@@ -254,6 +295,54 @@ const renderStars = (rating) => {
 
           <div v-if="product.stockQuantity < 10" style="margin-top: 1rem; color: #cc0000;">
             Only {{ product.stockQuantity }} left in stock!
+          </div>
+
+          <!-- Specifications Section -->
+          <div v-if="product.specifications && product.specifications.length > 0" class="specifications-section">
+            <h3> Specifications</h3>
+            <table class="specs-table">
+              <tbody>
+                <tr v-for="spec in product.specifications" :key="spec.specificationId">
+                  <td class="spec-name">{{ spec.specName }}</td>
+                  <td class="spec-value">{{ spec.specValue }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Seller Info Card -->
+          <div v-if="product.shop" class="seller-card">
+            <div class="seller-header">
+              <router-link :to="`/shop/${product.shop.shopId}`" class="seller-logo-link">
+                <img
+                  :src="product.shop.logoImageUrl || '/placeholder.png'"
+                  :alt="product.shop.shopName"
+                  class="seller-logo"
+                />
+              </router-link>
+              <div class="seller-info">
+                <router-link :to="`/shop/${product.shop.shopId}`" class="seller-name">
+                  {{ product.shop.shopName }}
+                </router-link>
+                <div class="seller-stats">
+                  <span class="seller-rating">
+                    <i class="bi bi-star-fill"></i>
+                    {{ product.shop.averageRating?.toFixed(1) || '0.0' }}
+                  </span>
+                  <span class="seller-sales">
+                    <i class="bi bi-bag-check"></i>
+                    {{ product.shop.totalSales || 0 }} sales
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p v-if="product.shop.description" class="seller-description">
+              {{ product.shop.description }}
+            </p>
+            <router-link :to="`/shop/${product.shop.shopId}`" class="visit-shop-btn">
+              <i class="bi bi-shop"></i>
+              Visit Shop
+            </router-link>
           </div>
         </div>
       </div>
@@ -385,8 +474,92 @@ const renderStars = (rating) => {
 </template>
 
 <style scoped>
-.product-image-wrapper {
+/* Image Gallery */
+.product-gallery {
   position: relative;
+}
+
+.main-image-wrapper {
+  position: relative;
+  background: var(--light-gray);
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.gallery-nav:hover {
+  background: #fff;
+}
+
+.gallery-nav.prev {
+  left: 1rem;
+}
+
+.gallery-nav.next {
+  right: 1rem;
+}
+
+.thumbnail-strip {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  padding: 0.25rem;
+}
+
+.thumbnail {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: var(--light-gray);
+  transition: border-color 0.2s;
+}
+
+.thumbnail:hover {
+  border-color: var(--secondary-color);
+}
+
+.thumbnail.active {
+  border-color: var(--primary-color);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .favorite-btn-detail {
@@ -405,6 +578,7 @@ const renderStars = (rating) => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-size: 1.2rem;
   transition: all 0.2s;
+  z-index: 10;
 }
 
 .favorite-btn-detail:hover {
@@ -418,6 +592,100 @@ const renderStars = (rating) => {
 .favorite-btn-detail:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Seller Card */
+.seller-card {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.seller-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.seller-logo-link {
+  flex-shrink: 0;
+}
+
+.seller-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid var(--border-color);
+}
+
+.seller-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.seller-name {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+}
+
+.seller-name:hover {
+  text-decoration: underline;
+}
+
+.seller-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+}
+
+.seller-stats i {
+  margin-right: 0.25rem;
+}
+
+.seller-rating i {
+  color: #ffc107;
+}
+
+.seller-description {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.visit-shop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.visit-shop-btn:hover {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
 }
 
 .favorite-btn-inline {
@@ -444,21 +712,6 @@ const renderStars = (rating) => {
 .favorite-btn-inline:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.shop-link-container {
-  margin-bottom: 1rem;
-  color: #666;
-}
-
-.shop-link {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.shop-link:hover {
-  text-decoration: underline;
 }
 
 .product-rating {
@@ -740,5 +993,65 @@ const renderStars = (rating) => {
 .submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Specifications Section */
+.specifications-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--light-gray);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.specifications-section h3 {
+  font-weight: 500;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.specs-table tr:not(:last-child) {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.specs-table td {
+  padding: 0.75rem 0;
+  vertical-align: top;
+}
+
+.spec-name {
+  font-weight: 500;
+  color: var(--secondary-color);
+  width: 40%;
+  padding-right: 1rem;
+}
+
+.spec-value {
+  color: var(--primary-color);
+}
+
+@media (max-width: 576px) {
+  .specs-table tr {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+  }
+
+  .spec-name,
+  .spec-value {
+    width: 100%;
+    padding: 0.25rem 0;
+  }
+
+  .spec-name {
+    font-size: 0.85rem;
+  }
 }
 </style>

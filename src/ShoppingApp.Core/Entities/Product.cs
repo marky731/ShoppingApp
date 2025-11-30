@@ -26,4 +26,5 @@ public class Product
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+    public ICollection<ProductSpecification> Specifications { get; set; } = new List<ProductSpecification>();
 }

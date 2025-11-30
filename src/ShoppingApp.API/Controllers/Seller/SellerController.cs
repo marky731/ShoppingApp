@@ -172,6 +172,7 @@ public class SellerController : ControllerBase
             .Where(p => p.ShopId == shop.ShopId)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .OrderByDescending(p => p.CreatedAt);
 
         var totalCount = await query.CountAsync();
@@ -207,6 +208,7 @@ public class SellerController : ControllerBase
             .Where(p => p.ProductId == id && p.ShopId == shop.ShopId)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .FirstOrDefaultAsync();
 
         if (product == null)
@@ -284,11 +286,29 @@ public class SellerController : ControllerBase
             await _unitOfWork.SaveChangesAsync();
         }
 
-        // Reload product with category and images
+        // Add specifications
+        if (request.Specifications?.Any() == true)
+        {
+            foreach (var spec in request.Specifications)
+            {
+                var specification = new ProductSpecification
+                {
+                    ProductId = product.ProductId,
+                    SpecName = spec.SpecName,
+                    SpecValue = spec.SpecValue,
+                    DisplayOrder = spec.DisplayOrder
+                };
+                _context.ProductSpecifications.Add(specification);
+            }
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        // Reload product with category, images, and specifications
         var createdProduct = await _context.Products
             .Where(p => p.ProductId == product.ProductId)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .FirstAsync();
 
         return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, MapToSellerProductDto(createdProduct));
@@ -309,6 +329,7 @@ public class SellerController : ControllerBase
         var product = await _context.Products
             .Where(p => p.ProductId == id && p.ShopId == shop.ShopId)
             .Include(p => p.Images)
+            .Include(p => p.Specifications)
             .FirstOrDefaultAsync();
 
         if (product == null)
@@ -364,6 +385,26 @@ public class SellerController : ControllerBase
             }
         }
 
+        // Update specifications if provided
+        if (request.Specifications != null)
+        {
+            // Remove old specifications
+            _context.ProductSpecifications.RemoveRange(product.Specifications);
+
+            // Add new specifications
+            foreach (var spec in request.Specifications)
+            {
+                var specification = new ProductSpecification
+                {
+                    ProductId = product.ProductId,
+                    SpecName = spec.SpecName,
+                    SpecValue = spec.SpecValue,
+                    DisplayOrder = spec.DisplayOrder
+                };
+                _context.ProductSpecifications.Add(specification);
+            }
+        }
+
         await _unitOfWork.SaveChangesAsync();
 
         // Reload product
@@ -371,6 +412,7 @@ public class SellerController : ControllerBase
             .Where(p => p.ProductId == product.ProductId)
             .Include(p => p.Category)
             .Include(p => p.Images)
+            .Include(p => p.Specifications.OrderBy(s => s.DisplayOrder))
             .FirstAsync();
 
         return Ok(MapToSellerProductDto(updatedProduct));
@@ -790,7 +832,14 @@ public class SellerController : ControllerBase
             CategoryName = product.Category.CategoryName,
             CreatedAt = product.CreatedAt,
             UpdatedAt = product.UpdatedAt,
-            Images = product.Images.Select(i => i.ImageUrl).ToList()
+            Images = product.Images.Select(i => i.ImageUrl).ToList(),
+            Specifications = product.Specifications.Select(s => new ProductSpecificationDto
+            {
+                SpecificationId = s.SpecificationId,
+                SpecName = s.SpecName,
+                SpecValue = s.SpecValue,
+                DisplayOrder = s.DisplayOrder
+            }).ToList()
         };
     }
 
