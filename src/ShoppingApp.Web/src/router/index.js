@@ -41,6 +41,21 @@ const routes = [
     path: '/favorites',
     name: 'favorites',
     component: () => import('../views/FavoritesView.vue')
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: () => import('../views/CheckoutView.vue')
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    component: () => import('../views/OrdersView.vue')
+  },
+  {
+    path: '/orders/:id',
+    name: 'order-detail',
+    component: () => import('../views/OrderDetailView.vue')
   }
 ]
 

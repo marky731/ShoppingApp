@@ -53,4 +53,39 @@ export const categoriesAPI = {
   getById: (id) => api.get(`/categories/${id}`)
 }
 
+// Cart APIs
+export const cartAPI = {
+  get: () => api.get('/cart'),
+  add: (productId, quantity = 1) => api.post('/cart', { productId, quantity }),
+  update: (productId, quantity) => api.put(`/cart/${productId}`, { quantity }),
+  remove: (productId) => api.delete(`/cart/${productId}`),
+  clear: () => api.delete('/cart')
+}
+
+// Favorites APIs
+export const favoritesAPI = {
+  get: () => api.get('/favorites'),
+  add: (productId) => api.post(`/favorites/${productId}`),
+  remove: (productId) => api.delete(`/favorites/${productId}`),
+  check: (productId) => api.get(`/favorites/check/${productId}`)
+}
+
+// Address APIs
+export const addressAPI = {
+  getAll: () => api.get('/addresses'),
+  getById: (id) => api.get(`/addresses/${id}`),
+  create: (data) => api.post('/addresses', data),
+  update: (id, data) => api.put(`/addresses/${id}`, data),
+  delete: (id) => api.delete(`/addresses/${id}`)
+}
+
+// Orders APIs
+export const ordersAPI = {
+  getAll: () => api.get('/orders'),
+  getById: (id) => api.get(`/orders/${id}`),
+  create: (shippingAddressId, discountCode = null) =>
+    api.post('/orders', { shippingAddressId, discountCode }),
+  cancel: (id) => api.post(`/orders/${id}/cancel`)
+}
+
 export default api

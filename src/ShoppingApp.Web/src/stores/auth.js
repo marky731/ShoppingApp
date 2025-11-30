@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { authAPI } from '../services/api'
+import { useCartStore } from './cart'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -23,6 +24,9 @@ export const useAuthStore = defineStore('auth', {
         this.token = response.data.token
         localStorage.setItem('token', this.token)
         await this.fetchUser()
+        // Sync cart after login
+        const cartStore = useCartStore()
+        await cartStore.syncCartAfterLogin()
         return true
       } catch (error) {
         this.error = error.response?.data?.message || 'Login failed'
@@ -60,6 +64,9 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       localStorage.removeItem('token')
+      // Clear cart on logout
+      const cartStore = useCartStore()
+      cartStore.onLogout()
     }
   }
 })
