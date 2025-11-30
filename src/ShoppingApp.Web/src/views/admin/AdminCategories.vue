@@ -143,19 +143,16 @@ const getParentOptions = () => {
 
     <div v-else class="categories-list">
       <div v-for="category in categories" :key="category.categoryId" class="category-item">
-        <div class="category-main">
+        <div class="category-main clickable-row" @click="openEditForm(category)">
           <div class="category-info">
             <span class="category-name">{{ category.categoryName }}</span>
             <span class="sub-count" v-if="category.subCategories?.length">
               ({{ category.subCategories.length }} subcategories)
             </span>
           </div>
-          <div class="category-actions">
+          <div class="category-actions" @click.stop>
             <button class="action-btn" @click="openAddForm(category.categoryId)" title="Add Subcategory">
               <i class="bi bi-plus"></i>
-            </button>
-            <button class="action-btn" @click="openEditForm(category)" title="Edit">
-              <i class="bi bi-pencil"></i>
             </button>
             <button class="action-btn delete" @click="deleteCategory(category.categoryId)" title="Delete">
               <i class="bi bi-trash"></i>
@@ -167,16 +164,14 @@ const getParentOptions = () => {
           <div
             v-for="sub in category.subCategories"
             :key="sub.categoryId"
-            class="subcategory-item"
+            class="subcategory-item clickable-row"
+            @click="openEditForm(sub, category.categoryId)"
           >
             <div class="category-info">
               <i class="bi bi-arrow-return-right"></i>
               <span class="category-name">{{ sub.categoryName }}</span>
             </div>
-            <div class="category-actions">
-              <button class="action-btn" @click="openEditForm(sub, category.categoryId)" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </button>
+            <div class="category-actions" @click.stop>
               <button class="action-btn delete" @click="deleteCategory(sub.categoryId)" title="Delete">
                 <i class="bi bi-trash"></i>
               </button>
@@ -234,6 +229,15 @@ const getParentOptions = () => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clickable-row:hover {
+  background: var(--light-gray);
 }
 
 .category-info {

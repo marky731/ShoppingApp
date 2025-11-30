@@ -170,11 +170,16 @@ const getStatusClass = (status) => {
           <th>Date</th>
           <th>Total</th>
           <th>Status</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="order in orders" :key="order.shopOrderId">
+        <tr
+          v-for="order in orders"
+          :key="order.shopOrderId"
+          class="clickable-row"
+          @click="viewOrder(order.shopOrderId)"
+        >
           <td>#{{ order.shopOrderId }}</td>
           <td>{{ order.customerName }}</td>
           <td>{{ formatDate(order.orderDate) }}</td>
@@ -183,9 +188,7 @@ const getStatusClass = (status) => {
             <span :class="['status-badge', getStatusClass(order.status)]">{{ order.status }}</span>
           </td>
           <td>
-            <button class="action-btn" @click="viewOrder(order.shopOrderId)" title="View">
-              <i class="bi bi-eye"></i>
-            </button>
+            <i class="bi bi-chevron-right row-arrow"></i>
           </td>
         </tr>
       </tbody>
@@ -236,6 +239,20 @@ const getStatusClass = (status) => {
 .orders-table th {
   background: var(--light-gray);
   font-weight: 500;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clickable-row:hover {
+  background: var(--light-gray);
+}
+
+.row-arrow {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
 }
 
 .status-badge {

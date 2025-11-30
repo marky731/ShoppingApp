@@ -9,8 +9,15 @@ const page = ref(1)
 const totalPages = ref(1)
 const roleFilter = ref('')
 const searchQuery = ref('')
+const selectedUser = ref(null)
+const showModal = ref(false)
 
 const roles = ['customer', 'seller', 'admin']
+
+const viewUser = (user) => {
+  selectedUser.value = user
+  showModal.value = true
+}
 
 onMounted(async () => {
   await loadUsers()
@@ -92,6 +99,81 @@ const handleSearch = () => {
 
     <div v-if="error" class="error-message">{{ error }}</div>
 
+    <!-- User Detail Modal -->
+    <div v-if="showModal && selectedUser" class="modal-overlay" @click.self="showModal = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>User Details</h2>
+          <button class="close-btn" @click="showModal = false">&times;</button>
+        </div>
+
+        <div class="user-detail">
+          <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span>{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Email:</span>
+            <span>{{ selectedUser.email }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Phone:</span>
+            <span>{{ selectedUser.phone || 'Not set' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Role:</span>
+            <span :class="['role-badge', selectedUser.role]">{{ selectedUser.role }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span :class="['status-badge', selectedUser.isActive ? 'active' : 'suspended']">
+              {{ selectedUser.isActive ? 'Active' : 'Suspended' }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Joined:</span>
+            <span>{{ formatDate(selectedUser.createdAt) }}</span>
+          </div>
+          <div v-if="selectedUser.shop" class="shop-detail">
+            <h4>Shop Information</h4>
+            <div class="detail-row">
+              <span class="detail-label">Shop Name:</span>
+              <span>{{ selectedUser.shop.shopName }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status:</span>
+              <span :class="['status-badge', selectedUser.shop.isApproved ? 'active' : 'pending']">
+                {{ selectedUser.shop.isApproved ? 'Approved' : 'Pending' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" v-if="selectedUser.role !== 'admin'">
+          <button
+            v-if="selectedUser.isActive"
+            class="action-btn-large suspend"
+            @click="suspendUser(selectedUser.userId); showModal = false"
+          >
+            <i class="bi bi-pause-circle"></i> Suspend User
+          </button>
+          <button
+            v-else
+            class="action-btn-large activate"
+            @click="activateUser(selectedUser.userId); showModal = false"
+          >
+            <i class="bi bi-play-circle"></i> Activate User
+          </button>
+          <button
+            class="action-btn-large delete"
+            @click="deleteUser(selectedUser.userId); showModal = false"
+          >
+            <i class="bi bi-trash"></i> Delete User
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div v-if="loading" class="loading">Loading users...</div>
 
     <div v-else-if="users.length === 0" class="empty-state">
@@ -109,11 +191,16 @@ const handleSearch = () => {
           <th>Shop</th>
           <th>Status</th>
           <th>Joined</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.userId">
+        <tr
+          v-for="user in users"
+          :key="user.userId"
+          class="clickable-row"
+          @click="viewUser(user)"
+        >
           <td>{{ user.userId }}</td>
           <td>{{ user.firstName }} {{ user.lastName }}</td>
           <td>{{ user.email }}</td>
@@ -136,30 +223,7 @@ const handleSearch = () => {
           </td>
           <td>{{ formatDate(user.createdAt) }}</td>
           <td>
-            <button
-              v-if="user.isActive && user.role !== 'admin'"
-              class="action-btn suspend"
-              @click="suspendUser(user.userId)"
-              title="Suspend"
-            >
-              <i class="bi bi-pause-circle"></i>
-            </button>
-            <button
-              v-if="!user.isActive"
-              class="action-btn activate"
-              @click="activateUser(user.userId)"
-              title="Activate"
-            >
-              <i class="bi bi-play-circle"></i>
-            </button>
-            <button
-              v-if="user.role !== 'admin'"
-              class="action-btn delete"
-              @click="deleteUser(user.userId)"
-              title="Delete"
-            >
-              <i class="bi bi-trash"></i>
-            </button>
+            <i class="bi bi-chevron-right row-arrow"></i>
           </td>
         </tr>
       </tbody>
@@ -222,6 +286,133 @@ const handleSearch = () => {
   font-weight: 500;
 }
 
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clickable-row:hover {
+  background: var(--light-gray);
+}
+
+.row-arrow {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  font-weight: 500;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.user-detail {
+  background: var(--light-gray);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--secondary-color);
+}
+
+.shop-detail {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.shop-detail h4 {
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.action-btn-large {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.action-btn-large.suspend {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #856404;
+}
+
+.action-btn-large.activate {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #155724;
+}
+
+.action-btn-large.delete {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #721c24;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
 .role-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -251,21 +442,6 @@ const handleSearch = () => {
 .status-badge.active { background: #d4edda; color: #155724; }
 .status-badge.suspended { background: #f8d7da; color: #721c24; }
 
-.action-btn {
-  background: none;
-  border: 1px solid var(--border-color);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 0.25rem;
-}
-
-.action-btn:hover { background: var(--light-gray); }
-.action-btn.suspend { color: #856404; }
-.action-btn.activate { color: #155724; }
-.action-btn.delete { color: #dc3545; }
-.action-btn.delete:hover { background: #ffe6e6; }
 
 .empty-state {
   text-align: center;

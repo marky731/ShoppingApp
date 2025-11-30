@@ -75,11 +75,6 @@ const routes = [
     meta: { requiresAuth: true, role: 'seller' },
     children: [
       {
-        path: 'shop',
-        name: 'seller-shop',
-        component: () => import('../views/seller/SellerShop.vue')
-      },
-      {
         path: 'products',
         name: 'seller-products',
         component: () => import('../views/seller/SellerProducts.vue')

@@ -207,11 +207,16 @@ const formatPrice = (price) => `$${price.toFixed(2)}`
           <th>Price</th>
           <th>Stock</th>
           <th>Status</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.productId">
+        <tr
+          v-for="product in products"
+          :key="product.productId"
+          class="clickable-row"
+          @click="openEditForm(product)"
+        >
           <td>
             <img :src="product.mainImageUrl || '/placeholder.png'" :alt="product.productName" class="product-thumb" />
           </td>
@@ -223,10 +228,7 @@ const formatPrice = (price) => `$${price.toFixed(2)}`
               {{ product.isActive ? 'Active' : 'Inactive' }}
             </span>
           </td>
-          <td>
-            <button class="action-btn" @click="openEditForm(product)" title="Edit">
-              <i class="bi bi-pencil"></i>
-            </button>
+          <td class="action-cell" @click.stop>
             <button class="action-btn delete" @click="deleteProduct(product.productId)" title="Delete">
               <i class="bi bi-trash"></i>
             </button>
@@ -290,6 +292,20 @@ const formatPrice = (price) => `$${price.toFixed(2)}`
 .products-table th {
   background: var(--light-gray);
   font-weight: 500;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clickable-row:hover {
+  background: var(--light-gray);
+}
+
+.action-cell {
+  width: 50px;
+  text-align: right;
 }
 
 .product-thumb {
