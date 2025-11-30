@@ -11,7 +11,7 @@ namespace ShoppingApp.API.Controllers.Admin;
 
 [ApiController]
 [Route("api/admin")]
-[Authorize]
+[Authorize(Roles = "admin")]
 public class AdminController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -23,28 +23,11 @@ public class AdminController : ControllerBase
         _context = context;
     }
 
-    private async Task<bool> IsAdmin()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
-        {
-            return false;
-        }
-
-        var user = await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.UserId == userId);
-
-        return user?.Role.RoleName == "admin";
-    }
-
     #region Dashboard Stats
 
     [HttpGet("stats")]
     public async Task<ActionResult<AdminStatsDto>> GetStats()
     {
-        if (!await IsAdmin()) return Forbid();
-
         var totalUsers = await _context.Users.CountAsync();
         var totalSellers = await _context.Shops.CountAsync(s => s.IsApproved);
         var pendingSellers = await _context.Shops.CountAsync(s => !s.IsApproved);
@@ -76,8 +59,6 @@ public class AdminController : ControllerBase
         [FromQuery] string? role = null,
         [FromQuery] string? search = null)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var query = _context.Users
             .Include(u => u.Role)
             .Include(u => u.Shop)
@@ -134,8 +115,6 @@ public class AdminController : ControllerBase
     [HttpPut("users/{id:int}/suspend")]
     public async Task<ActionResult> SuspendUser(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var user = await _unitOfWork.Users.GetByIdAsync(id);
         if (user == null)
         {
@@ -153,8 +132,6 @@ public class AdminController : ControllerBase
     [HttpPut("users/{id:int}/activate")]
     public async Task<ActionResult> ActivateUser(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var user = await _unitOfWork.Users.GetByIdAsync(id);
         if (user == null)
         {
@@ -172,8 +149,6 @@ public class AdminController : ControllerBase
     [HttpDelete("users/{id:int}")]
     public async Task<ActionResult> DeleteUser(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var user = await _context.Users
             .Include(u => u.Orders)
             .FirstOrDefaultAsync(u => u.UserId == id);
@@ -202,8 +177,6 @@ public class AdminController : ControllerBase
     [HttpGet("sellers/pending")]
     public async Task<ActionResult<List<PendingSellerDto>>> GetPendingSellers()
     {
-        if (!await IsAdmin()) return Forbid();
-
         var pendingShops = await _context.Shops
             .Where(s => !s.IsApproved)
             .Include(s => s.Seller)
@@ -233,8 +206,6 @@ public class AdminController : ControllerBase
     [HttpPut("sellers/{id:int}/approve")]
     public async Task<ActionResult> ApproveSeller(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var shop = await _unitOfWork.Shops.GetByIdAsync(id);
         if (shop == null)
         {
@@ -252,8 +223,6 @@ public class AdminController : ControllerBase
     [HttpPut("sellers/{id:int}/reject")]
     public async Task<ActionResult> RejectSeller(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var shop = await _context.Shops
             .Include(s => s.Seller)
             .FirstOrDefaultAsync(s => s.ShopId == id);
@@ -285,8 +254,6 @@ public class AdminController : ControllerBase
     [HttpPost("categories")]
     public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
-        if (!await IsAdmin()) return Forbid();
-
         // Verify parent category if provided
         if (request.ParentCategoryId.HasValue)
         {
@@ -317,8 +284,6 @@ public class AdminController : ControllerBase
     [HttpPut("categories/{id:int}")]
     public async Task<ActionResult<CategoryDto>> UpdateCategory(int id, [FromBody] UpdateCategoryRequest request)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var category = await _unitOfWork.Categories.GetByIdAsync(id);
         if (category == null)
         {
@@ -357,8 +322,6 @@ public class AdminController : ControllerBase
     [HttpDelete("categories/{id:int}")]
     public async Task<ActionResult> DeleteCategory(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var category = await _context.Categories
             .Include(c => c.Products)
             .Include(c => c.SubCategories)
@@ -392,8 +355,6 @@ public class AdminController : ControllerBase
     [HttpGet("reviews/pending")]
     public async Task<ActionResult<List<PendingReviewDto>>> GetPendingReviews()
     {
-        if (!await IsAdmin()) return Forbid();
-
         var pendingReviews = await _context.Reviews
             .Where(r => r.Status == "pending")
             .Include(r => r.Product)
@@ -425,8 +386,6 @@ public class AdminController : ControllerBase
     [HttpPut("reviews/{id:int}/approve")]
     public async Task<ActionResult> ApproveReview(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var review = await _context.Reviews
             .Include(r => r.Product)
             .FirstOrDefaultAsync(r => r.ReviewId == id);
@@ -457,8 +416,6 @@ public class AdminController : ControllerBase
     [HttpPut("reviews/{id:int}/reject")]
     public async Task<ActionResult> RejectReview(int id)
     {
-        if (!await IsAdmin()) return Forbid();
-
         var review = await _unitOfWork.Reviews.GetByIdAsync(id);
         if (review == null)
         {

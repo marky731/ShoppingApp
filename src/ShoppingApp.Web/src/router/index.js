@@ -56,6 +56,70 @@ const routes = [
     path: '/orders/:id',
     name: 'order-detail',
     component: () => import('../views/OrderDetailView.vue')
+  },
+  {
+    path: '/shop/:id',
+    name: 'shop',
+    component: () => import('../views/ShopView.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/ProfileView.vue')
+  },
+  {
+    path: '/seller',
+    name: 'seller',
+    component: () => import('../views/seller/SellerDashboard.vue'),
+    children: [
+      {
+        path: 'shop',
+        name: 'seller-shop',
+        component: () => import('../views/seller/SellerShop.vue')
+      },
+      {
+        path: 'products',
+        name: 'seller-products',
+        component: () => import('../views/seller/SellerProducts.vue')
+      },
+      {
+        path: 'orders',
+        name: 'seller-orders',
+        component: () => import('../views/seller/SellerOrders.vue')
+      },
+      {
+        path: 'discounts',
+        name: 'seller-discounts',
+        component: () => import('../views/seller/SellerDiscounts.vue')
+      }
+    ]
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('../views/admin/AdminDashboard.vue'),
+    children: [
+      {
+        path: 'users',
+        name: 'admin-users',
+        component: () => import('../views/admin/AdminUsers.vue')
+      },
+      {
+        path: 'sellers',
+        name: 'admin-sellers',
+        component: () => import('../views/admin/AdminSellers.vue')
+      },
+      {
+        path: 'categories',
+        name: 'admin-categories',
+        component: () => import('../views/admin/AdminCategories.vue')
+      },
+      {
+        path: 'reviews',
+        name: 'admin-reviews',
+        component: () => import('../views/admin/AdminReviews.vue')
+      }
+    ]
   }
 ]
 

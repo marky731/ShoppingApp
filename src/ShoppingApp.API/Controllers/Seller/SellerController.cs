@@ -12,7 +12,7 @@ namespace ShoppingApp.API.Controllers.Seller;
 
 [ApiController]
 [Route("api/seller")]
-[Authorize]
+[Authorize(Roles = "seller")]
 public class SellerController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;

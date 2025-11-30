@@ -88,4 +88,81 @@ export const ordersAPI = {
   cancel: (id) => api.post(`/orders/${id}/cancel`)
 }
 
+// Shops APIs
+export const shopsAPI = {
+  getAll: () => api.get('/shops'),
+  getById: (id, params) => api.get(`/shops/${id}`, { params })
+}
+
+// User Profile APIs
+export const profileAPI = {
+  get: () => api.get('/auth/me'),
+  update: (data) => api.put('/auth/profile', data)
+}
+
+// Reviews APIs
+export const reviewsAPI = {
+  getProductReviews: (productId) => api.get(`/reviews/product/${productId}`),
+  canReview: (productId) => api.get(`/reviews/can-review/${productId}`),
+  create: (data) => api.post('/reviews', data),
+  update: (id, data) => api.put(`/reviews/${id}`, data),
+  delete: (id) => api.delete(`/reviews/${id}`),
+  getMyReviews: () => api.get('/reviews/my-reviews')
+}
+
+// Seller APIs
+export const sellerAPI = {
+  // Shop
+  getShop: () => api.get('/seller/shop'),
+  createShop: (data) => api.post('/seller/shop', data),
+  updateShop: (data) => api.put('/seller/shop', data),
+  getStats: () => api.get('/seller/stats'),
+
+  // Products
+  getProducts: (params) => api.get('/seller/products', { params }),
+  getProduct: (id) => api.get(`/seller/products/${id}`),
+  createProduct: (data) => api.post('/seller/products', data),
+  updateProduct: (id, data) => api.put(`/seller/products/${id}`, data),
+  deleteProduct: (id) => api.delete(`/seller/products/${id}`),
+
+  // Orders
+  getOrders: (params) => api.get('/seller/orders', { params }),
+  getOrder: (id) => api.get(`/seller/orders/${id}`),
+  updateOrderStatus: (id, status) => api.put(`/seller/orders/${id}/status`, { status }),
+  updateOrderTracking: (id, trackingNumber) => api.put(`/seller/orders/${id}/tracking`, { trackingNumber }),
+
+  // Discounts
+  getDiscounts: () => api.get('/seller/discounts'),
+  createDiscount: (data) => api.post('/seller/discounts', data),
+  updateDiscount: (id, data) => api.put(`/seller/discounts/${id}`, data),
+  deleteDiscount: (id) => api.delete(`/seller/discounts/${id}`)
+}
+
+// Admin APIs
+export const adminAPI = {
+  // Stats
+  getStats: () => api.get('/admin/stats'),
+
+  // Users
+  getUsers: (params) => api.get('/admin/users', { params }),
+  suspendUser: (id) => api.put(`/admin/users/${id}/suspend`),
+  activateUser: (id) => api.put(`/admin/users/${id}/activate`),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+
+  // Sellers
+  getPendingSellers: () => api.get('/admin/sellers/pending'),
+  approveSeller: (id) => api.put(`/admin/sellers/${id}/approve`),
+  rejectSeller: (id) => api.put(`/admin/sellers/${id}/reject`),
+
+  // Categories
+  createCategory: (data) => api.post('/admin/categories', data),
+  updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+
+  // Reviews
+  getPendingReviews: () => api.get('/admin/reviews/pending'),
+  approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
+  rejectReview: (id) => api.put(`/admin/reviews/${id}/reject`)
+}
+
 export default api

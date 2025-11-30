@@ -25,9 +25,14 @@ PREPARE stmt FROM @reset_cat;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Create a test admin user (password: Test1234)
+INSERT INTO Users (role_id, first_name, last_name, email, password_hash, phone, is_active, created_at, updated_at)
+VALUES (3, 'Admin', 'User', 'admin@example.com', '$2a$11$RhaSk9C68R5HtU75NL6DUeYOr8oGsuX1dpQQSe6WQnrjeBzmU8/Yy', '555-0001', 1, NOW(), NOW())
+ON DUPLICATE KEY UPDATE first_name = VALUES(first_name);
+
 -- Create a test seller user (password: Test1234)
 INSERT INTO Users (role_id, first_name, last_name, email, password_hash, phone, is_active, created_at, updated_at)
-VALUES (2, 'Shop', 'Owner', 'seller@example.com', '$2a$11$rBNr.RqLvXqhQsKfLdkFEuPHLG2V.vVJI7V8wZBqQKBz1ZKxGqKZG', '555-0100', 1, NOW(), NOW())
+VALUES (2, 'Shop', 'Owner', 'seller@example.com', '$2a$11$RhaSk9C68R5HtU75NL6DUeYOr8oGsuX1dpQQSe6WQnrjeBzmU8/Yy', '555-0100', 1, NOW(), NOW())
 ON DUPLICATE KEY UPDATE first_name = VALUES(first_name);
 
 -- Get seller ID
@@ -169,7 +174,7 @@ INSERT INTO Products (shop_id, category_id, product_name, slug, description, pri
 
 -- Create a test customer user (password: Test1234)
 INSERT INTO Users (role_id, first_name, last_name, email, password_hash, phone, is_active, created_at, updated_at)
-VALUES (1, 'John', 'Doe', 'john@example.com', '$2a$11$rBNr.RqLvXqhQsKfLdkFEuPHLG2V.vVJI7V8wZBqQKBz1ZKxGqKZG', '555-0101', 1, NOW(), NOW())
+VALUES (1, 'John', 'Doe', 'john@example.com', '$2a$11$RhaSk9C68R5HtU75NL6DUeYOr8oGsuX1dpQQSe6WQnrjeBzmU8/Yy', '555-0101', 1, NOW(), NOW())
 ON DUPLICATE KEY UPDATE first_name = VALUES(first_name);
 
 SELECT 'Sample data inserted successfully!' AS Status;

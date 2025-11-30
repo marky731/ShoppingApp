@@ -64,9 +64,9 @@ const handleLogout = () => {
           <RouterLink to="/orders" class="header-icon" title="My Orders">
             <i class="bi bi-bag"></i>
           </RouterLink>
-          <button class="header-icon" title="Logout" @click="handleLogout">
-            <i class="bi bi-box-arrow-right"></i>
-          </button>
+          <RouterLink to="/profile" class="header-icon" title="My Profile">
+            <i class="bi bi-person-circle"></i>
+          </RouterLink>
         </template>
         <template v-else>
           <RouterLink to="/login" class="header-icon" title="Login">
