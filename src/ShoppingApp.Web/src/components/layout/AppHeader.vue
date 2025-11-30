@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useCartStore } from '../../stores/cart'
 import { categoriesAPI } from '../../services/api'
+import ProfileSidebar from './ProfileSidebar.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -11,9 +12,13 @@ const cartStore = useCartStore()
 
 const allCategories = ref([])
 const searchQuery = ref('')
+const showProfileSidebar = ref(false)
 
 const isLoggedIn = computed(() => authStore.isAuthenticated)
 const cartCount = computed(() => cartStore.totalItems)
+const userRole = computed(() => authStore.currentUser?.role)
+const isAdmin = computed(() => userRole.value === 'admin')
+const isSeller = computed(() => userRole.value === 'seller')
 
 // Get parent categories with their subcategories (API returns nested data)
 const categoriesWithSubs = computed(() => {
@@ -61,12 +66,20 @@ const handleLogout = () => {
           <span v-if="cartCount > 0" class="badge-count">{{ cartCount }}</span>
         </RouterLink>
         <template v-if="isLoggedIn">
+          <RouterLink v-if="isAdmin" to="/admin" class="header-icon role-badge admin" title="Admin Dashboard">
+            <i class="bi bi-shield-check"></i>
+            <span class="role-label">Admin</span>
+          </RouterLink>
+          <RouterLink v-else-if="isSeller" to="/seller" class="header-icon role-badge seller" title="Seller Dashboard">
+            <i class="bi bi-shop"></i>
+            <span class="role-label">Seller</span>
+          </RouterLink>
           <RouterLink to="/orders" class="header-icon" title="My Orders">
             <i class="bi bi-bag"></i>
           </RouterLink>
-          <RouterLink to="/profile" class="header-icon" title="My Profile">
+          <button class="header-icon" title="My Profile" @click="showProfileSidebar = true">
             <i class="bi bi-person-circle"></i>
-          </RouterLink>
+          </button>
         </template>
         <template v-else>
           <RouterLink to="/login" class="header-icon" title="Login">
@@ -109,5 +122,11 @@ const handleLogout = () => {
         />
       </div>
     </nav>
+
+    <!-- Profile Sidebar -->
+    <ProfileSidebar
+      :isOpen="showProfileSidebar"
+      @close="showProfileSidebar = false"
+    />
   </header>
 </template>

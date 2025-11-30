@@ -1,10 +1,17 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
 
 const authStore = useAuthStore()
+const route = useRoute()
+
+// Hide header/footer on dashboard routes
+const isDashboardRoute = computed(() => {
+  return route.path.startsWith('/admin') || route.path.startsWith('/seller')
+})
 
 onMounted(() => {
   if (authStore.token) {
@@ -15,11 +22,11 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <AppHeader />
-    <main>
+    <AppHeader v-if="!isDashboardRoute" />
+    <main :class="{ 'dashboard-main': isDashboardRoute }">
       <router-view />
     </main>
-    <AppFooter />
+    <AppFooter v-if="!isDashboardRoute" />
   </div>
 </template>
 
@@ -32,5 +39,10 @@ onMounted(() => {
 
 main {
   flex: 1;
+}
+
+main.dashboard-main {
+  padding: 0;
+  background: var(--light-gray, #f5f5f5);
 }
 </style>

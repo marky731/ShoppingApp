@@ -79,6 +79,48 @@ body {
   justify-content: center;
 }
 
+/* Role Badge */
+.role-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.role-badge.admin {
+  background: #dc3545;
+  color: #fff;
+}
+
+.role-badge.admin:hover {
+  background: #c82333;
+  color: #fff;
+}
+
+.role-badge.seller {
+  background: #6f42c1;
+  color: #fff;
+}
+
+.role-badge.seller:hover {
+  background: #5a32a3;
+  color: #fff;
+}
+
+.role-badge i {
+  font-size: 0.9rem;
+}
+
+.role-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Navigation */
 .nav-categories {
   background: var(--white);

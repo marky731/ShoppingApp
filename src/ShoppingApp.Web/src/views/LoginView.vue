@@ -12,7 +12,15 @@ const password = ref('')
 const handleLogin = async () => {
   const success = await authStore.login(email.value, password.value)
   if (success) {
-    router.push('/')
+    // Redirect based on user role
+    const role = authStore.currentUser?.role
+    if (role === 'admin') {
+      router.push('/admin')
+    } else if (role === 'seller') {
+      router.push('/seller')
+    } else {
+      router.push('/')
+    }
   }
 }
 </script>

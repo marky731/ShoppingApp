@@ -29,8 +29,8 @@ const loadData = async () => {
   error.value = null
   try {
     const shopResponse = await sellerAPI.getShop()
-    if (shopResponse.data.shop) {
-      shop.value = shopResponse.data.shop
+    if (shopResponse.data) {
+      shop.value = shopResponse.data
       hasShop.value = true
       // Load stats if shop exists
       try {

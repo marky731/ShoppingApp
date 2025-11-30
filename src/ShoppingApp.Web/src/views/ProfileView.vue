@@ -9,6 +9,8 @@ const authStore = useAuthStore()
 
 const user = computed(() => authStore.currentUser)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+const isSeller = computed(() => user.value?.role === 'seller')
+const isAdmin = computed(() => user.value?.role === 'admin')
 
 const addresses = ref([])
 const addressLoading = ref(false)
@@ -169,9 +171,13 @@ const clearMessages = () => {
           <i class="bi bi-cart3"></i>
           <span>Shopping Cart</span>
         </router-link>
-        <router-link to="/seller" class="quick-link seller-link">
+        <router-link v-if="isSeller" to="/seller" class="quick-link seller-link">
           <i class="bi bi-shop"></i>
           <span>Seller Dashboard</span>
+        </router-link>
+        <router-link v-if="isAdmin" to="/admin" class="quick-link admin-link">
+          <i class="bi bi-shield-check"></i>
+          <span>Admin Dashboard</span>
         </router-link>
       </div>
     </div>

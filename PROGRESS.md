@@ -17,7 +17,7 @@
 | Phase 1: Project Setup (Vue 3) | ✅ COMPLETE | 100% |
 | Phase 2: Core Components & Views | ✅ COMPLETE | 100% |
 | Phase 3: Shopping Flow UI | ✅ COMPLETE | 100% |
-| Phase 4: Seller & Admin UI | ⏳ NOT STARTED | 0% |
+| Phase 4: Seller & Admin UI | ✅ COMPLETE | 100% |
 
 ### Testing
 | Phase | Status | Progress |
@@ -87,8 +87,15 @@
 ### Test Data in Database
 Run `mysql -u root -p < database/sample_data.sql` to populate test data.
 
-- Users: 1 customer (john@example.com / Test1234), 1 seller (seller@example.com / Test1234)
-- Shop: Minimal Shop (approved)
+**Test Accounts** (all passwords: `Test1234`):
+| Role | Email | Access |
+|------|-------|--------|
+| Admin | admin@example.com | `/admin` dashboard |
+| Seller | seller@example.com | `/seller` dashboard |
+| Customer | john@example.com | Shopping features |
+
+**Sample Data:**
+- Shop: Minimal Shop (approved, owned by seller@example.com)
 - Categories: 5 parent (Electronics, Clothing, Home, Beauty, Accessories) + 6 subcategories
 - Products: 20 products with Unsplash images across all categories
 
@@ -436,3 +443,75 @@ These are in the SQL schema but not in C# models:
   - `src/ShoppingApp.Web/src/services/api.js`
   - `src/ShoppingApp.Web/src/router/index.js`
   - `src/ShoppingApp.Web/src/components/layout/AppHeader.vue`
+
+### Session 8 (2025-11-30)
+- **Implemented Frontend Phase 4: Seller & Admin UI**
+
+  #### Seller Dashboard (`/seller`)
+  - `SellerDashboard.vue` - Main layout with sidebar, stats overview
+  - `SellerShop.vue` - Shop profile management (create/edit shop)
+  - `SellerProducts.vue` - Product CRUD with modal forms
+  - `SellerOrders.vue` - Order management with status updates
+  - `SellerDiscounts.vue` - Discount code management
+
+  #### Admin Dashboard (`/admin`)
+  - `AdminDashboard.vue` - Main layout with sidebar, platform stats
+  - `AdminUsers.vue` - User management (search, filter, suspend/activate/delete)
+  - `AdminSellers.vue` - Pending seller applications (approve/reject)
+  - `AdminCategories.vue` - Category CRUD with subcategory support
+  - `AdminReviews.vue` - Review moderation (approve/reject)
+
+  #### Reviews Feature
+  - `ReviewsController.cs` - Full review API (create, list, can-review check)
+  - `ReviewDTOs.cs` - Review data transfer objects
+  - Updated `ProductDetailView.vue` with reviews section (rating display, distribution, write review)
+  - Reviews require verified purchase (delivered order) before posting
+
+  #### Authentication & Authorization Improvements
+  - **Role-based authorization from JWT token** (not database lookup)
+  - `[Authorize(Roles = "admin")]` on AdminController
+  - `[Authorize(Roles = "seller")]` on SellerController
+  - Route guards in Vue Router for `/admin` and `/seller` routes
+  - Role-based redirect after login (admin→/admin, seller→/seller, customer→/)
+
+  #### UI/UX Improvements
+  - Dashboard routes hide main header/footer (clean dashboard experience)
+  - Role badges in header (red for admin, purple for seller)
+  - Profile sidebar (slides in from right) instead of separate page
+  - Hero section shows personalized message based on role
+  - "Seller Dashboard" link only shows for sellers in profile
+  - "Admin Dashboard" link only shows for admins in profile
+
+  #### Test Accounts Fixed
+  - Fixed BCrypt password hash (was invalid format)
+  - Updated `sample_data.sql` with correct hash for all 3 test accounts
+  - All accounts use password: `Test1234`
+
+- **Files Created:**
+  - `src/ShoppingApp.Web/src/views/seller/SellerDashboard.vue`
+  - `src/ShoppingApp.Web/src/views/seller/SellerShop.vue`
+  - `src/ShoppingApp.Web/src/views/seller/SellerProducts.vue`
+  - `src/ShoppingApp.Web/src/views/seller/SellerOrders.vue`
+  - `src/ShoppingApp.Web/src/views/seller/SellerDiscounts.vue`
+  - `src/ShoppingApp.Web/src/views/admin/AdminDashboard.vue`
+  - `src/ShoppingApp.Web/src/views/admin/AdminUsers.vue`
+  - `src/ShoppingApp.Web/src/views/admin/AdminSellers.vue`
+  - `src/ShoppingApp.Web/src/views/admin/AdminCategories.vue`
+  - `src/ShoppingApp.Web/src/views/admin/AdminReviews.vue`
+  - `src/ShoppingApp.Web/src/components/layout/ProfileSidebar.vue`
+  - `src/ShoppingApp.API/Controllers/Reviews/ReviewsController.cs`
+  - `src/ShoppingApp.API/Models/DTOs/ReviewDTOs.cs`
+
+- **Files Modified:**
+  - `src/ShoppingApp.Web/src/App.vue` (hide header on dashboard routes)
+  - `src/ShoppingApp.Web/src/router/index.js` (routes + guards)
+  - `src/ShoppingApp.Web/src/services/api.js` (added reviewsAPI, adminAPI)
+  - `src/ShoppingApp.Web/src/views/ProductDetailView.vue` (reviews section)
+  - `src/ShoppingApp.Web/src/views/ProfileView.vue` (role-based links)
+  - `src/ShoppingApp.Web/src/views/LoginView.vue` (role-based redirect)
+  - `src/ShoppingApp.Web/src/components/layout/AppHeader.vue` (role badges, sidebar)
+  - `src/ShoppingApp.Web/src/components/shared/HeroSection.vue` (personalized)
+  - `src/ShoppingApp.Web/src/assets/css/main.css` (role badge styles)
+  - `src/ShoppingApp.API/Controllers/Admin/AdminController.cs` (token auth)
+  - `src/ShoppingApp.API/Controllers/Seller/SellerController.cs` (token auth)
+  - `database/sample_data.sql` (fixed password hashes)

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import HomeView from '../views/HomeView.vue'
 
 const routes = [
@@ -71,6 +72,7 @@ const routes = [
     path: '/seller',
     name: 'seller',
     component: () => import('../views/seller/SellerDashboard.vue'),
+    meta: { requiresAuth: true, role: 'seller' },
     children: [
       {
         path: 'shop',
@@ -98,6 +100,7 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: () => import('../views/admin/AdminDashboard.vue'),
+    meta: { requiresAuth: true, role: 'admin' },
     children: [
       {
         path: 'users',
@@ -126,6 +129,26 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Navigation guard for protected routes
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      next('/login')
+      return
+    }
+
+    // Check role if specified
+    if (to.meta.role && authStore.currentUser?.role !== to.meta.role) {
+      next('/')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router
