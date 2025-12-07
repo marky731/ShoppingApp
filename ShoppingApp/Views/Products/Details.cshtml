@@ -1,0 +1,194 @@
+@model ShoppingApp.Models.ViewModels.ProductDetailsViewModel
+
+@{
+    ViewBag.Title = Model.Product.ProductName;
+}
+
+<div class="row">
+    <div class="col-md-5">
+        @if (!string.IsNullOrEmpty(Model.Product.MainImageUrl))
+        {
+            <img src="@Model.Product.MainImageUrl" alt="@Model.Product.ProductName" class="img-responsive" style="width: 100%;">
+        }
+        else
+        {
+            <img src="https://via.placeholder.com/500x400?text=No+Image" alt="@Model.Product.ProductName" class="img-responsive" style="width: 100%;">
+        }
+        @if (Model.Product.Images.Any())
+        {
+            <div class="row" style="margin-top: 10px;">
+                @foreach (var image in Model.Product.Images)
+                {
+                    <div class="col-xs-3">
+                        <img src="@image.ImageUrl" alt="Product image" class="img-responsive img-thumbnail">
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="col-md-7">
+        <h1>@Model.Product.ProductName</h1>
+        <p class="text-muted">
+            Sold by: <a href="@Url.Action("Details", "Shops", new { id = Model.Product.ShopId })">@Model.Product.Shop.ShopName</a>
+        </p>
+
+        <p>
+            <span class="label label-warning">
+                <span class="glyphicon glyphicon-star"></span> @Model.Product.AverageRating.ToString("F1")
+            </span>
+            <span class="text-muted">(@Model.Product.TotalReviews reviews)</span>
+        </p>
+
+        <h2 class="text-primary">$@Model.Product.Price.ToString("F2")</h2>
+
+        <p>
+            @if (Model.Product.StockQuantity > 0)
+            {
+                <span class="label label-success">In Stock (@Model.Product.StockQuantity available)</span>
+            }
+            else
+            {
+                <span class="label label-danger">Out of Stock</span>
+            }
+        </p>
+
+        @if (!string.IsNullOrEmpty(Model.Product.Brand))
+        {
+            <p><strong>Brand:</strong> @Model.Product.Brand</p>
+        }
+        @if (!string.IsNullOrEmpty(Model.Product.Model))
+        {
+            <p><strong>Model:</strong> @Model.Product.Model</p>
+        }
+        <p><strong>Category:</strong> @Model.Product.Category.CategoryName</p>
+
+        <hr />
+
+        @if (Request.IsAuthenticated)
+        {
+            <div class="row">
+                <div class="col-md-8">
+                    @using (Html.BeginForm("Add", "Cart", FormMethod.Post, new { @class = "form-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ProductId" value="@Model.Product.ProductId" />
+                        <div class="form-group">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="Quantity" id="quantity" class="form-control" value="1" min="1" max="@Model.Product.StockQuantity" style="width: 80px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" @(Model.Product.StockQuantity == 0 ? "disabled" : "")>
+                            <span class="glyphicon glyphicon-shopping-cart"></span> Add to Cart
+                        </button>
+                    }
+                </div>
+                <div class="col-md-4">
+                    @using (Html.BeginForm("Toggle", "Favorites", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                        <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
+                        <button type="submit" class="btn @(Model.IsFavorite ? "btn-danger" : "btn-default")">
+                            <span class="glyphicon glyphicon-heart"></span> @(Model.IsFavorite ? "Remove from Favorites" : "Add to Favorites")
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>
+                @Html.ActionLink("Log in", "Login", "Account", new { returnUrl = Request.Url.PathAndQuery }, new { @class = "btn btn-primary" })
+                to add to cart
+            </p>
+        }
+
+        <hr />
+
+        <h3>Description</h3>
+        <p>@Html.Raw(Model.Product.Description.Replace("\n", "<br/>"))</p>
+
+        @if (Model.Product.Specifications.Any())
+        {
+            <h3>Specifications</h3>
+            <table class="table table-striped">
+                @foreach (var spec in Model.Product.Specifications.OrderBy(s => s.DisplayOrder))
+                {
+                    <tr>
+                        <th style="width: 30%;">@spec.SpecName</th>
+                        <td>@spec.SpecValue</td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Customer Reviews (@Model.Reviews.Count())</h3>
+
+        @if (Model.CanReview)
+        {
+            <p>
+                @Html.ActionLink("Write a Review", "Create", "Reviews", new { productId = Model.Product.ProductId }, new { @class = "btn btn-success" })
+            </p>
+        }
+
+        @if (Model.Reviews.Any())
+        {
+            foreach (var review in Model.Reviews)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>@review.User.FirstName @review.User.LastName</strong>
+                        <span class="pull-right">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="glyphicon glyphicon-star@(i <= review.Rating ? "" : "-empty")" style="color: gold;"></span>
+                            }
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        @if (!string.IsNullOrEmpty(review.Title))
+                        {
+                            <h4>@review.Title</h4>
+                        }
+                        <p>@review.Comment</p>
+                        <p class="text-muted"><small>Posted on @review.CreatedAt.ToString("MMMM dd, yyyy")</small></p>
+
+                        @if (review.Response != null)
+                        {
+                            <div class="well well-sm">
+                                <strong>Seller Response:</strong>
+                                <p>@review.Response.ResponseText</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+        }
+    </div>
+</div>
+
+@if (Model.RelatedProducts.Any())
+{
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Related Products</h3>
+            <div class="row">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    @Html.Partial("_ProductCard", product)
+                }
+            </div>
+        </div>
+    </div>
+}

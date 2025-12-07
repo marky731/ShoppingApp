@@ -1,0 +1,75 @@
+@model IEnumerable<Address>
+@{
+    ViewBag.Title = "My Addresses";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>My Addresses</h2>
+            </div>
+
+            <div class="text-right" style="margin-bottom: 20px;">
+                @Html.ActionLink("Add New Address", "Create", null, new { @class = "btn btn-primary" })
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <p>You haven't added any addresses yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var address in Model)
+                    {
+                        <div class="col-md-6">
+                            <div class="panel @(address.IsDefault ? "panel-primary" : "panel-default")">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        @address.Title
+                                        @if (address.IsDefault)
+                                        {
+                                            <span class="label label-success pull-right">Default</span>
+                                        }
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <p><strong>@address.FullName</strong></p>
+                                    <p>@address.AddressLine1</p>
+                                    @if (!string.IsNullOrEmpty(address.AddressLine2))
+                                    {
+                                        <p>@address.AddressLine2</p>
+                                    }
+                                    <p>@address.City, @address.State @address.PostalCode</p>
+                                    <p>@address.Country</p>
+                                    <p><span class="glyphicon glyphicon-phone"></span> @address.Phone</p>
+                                </div>
+                                <div class="panel-footer">
+                                    @Html.ActionLink("Edit", "Edit", new { id = address.Id }, new { @class = "btn btn-sm btn-default" })
+
+                                    @if (!address.IsDefault)
+                                    {
+                                        using (Html.BeginForm("SetDefault", "Addresses", new { id = address.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-info">Set as Default</button>
+                                        }
+                                    }
+
+                                    using (Html.BeginForm("Delete", "Addresses", new { id = address.Id }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Are you sure you want to delete this address?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

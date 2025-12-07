@@ -1,0 +1,142 @@
+@model IEnumerable<ShoppingApp.Models.ViewModels.DiscountListItemViewModel>
+@{
+    ViewBag.Title = "Discounts";
+}
+
+<div class="page-header">
+    <div class="pull-right">
+        @Html.ActionLink("Create Discount", "Create", null, new { @class = "btn btn-primary" })
+    </div>
+    <h1>Discounts</h1>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Usage</th>
+                    <th>Valid Period</th>
+                    <th>Min. Purchase</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var discount in Model)
+                {
+                    <tr>
+                        <td>
+                            <code style="font-size: 14px;">@discount.Code</code>
+                        </td>
+                        <td>
+                            @if (discount.Type == DiscountType.Percentage)
+                            {
+                                <strong>@discount.Value%</strong>
+                                <span class="text-muted">off</span>
+                            }
+                            else
+                            {
+                                <strong>$@discount.Value.ToString("N2")</strong>
+                                <span class="text-muted">off</span>
+                            }
+                        </td>
+                        <td>
+                            @discount.UsageCount / @(discount.UsageLimit.HasValue ? discount.UsageLimit.ToString() : "Unlimited")
+                        </td>
+                        <td>
+                            @discount.StartDate.ToString("MMM dd") - @discount.EndDate.ToString("MMM dd, yyyy")
+                        </td>
+                        <td>
+                            @if (discount.MinimumPurchase.HasValue)
+                            {
+                                <text>$@discount.MinimumPurchase.Value.ToString("N2")</text>
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </td>
+                        <td>
+                            @if (!discount.IsActive)
+                            {
+                                <span class="label label-default">Inactive</span>
+                            }
+                            else if (discount.EndDate < DateTime.Today)
+                            {
+                                <span class="label label-danger">Expired</span>
+                            }
+                            else if (discount.StartDate > DateTime.Today)
+                            {
+                                <span class="label label-info">Scheduled</span>
+                            }
+                            else
+                            {
+                                <span class="label label-success">Active</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                @Html.ActionLink("Edit", "Edit", new { id = discount.Id }, new { @class = "btn btn-default" })
+                                <button type="button" class="btn btn-danger btn-delete" data-id="@discount.Id" data-code="@discount.Code">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>No discounts found</h4>
+        <p>Create discount codes to offer promotions to your customers.</p>
+        <p>
+            @Html.ActionLink("Create Discount", "Create", null, new { @class = "btn btn-primary" })
+        </p>
+    </div>
+}
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Delete Discount</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete discount <strong id="discountCode"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("Delete", "Discounts", FormMethod.Post, new { id = "deleteForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteDiscountId" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-delete').click(function () {
+                var id = $(this).data('id');
+                var code = $(this).data('code');
+                $('#deleteDiscountId').val(id);
+                $('#discountCode').text(code);
+                $('#deleteModal').modal('show');
+            });
+        });
+    </script>
+}

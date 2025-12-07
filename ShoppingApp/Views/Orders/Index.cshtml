@@ -1,0 +1,90 @@
+@model ShoppingApp.Models.ViewModels.OrderListViewModel
+
+@{
+    ViewBag.Title = "My Orders";
+}
+
+<h2>My Orders</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-pills" style="margin-bottom: 20px;">
+            <li role="presentation" class="@(Model.StatusFilter == null ? "active" : "")">
+                <a href="@Url.Action("Index")">All Orders</a>
+            </li>
+            <li role="presentation" class="@(Model.StatusFilter == OrderStatus.Pending ? "active" : "")">
+                <a href="@Url.Action("Index", new { status = OrderStatus.Pending })">Pending</a>
+            </li>
+            <li role="presentation" class="@(Model.StatusFilter == OrderStatus.Processing ? "active" : "")">
+                <a href="@Url.Action("Index", new { status = OrderStatus.Processing })">Processing</a>
+            </li>
+            <li role="presentation" class="@(Model.StatusFilter == OrderStatus.Shipped ? "active" : "")">
+                <a href="@Url.Action("Index", new { status = OrderStatus.Shipped })">Shipped</a>
+            </li>
+            <li role="presentation" class="@(Model.StatusFilter == OrderStatus.Delivered ? "active" : "")">
+                <a href="@Url.Action("Index", new { status = OrderStatus.Delivered })">Delivered</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@if (Model.Orders.Any())
+{
+    foreach (var order in Model.Orders)
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Order #@order.OrderId</strong>
+                    </div>
+                    <div class="col-md-4">
+                        @order.OrderDate.ToString("MMMM dd, yyyy")
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <strong>$@order.TotalAmount.ToString("F2")</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                @foreach (var shopOrder in order.ShopOrders)
+                {
+                    <p>
+                        <span class="label label-@GetStatusClass(shopOrder.ShopOrderStatus)">@shopOrder.ShopOrderStatus</span>
+                        Items from different shops
+                    </p>
+                }
+            </div>
+            <div class="panel-footer">
+                @Html.ActionLink("View Details", "Details", new { id = order.OrderId }, new { @class = "btn btn-primary btn-sm" })
+            </div>
+        </div>
+    }
+
+    <div class="text-center">
+        @Html.PagedListPager(Model.Orders, page => Url.Action("Index", new { page, status = Model.StatusFilter }))
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>You haven't placed any orders yet.</p>
+        <p>@Html.ActionLink("Start Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })</p>
+    </div>
+}
+
+@functions {
+    string GetStatusClass(OrderStatus status)
+    {
+        switch (status)
+        {
+            case OrderStatus.Pending: return "warning";
+            case OrderStatus.Confirmed: return "info";
+            case OrderStatus.Processing: return "primary";
+            case OrderStatus.Shipped: return "info";
+            case OrderStatus.Delivered: return "success";
+            case OrderStatus.Cancelled: return "danger";
+            default: return "default";
+        }
+    }
+}

@@ -1,0 +1,44 @@
+@model ShoppingApp.Models.Domain.Product
+
+<div class="col-sm-6 col-md-3">
+    <div class="thumbnail">
+        @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+        {
+            <img src="@Model.MainImageUrl" alt="@Model.ProductName" style="height: 200px; object-fit: cover;">
+        }
+        else
+        {
+            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="@Model.ProductName" style="height: 200px; object-fit: cover;">
+        }
+        <div class="caption">
+            <h4>
+                <a href="@Url.Action("Details", "Products", new { id = Model.ProductId })">
+                    @(Model.ProductName.Length > 30 ? Model.ProductName.Substring(0, 27) + "..." : Model.ProductName)
+                </a>
+            </h4>
+            <p class="text-muted">
+                @Model.Shop.ShopName
+            </p>
+            <p>
+                <span class="label label-warning">
+                    <span class="glyphicon glyphicon-star"></span> @Model.AverageRating.ToString("F1")
+                </span>
+                <span class="text-muted">(@Model.TotalReviews reviews)</span>
+            </p>
+            <h4 class="text-primary">$@Model.Price.ToString("F2")</h4>
+            <p>
+                @if (Model.StockQuantity > 0)
+                {
+                    <span class="label label-success">In Stock</span>
+                }
+                else
+                {
+                    <span class="label label-danger">Out of Stock</span>
+                }
+            </p>
+            <p>
+                <a href="@Url.Action("Details", "Products", new { id = Model.ProductId })" class="btn btn-primary btn-sm" role="button">View Details</a>
+            </p>
+        </div>
+    </div>
+</div>

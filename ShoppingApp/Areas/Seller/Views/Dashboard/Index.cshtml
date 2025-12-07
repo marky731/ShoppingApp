@@ -1,0 +1,226 @@
+@model ShoppingApp.Models.ViewModels.SellerDashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h1 class="page-header">Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="row">
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-shopping-cart" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.TotalOrders</div>
+                        <div>Total Orders</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index", "Orders")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-usd" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">$@Model.TotalRevenue.ToString("N2")</div>
+                        <div>Total Revenue</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index", "Orders")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-tags" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.TotalProducts</div>
+                        <div>Products</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index", "Products")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-time" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.PendingOrders</div>
+                        <div>Pending Orders</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index", "Orders", new { status = "Pending" })">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Orders -->
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-list"></span> Recent Orders
+                </h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentOrders.Any())
+                        {
+                            foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Orders", new { id = order.Id })">
+                                            #@order.OrderNumber
+                                        </a>
+                                    </td>
+                                    <td>@order.CustomerName</td>
+                                    <td>@order.ItemCount items</td>
+                                    <td>$@order.Total.ToString("N2")</td>
+                                    <td>
+                                        @switch (order.Status)
+                                        {
+                                            case OrderStatus.Pending:
+                                                <span class="label label-warning">Pending</span>
+                                                break;
+                                            case OrderStatus.Confirmed:
+                                                <span class="label label-info">Confirmed</span>
+                                                break;
+                                            case OrderStatus.Processing:
+                                                <span class="label label-primary">Processing</span>
+                                                break;
+                                            case OrderStatus.Shipped:
+                                                <span class="label label-info">Shipped</span>
+                                                break;
+                                            case OrderStatus.Delivered:
+                                                <span class="label label-success">Delivered</span>
+                                                break;
+                                            case OrderStatus.Cancelled:
+                                                <span class="label label-danger">Cancelled</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No orders yet</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer text-right">
+                <a href="@Url.Action("Index", "Orders")">View All Orders <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-warning-sign"></span> Low Stock Alert
+                </h4>
+            </div>
+            <ul class="list-group">
+                @if (Model.LowStockProducts.Any())
+                {
+                    foreach (var product in Model.LowStockProducts)
+                    {
+                        <li class="list-group-item">
+                            <span class="badge badge-danger">@product.Stock left</span>
+                            <a href="@Url.Action("Edit", "Products", new { id = product.Id })">@product.Name</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item text-muted text-center">No low stock items</li>
+                }
+            </ul>
+            <div class="panel-footer text-right">
+                <a href="@Url.Action("Index", "Products")">View All Products <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-flash"></span> Quick Actions
+                </h4>
+            </div>
+            <div class="list-group">
+                <a href="@Url.Action("Create", "Products")" class="list-group-item">
+                    <span class="glyphicon glyphicon-plus"></span> Add New Product
+                </a>
+                <a href="@Url.Action("Create", "Discounts")" class="list-group-item">
+                    <span class="glyphicon glyphicon-tag"></span> Create Discount
+                </a>
+                <a href="@Url.Action("Edit", "Shop")" class="list-group-item">
+                    <span class="glyphicon glyphicon-cog"></span> Shop Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+@model ShoppingApp.Models.ViewModels.ShopDetailsViewModel
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<div class="container">
+    <!-- Shop Header -->
+    <div class="panel panel-default shop-header">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                    {
+                        <img src="@Model.LogoUrl" alt="@Model.Name" class="img-responsive img-circle" style="max-width: 120px; margin: 0 auto;" />
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-shopping-bag" style="font-size: 80px; color: #ccc;"></span>
+                    }
+                </div>
+                <div class="col-md-10">
+                    <h1 style="margin-top: 0;">@Model.Name</h1>
+                    <div class="shop-rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Model.Rating)
+                            {
+                                <span class="glyphicon glyphicon-star text-warning"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-star-empty"></span>
+                            }
+                        }
+                        <span class="text-muted">(@Model.ReviewCount reviews)</span>
+                    </div>
+                    <p class="text-muted">@Model.Description</p>
+                    <ul class="list-inline shop-stats">
+                        <li>
+                            <strong>@Model.ProductCount</strong> Products
+                        </li>
+                        <li>
+                            <strong>@Model.TotalSales</strong> Sales
+                        </li>
+                        <li>
+                            Member since <strong>@Model.CreatedAt.ToString("MMM yyyy")</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Filters Sidebar -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Filter Products</h4>
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("Details", "Shops", FormMethod.Get))
+                    {
+                        <input type="hidden" name="slug" value="@Model.Slug" />
+
+                        <div class="form-group">
+                            <label>Search</label>
+                            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search products..." />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category</label>
+                            @Html.DropDownList("categoryId", (SelectList)ViewBag.Categories, "All Categories", new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Price Range</label>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <input type="number" name="minPrice" value="@ViewBag.MinPrice" class="form-control" placeholder="Min" />
+                                </div>
+                                <div class="col-xs-6">
+                                    <input type="number" name="maxPrice" value="@ViewBag.MaxPrice" class="form-control" placeholder="Max" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sort By</label>
+                            @Html.DropDownList("sortBy", new SelectList(new[] {
+                                new { Value = "", Text = "Default" },
+                                new { Value = "price_asc", Text = "Price: Low to High" },
+                                new { Value = "price_desc", Text = "Price: High to Low" },
+                                new { Value = "newest", Text = "Newest First" },
+                                new { Value = "rating", Text = "Highest Rated" }
+                            }, "Value", "Text", ViewBag.SortBy), new { @class = "form-control" })
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+                        <a href="@Url.Action("Details", "Shops", new { slug = Model.Slug })" class="btn btn-default btn-block">Clear Filters</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h3>Products from @Model.Name</h3>
+
+            @if (Model.Products.Any())
+            {
+                <div class="row">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="col-xs-6 col-sm-4">
+                            @Html.Partial("_ProductCard", product)
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="text-center">
+                        <ul class="pagination">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="@(i == Model.CurrentPage ? "active" : "")">
+                                    <a href="@Url.Action("Details", "Shops", new { slug = Model.Slug, page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice, sortBy = ViewBag.SortBy })">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <p>No products found matching your criteria.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

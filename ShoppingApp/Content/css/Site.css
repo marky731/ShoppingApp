@@ -1,0 +1,262 @@
+/* ShoppingApp Custom Styles */
+
+body {
+    padding-top: 70px;
+    padding-bottom: 20px;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background-color: #337ab7;
+    color: white;
+}
+
+.jumbotron h1 {
+    color: white;
+}
+
+.jumbotron .btn-primary {
+    background-color: white;
+    color: #337ab7;
+    border-color: white;
+}
+
+.jumbotron .btn-primary:hover {
+    background-color: #f5f5f5;
+    color: #23527c;
+}
+
+/* Product Cards */
+.thumbnail {
+    transition: box-shadow 0.3s ease;
+}
+
+.thumbnail:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.thumbnail .caption h4 {
+    min-height: 40px;
+    margin-bottom: 10px;
+}
+
+.thumbnail .caption h4 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.thumbnail .caption h4 a:hover {
+    color: #337ab7;
+}
+
+/* Panels */
+.panel {
+    margin-bottom: 20px;
+}
+
+/* Footer */
+footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    background-color: #f5f5f5;
+}
+
+footer h4 {
+    margin-bottom: 15px;
+}
+
+footer ul {
+    padding-left: 0;
+}
+
+footer ul li {
+    margin-bottom: 5px;
+}
+
+/* Forms */
+.form-horizontal .control-label {
+    text-align: right;
+}
+
+/* Cart */
+.cart-item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+/* Rating Stars */
+.glyphicon-star,
+.glyphicon-star-empty {
+    color: #f0ad4e;
+}
+
+/* Alerts */
+.alert {
+    margin-top: 15px;
+}
+
+/* Sidebar */
+.sidebar .panel {
+    margin-bottom: 15px;
+}
+
+/* Pagination */
+.pagination {
+    margin: 20px 0;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    color: #337ab7;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-form {
+        border: none;
+        margin-bottom: 0;
+    }
+
+    .jumbotron {
+        padding: 20px;
+    }
+
+    .jumbotron h1 {
+        font-size: 28px;
+    }
+}
+
+/* Admin/Seller Dashboard */
+.dashboard-stats .panel-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.dashboard-stats h2 {
+    margin: 0;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.dashboard-stats p {
+    margin: 10px 0 0;
+    color: #777;
+}
+
+/* Tables */
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+/* Buttons in navbar dropdown */
+.dropdown-menu form {
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu form a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.dropdown-menu form a:hover {
+    color: #262626;
+    text-decoration: none;
+    background-color: #f5f5f5;
+}
+
+/* Status labels */
+.label {
+    font-weight: normal;
+}
+
+/* Price display */
+.text-primary.price {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Image gallery */
+.product-gallery img {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.product-gallery img:hover,
+.product-gallery img.active {
+    border-color: #337ab7;
+}
+
+/* Profile sidebar */
+.profile-sidebar .list-group-item.active {
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+
+/* Card hover effects */
+.panel-clickable:hover {
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Loading spinner */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.loading.active {
+    display: block;
+}
+
+/* Seller/Admin sidebar */
+.admin-sidebar,
+.seller-sidebar {
+    background-color: #f5f5f5;
+    min-height: calc(100vh - 70px);
+    padding: 20px 0;
+}
+
+.admin-sidebar .nav > li > a,
+.seller-sidebar .nav > li > a {
+    color: #333;
+    padding: 10px 15px;
+}
+
+.admin-sidebar .nav > li > a:hover,
+.seller-sidebar .nav > li > a:hover,
+.admin-sidebar .nav > li.active > a,
+.seller-sidebar .nav > li.active > a {
+    background-color: #337ab7;
+    color: white;
+}

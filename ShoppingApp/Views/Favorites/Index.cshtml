@@ -1,0 +1,129 @@
+@model IEnumerable<ShoppingApp.Models.ViewModels.ProductCardViewModel>
+@{
+    ViewBag.Title = "My Favorites";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h2>My Favorites</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4>Your favorites list is empty</h4>
+            <p>Browse our products and click the heart icon to add items to your favorites.</p>
+            <p>
+                @Html.ActionLink("Start Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <div class="product-card panel panel-default">
+                        <div class="product-image">
+                            <a href="@Url.Action("Details", "Products", new { slug = product.Slug })">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="@product.Name" class="img-responsive" />
+                                }
+                                else
+                                {
+                                    <img src="~/Content/images/no-image.png" alt="@product.Name" class="img-responsive" />
+                                }
+                            </a>
+                            @if (product.DiscountPercentage > 0)
+                            {
+                                <span class="discount-badge">-@product.DiscountPercentage%</span>
+                            }
+                            <button type="button" class="btn-favorite active" data-product-id="@product.Id" title="Remove from favorites">
+                                <span class="glyphicon glyphicon-heart"></span>
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <h4 class="product-name">
+                                <a href="@Url.Action("Details", "Products", new { slug = product.Slug })">@product.Name</a>
+                            </h4>
+                            <p class="product-shop text-muted">
+                                <small>by @product.ShopName</small>
+                            </p>
+                            <div class="product-rating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= product.Rating)
+                                    {
+                                        <span class="glyphicon glyphicon-star text-warning"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="glyphicon glyphicon-star-empty"></span>
+                                    }
+                                }
+                                <small>(@product.ReviewCount)</small>
+                            </div>
+                            <div class="product-price">
+                                @if (product.OriginalPrice > product.Price)
+                                {
+                                    <span class="original-price">$@product.OriginalPrice.ToString("N2")</span>
+                                }
+                                <span class="current-price">$@product.Price.ToString("N2")</span>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            @if (product.Stock > 0)
+                            {
+                                <button type="button" class="btn btn-primary btn-sm btn-block btn-add-cart" data-product-id="@product.Id">
+                                    <span class="glyphicon glyphicon-shopping-cart"></span> Add to Cart
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-default btn-sm btn-block" disabled>
+                                    Out of Stock
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Toggle favorite
+            $('.btn-favorite').click(function () {
+                var btn = $(this);
+                var productId = btn.data('product-id');
+
+                $.post('@Url.Action("Toggle", "Favorites")', { productId: productId }, function (result) {
+                    if (result.success && !result.isFavorite) {
+                        btn.closest('.col-xs-6').fadeOut(300, function () {
+                            $(this).remove();
+                            if ($('.product-card').length === 0) {
+                                location.reload();
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Add to cart
+            $('.btn-add-cart').click(function () {
+                var productId = $(this).data('product-id');
+                $.post('@Url.Action("Add", "Cart")', { productId: productId, quantity: 1 }, function (result) {
+                    if (result.success) {
+                        updateCartCount(result.cartCount);
+                        alert('Product added to cart!');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,227 @@
+@model ShoppingApp.Models.ViewModels.SellerProductViewModel
+@{
+    ViewBag.Title = "Edit Product";
+}
+
+<h1 class="page-header">Edit Product</h1>
+
+@using (Html.BeginForm("Edit", "Products", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Basic Information</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Sku, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Sku, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Sku, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CategoryId, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.CategoryId, (SelectList)ViewBag.Categories, "Select Category", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Brand, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Brand, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Brand, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ShortDescription, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextAreaFor(m => m.ShortDescription, new { @class = "form-control", rows = 2 })
+                            @Html.ValidationMessageFor(m => m.ShortDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Description, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 5 })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Specifications</h4>
+                </div>
+                <div class="panel-body">
+                    <div id="specifications">
+                        @if (Model.Specifications != null && Model.Specifications.Any())
+                        {
+                            foreach (var spec in Model.Specifications)
+                            {
+                                <div class="specification-row row" style="margin-bottom: 10px;">
+                                    <div class="col-md-5">
+                                        <input type="text" name="SpecificationNames[]" class="form-control" placeholder="Name" value="@spec.Name" />
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" name="SpecificationValues[]" class="form-control" placeholder="Value" value="@spec.Value" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger btn-remove-spec">&times;</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="specification-row row" style="margin-bottom: 10px;">
+                                <div class="col-md-5">
+                                    <input type="text" name="SpecificationNames[]" class="form-control" placeholder="Name (e.g., Color)" />
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" name="SpecificationValues[]" class="form-control" placeholder="Value (e.g., Red)" />
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger btn-remove-spec" style="display:none;">&times;</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-default btn-sm" id="addSpecification">
+                        <span class="glyphicon glyphicon-plus"></span> Add Specification
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Pricing & Inventory</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Price, new { @class = "control-label" })
+                        <div class="input-group">
+                            <span class="input-group-addon">$</span>
+                            @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CompareAtPrice, new { @class = "control-label" })
+                        <div class="input-group">
+                            <span class="input-group-addon">$</span>
+                            @Html.TextBoxFor(m => m.CompareAtPrice, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.CompareAtPrice, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Stock, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Stock, new { @class = "form-control", type = "number", min = "0" })
+                        @Html.ValidationMessageFor(m => m.Stock, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(m => m.IsActive) Active (visible to customers)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Current Images</h4>
+                </div>
+                <div class="panel-body">
+                    @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+                    {
+                        <div class="row">
+                            @foreach (var image in Model.ExistingImages)
+                            {
+                                <div class="col-xs-6" style="margin-bottom: 10px;">
+                                    <div class="thumbnail">
+                                        <img src="@image.Url" alt="Product image" style="height: 80px; object-fit: cover;" />
+                                        <div class="caption text-center">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="DeleteImageIds[]" value="@image.Id" /> Delete
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No images uploaded</p>
+                    }
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Add New Images</h4>
+                </div>
+                <div class="panel-body">
+                    <input type="file" name="Images" multiple accept="image/*" class="form-control" />
+                    <p class="help-block">You can select multiple images to add.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+        @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default btn-lg" })
+    </div>
+}
+
+@section scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            $('#addSpecification').click(function () {
+                var row = `
+                    <div class="specification-row row" style="margin-bottom: 10px;">
+                        <div class="col-md-5">
+                            <input type="text" name="SpecificationNames[]" class="form-control" placeholder="Name" />
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" name="SpecificationValues[]" class="form-control" placeholder="Value" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-remove-spec">&times;</button>
+                        </div>
+                    </div>`;
+                $('#specifications').append(row);
+            });
+
+            $(document).on('click', '.btn-remove-spec', function () {
+                $(this).closest('.specification-row').remove();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,15 @@
+@model IPagedList
+
+@Html.PagedListPager(Model, page => Url.Action(ViewContext.RouteData.Values["action"].ToString(),
+    new RouteValueDictionary(ViewBag.RouteValues) { { "page", page } }),
+    new PagedListRenderOptions
+    {
+        LinkToFirstPageFormat = "First",
+        LinkToPreviousPageFormat = "Prev",
+        LinkToNextPageFormat = "Next",
+        LinkToLastPageFormat = "Last",
+        DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToNextPage = PagedListDisplayMode.IfNeeded
+    })

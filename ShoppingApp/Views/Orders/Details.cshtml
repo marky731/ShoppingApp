@@ -1,0 +1,126 @@
+@model ShoppingApp.Models.ViewModels.OrderDetailsViewModel
+
+@{
+    ViewBag.Title = "Order Details";
+}
+
+<h2>Order #@Model.Order.OrderId</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var shopOrder in Model.ShopOrders)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>@shopOrder.Shop.ShopName</strong>
+                    <span class="label label-@GetStatusClass(shopOrder.ShopOrderStatus) pull-right">@shopOrder.ShopOrderStatus</span>
+                </div>
+                <div class="panel-body">
+                    @if (!string.IsNullOrEmpty(shopOrder.TrackingNumber))
+                    {
+                        <p><strong>Tracking Number:</strong> @shopOrder.TrackingNumber</p>
+                    }
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in shopOrder.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.ActionLink(item.Product.ProductName, "Details", "Products", new { id = item.ProductId }, null)
+                                    </td>
+                                    <td>$@item.PriceAtPurchase.ToString("F2")</td>
+                                    <td>@item.Quantity</td>
+                                    <td>$@((item.PriceAtPurchase * item.Quantity).ToString("F2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Shop Total:</strong></td>
+                                <td><strong>$@shopOrder.ShopTotal.ToString("F2")</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    @if (shopOrder.ShopOrderStatus == OrderStatus.Delivered)
+                    {
+                        <p class="text-muted">
+                            <small>You can now review the products you purchased.</small>
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Order Summary</h3>
+            </div>
+            <div class="panel-body">
+                <p><strong>Order Date:</strong> @Model.Order.OrderDate.ToString("MMMM dd, yyyy HH:mm")</p>
+
+                <hr />
+
+                <h4>Shipping Address</h4>
+                <address>
+                    @Model.Order.ShippingAddress.AddressLabel<br />
+                    @Model.Order.ShippingAddress.StreetAddress<br />
+                    @Model.Order.ShippingAddress.City, @Model.Order.ShippingAddress.PostalCode<br />
+                    @Model.Order.ShippingAddress.Country
+                </address>
+
+                <hr />
+
+                <p>Subtotal: <span class="pull-right">$@Model.Order.SubtotalAmount.ToString("F2")</span></p>
+                @if (Model.Order.DiscountId.HasValue)
+                {
+                    <p>Discount: <span class="pull-right text-success">-$@((Model.Order.SubtotalAmount - Model.Order.TotalAmount).ToString("F2"))</span></p>
+                }
+                <h4>Total: <span class="pull-right">$@Model.Order.TotalAmount.ToString("F2")</span></h4>
+
+                @if (Model.CanCancel)
+                {
+                    <hr />
+                    @using (Html.BeginForm("Cancel", "Orders", new { id = Model.Order.OrderId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-block" onclick="return confirm('Are you sure you want to cancel this order?');">
+                            Cancel Order
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Back to Orders", "Index", null, new { @class = "btn btn-default" })
+</p>
+
+@functions {
+    string GetStatusClass(OrderStatus status)
+    {
+        switch (status)
+        {
+            case OrderStatus.Pending: return "warning";
+            case OrderStatus.Confirmed: return "info";
+            case OrderStatus.Processing: return "primary";
+            case OrderStatus.Shipped: return "info";
+            case OrderStatus.Delivered: return "success";
+            case OrderStatus.Cancelled: return "danger";
+            default: return "default";
+        }
+    }
+}

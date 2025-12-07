@@ -1,0 +1,72 @@
+@model ShoppingApp.Models.ViewModels.HomeViewModel
+
+@{
+    ViewBag.Title = "Home";
+}
+
+<div class="jumbotron">
+    <h1>Welcome to ShoppingApp</h1>
+    <p class="lead">Your one-stop multi-vendor marketplace for all your shopping needs.</p>
+    <p>
+        @Html.ActionLink("Browse Products", "Index", "Products", null, new { @class = "btn btn-primary btn-lg" })
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Shop by Category</h2>
+        <div class="row">
+            @foreach (var category in Model.Categories)
+            {
+                <div class="col-sm-4 col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-body text-center">
+                            <h4>
+                                <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                                    @category.CategoryName
+                                </a>
+                            </h4>
+                            @if (category.SubCategories.Any())
+                            {
+                                <ul class="list-unstyled">
+                                    @foreach (var sub in category.SubCategories.Take(3))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Products", new { CategoryId = sub.CategoryId })">
+                                                @sub.CategoryName
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Featured Products</h2>
+        <div class="row">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                @Html.Partial("_ProductCard", product)
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>New Arrivals</h2>
+        <div class="row">
+            @foreach (var product in Model.NewArrivals)
+            {
+                @Html.Partial("_ProductCard", product)
+            }
+        </div>
+    </div>
+</div>

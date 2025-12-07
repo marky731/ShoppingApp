@@ -1,0 +1,124 @@
+@model IEnumerable<ShoppingApp.Models.ViewModels.PendingSellerViewModel>
+@{
+    ViewBag.Title = "Pending Sellers";
+}
+
+<h1 class="page-header">Pending Seller Applications</h1>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var seller in Model)
+        {
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            @seller.ShopName
+                            <span class="label label-warning pull-right">Pending</span>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-4 text-center">
+                                @if (!string.IsNullOrEmpty(seller.LogoUrl))
+                                {
+                                    <img src="@seller.LogoUrl" alt="@seller.ShopName" class="img-responsive img-circle" style="max-width: 100px; margin: 0 auto;" />
+                                }
+                                else
+                                {
+                                    <span class="glyphicon glyphicon-shopping-bag" style="font-size: 60px; color: #ccc;"></span>
+                                }
+                            </div>
+                            <div class="col-sm-8">
+                                <dl>
+                                    <dt>Owner</dt>
+                                    <dd>@seller.OwnerName (@seller.OwnerEmail)</dd>
+
+                                    <dt>Description</dt>
+                                    <dd>@(seller.Description ?? "No description provided")</dd>
+
+                                    <dt>Contact</dt>
+                                    <dd>
+                                        @if (!string.IsNullOrEmpty(seller.Phone))
+                                        {
+                                            <span class="glyphicon glyphicon-phone"></span> @seller.Phone<br />
+                                        }
+                                        @if (!string.IsNullOrEmpty(seller.Email))
+                                        {
+                                            <span class="glyphicon glyphicon-envelope"></span> @seller.Email
+                                        }
+                                    </dd>
+
+                                    <dt>Applied On</dt>
+                                    <dd>@seller.CreatedAt.ToString("MMMM dd, yyyy")</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        @using (Html.BeginForm("Approve", "Sellers", new { id = seller.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Approve
+                            </button>
+                        }
+                        <button type="button" class="btn btn-danger btn-reject" data-id="@seller.Id" data-name="@seller.ShopName">
+                            <span class="glyphicon glyphicon-remove"></span> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>No pending applications</h4>
+        <p>All seller applications have been processed.</p>
+    </div>
+}
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("Reject", "Sellers", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="rejectSellerId" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reject Application</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to reject the application for <strong id="shopName"></strong>.</p>
+                    <div class="form-group">
+                        <label>Reason for rejection:</label>
+                        <textarea name="reason" class="form-control" rows="3" placeholder="Enter reason (will be sent to the applicant)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Application</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-reject').click(function () {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                $('#rejectSellerId').val(id);
+                $('#shopName').text(name);
+                $('#rejectModal').modal('show');
+            });
+        });
+    </script>
+}

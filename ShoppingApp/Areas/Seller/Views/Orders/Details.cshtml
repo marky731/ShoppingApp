@@ -1,0 +1,208 @@
+@model ShoppingApp.Models.ViewModels.SellerOrderDetailsViewModel
+@{
+    ViewBag.Title = "Order #" + Model.OrderNumber;
+}
+
+<div class="page-header">
+    <div class="pull-right">
+        @Html.ActionLink("Back to Orders", "Index", null, new { @class = "btn btn-default" })
+    </div>
+    <h1>Order #@Model.OrderNumber</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Order Items -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Order Items</h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;"></th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 50px; height: 50px; object-fit: cover;" class="img-thumbnail" />
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@item.ProductName</strong>
+                                    <br />
+                                    <small class="text-muted">SKU: @item.ProductSku</small>
+                                </td>
+                                <td>$@item.UnitPrice.ToString("N2")</td>
+                                <td>@item.Quantity</td>
+                                <td class="text-right">$@item.Total.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Subtotal:</strong></td>
+                            <td class="text-right">$@Model.Subtotal.ToString("N2")</td>
+                        </tr>
+                        @if (Model.DiscountAmount > 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-right">
+                                    <strong>Discount:</strong>
+                                    @if (!string.IsNullOrEmpty(Model.DiscountCode))
+                                    {
+                                        <span class="label label-success">@Model.DiscountCode</span>
+                                    }
+                                </td>
+                                <td class="text-right text-success">-$@Model.DiscountAmount.ToString("N2")</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                            <td class="text-right"><strong>$@Model.Total.ToString("N2")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Shipping Address</h4>
+            </div>
+            <div class="panel-body">
+                <address>
+                    <strong>@Model.ShippingAddress.FullName</strong><br />
+                    @Model.ShippingAddress.AddressLine1<br />
+                    @if (!string.IsNullOrEmpty(Model.ShippingAddress.AddressLine2))
+                    {
+                        @Model.ShippingAddress.AddressLine2<br />
+                    }
+                    @Model.ShippingAddress.City, @Model.ShippingAddress.State @Model.ShippingAddress.PostalCode<br />
+                    @Model.ShippingAddress.Country<br />
+                    <span class="glyphicon glyphicon-phone"></span> @Model.ShippingAddress.Phone
+                </address>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Order Info -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Order Information</h4>
+            </div>
+            <div class="panel-body">
+                <dl>
+                    <dt>Order Number</dt>
+                    <dd>#@Model.OrderNumber</dd>
+
+                    <dt>Date</dt>
+                    <dd>@Model.CreatedAt.ToString("MMMM dd, yyyy h:mm tt")</dd>
+
+                    <dt>Customer</dt>
+                    <dd>
+                        @Model.CustomerName
+                        <br />
+                        <small>@Model.CustomerEmail</small>
+                    </dd>
+
+                    <dt>Status</dt>
+                    <dd>
+                        @switch (Model.Status)
+                        {
+                            case OrderStatus.Pending:
+                                <span class="label label-warning">Pending</span>
+                                break;
+                            case OrderStatus.Confirmed:
+                                <span class="label label-info">Confirmed</span>
+                                break;
+                            case OrderStatus.Processing:
+                                <span class="label label-primary">Processing</span>
+                                break;
+                            case OrderStatus.Shipped:
+                                <span class="label label-info">Shipped</span>
+                                break;
+                            case OrderStatus.Delivered:
+                                <span class="label label-success">Delivered</span>
+                                break;
+                            case OrderStatus.Cancelled:
+                                <span class="label label-danger">Cancelled</span>
+                                break;
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Update Status -->
+        @if (Model.Status != OrderStatus.Delivered && Model.Status != OrderStatus.Cancelled)
+        {
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Update Status</h4>
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("UpdateStatus", "Orders", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <div class="form-group">
+                            <select name="status" class="form-control">
+                                @if (Model.Status == OrderStatus.Pending)
+                                {
+                                    <option value="Confirmed">Confirm Order</option>
+                                    <option value="Cancelled">Cancel Order</option>
+                                }
+                                @if (Model.Status == OrderStatus.Confirmed)
+                                {
+                                    <option value="Processing">Start Processing</option>
+                                    <option value="Cancelled">Cancel Order</option>
+                                }
+                                @if (Model.Status == OrderStatus.Processing)
+                                {
+                                    <option value="Shipped">Mark as Shipped</option>
+                                }
+                                @if (Model.Status == OrderStatus.Shipped)
+                                {
+                                    <option value="Delivered">Mark as Delivered</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea name="notes" class="form-control" rows="2" placeholder="Notes (optional)"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Update Status</button>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Order Notes -->
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Customer Notes</h4>
+                </div>
+                <div class="panel-body">
+                    <p>@Model.Notes</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

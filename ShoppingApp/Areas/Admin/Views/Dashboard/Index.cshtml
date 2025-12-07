@@ -1,0 +1,190 @@
+@model ShoppingApp.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h1 class="page-header">Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="row">
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-user" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.TotalUsers</div>
+                        <div>Total Users</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index", "Users")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-shopping-cart" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.TotalOrders</div>
+                        <div>Total Orders</div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <span class="pull-left">Platform-wide</span>
+                <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-briefcase" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">@Model.TotalShops</div>
+                        <div>Active Shops</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Pending", "Sellers")">
+                <div class="panel-footer">
+                    <span class="pull-left">@Model.PendingSellers pending</span>
+                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-usd" style="font-size: 40px;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 24px;">$@Model.TotalRevenue.ToString("N0")</div>
+                        <div>Total Revenue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <span class="pull-left">Platform-wide</span>
+                <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Users -->
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-user"></span> Recent Users
+                </h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentUsers.Any())
+                        {
+                            foreach (var user in Model.RecentUsers)
+                            {
+                                <tr>
+                                    <td>@user.FirstName @user.LastName</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.CreatedAt.ToString("MMM dd")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No recent users</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer text-right">
+                <a href="@Url.Action("Index", "Users")">View All Users <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Items -->
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-time"></span> Pending Actions
+                </h4>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="badge">@Model.PendingSellers</span>
+                    <a href="@Url.Action("Pending", "Sellers")">
+                        <span class="glyphicon glyphicon-briefcase"></span> Pending Seller Applications
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <span class="badge">@Model.PendingReviews</span>
+                    <a href="@Url.Action("Pending", "Reviews")">
+                        <span class="glyphicon glyphicon-comment"></span> Pending Reviews
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-stats"></span> Quick Stats
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="text-center">
+                            <h3>@Model.TotalProducts</h3>
+                            <p class="text-muted">Products</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="text-center">
+                            <h3>@Model.TotalCategories</h3>
+                            <p class="text-muted">Categories</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+@model IEnumerable<ShoppingApp.Models.ViewModels.PendingReviewViewModel>
+@{
+    ViewBag.Title = "Pending Reviews";
+}
+
+<h1 class="page-header">Pending Reviews</h1>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var review in Model)
+        {
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="pull-right">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <span class="glyphicon glyphicon-star text-warning"></span>
+                                }
+                                else
+                                {
+                                    <span class="glyphicon glyphicon-star-empty"></span>
+                                }
+                            }
+                        </div>
+                        <h4 class="panel-title">@review.ProductName</h4>
+                    </div>
+                    <div class="panel-body">
+                        <p><strong>@review.Title</strong></p>
+                        <p>@review.Content</p>
+                        <hr />
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <small class="text-muted">
+                                    <span class="glyphicon glyphicon-user"></span> @review.CustomerName
+                                </small>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <small class="text-muted">
+                                    <span class="glyphicon glyphicon-time"></span> @review.CreatedAt.ToString("MMM dd, yyyy")
+                                </small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-xs-12">
+                                <small class="text-muted">
+                                    <span class="glyphicon glyphicon-shopping-bag"></span> Shop: @review.ShopName
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        @using (Html.BeginForm("Approve", "Reviews", new { id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <span class="glyphicon glyphicon-ok"></span> Approve
+                            </button>
+                        }
+                        @using (Html.BeginForm("Reject", "Reviews", new { id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject this review?');">
+                                <span class="glyphicon glyphicon-remove"></span> Reject
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>No pending reviews</h4>
+        <p>All reviews have been moderated.</p>
+    </div>
+}

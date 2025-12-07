@@ -1,0 +1,126 @@
+@model ShoppingApp.Models.ViewModels.ShopViewModel
+@{
+    ViewBag.Title = "Shop Settings";
+}
+
+<h1 class="page-header">Shop Settings</h1>
+
+@using (Html.BeginForm("Edit", "Shop", new { area = "Seller" }, FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Shop Information</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Description, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4 })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Phone, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Address, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = 2 })
+                            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Shop Logo</h4>
+                </div>
+                <div class="panel-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                    {
+                        <img src="@Model.LogoUrl" alt="Shop Logo" class="img-responsive img-thumbnail" style="max-width: 200px; margin: 0 auto 15px;" />
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-shopping-bag" style="font-size: 80px; color: #ccc;"></span>
+                    }
+                    <div class="form-group">
+                        <input type="file" name="Logo" accept="image/*" class="form-control" />
+                        <p class="help-block">Recommended size: 200x200 pixels</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Shop Status</h4>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        <strong>Status:</strong>
+                        @if (Model.IsApproved)
+                        {
+                            <span class="label label-success">Approved</span>
+                        }
+                        else
+                        {
+                            <span class="label label-warning">Pending Approval</span>
+                        }
+                    </p>
+                    <p>
+                        <strong>Active:</strong>
+                        @if (Model.IsActive)
+                        {
+                            <span class="label label-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger">No</span>
+                        }
+                    </p>
+                    <p>
+                        <strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+}
+
+@section scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}

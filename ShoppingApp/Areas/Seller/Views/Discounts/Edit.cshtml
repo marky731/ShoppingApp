@@ -1,0 +1,138 @@
+@model ShoppingApp.Models.ViewModels.DiscountViewModel
+@{
+    ViewBag.Title = "Edit Discount";
+}
+
+<h1 class="page-header">Edit Discount</h1>
+
+@using (Html.BeginForm("Edit", "Discounts", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Discount Details</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Code, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Code, new { @class = "form-control", style = "text-transform: uppercase;" })
+                            @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Description, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 2 })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Type, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.Type, new SelectList(new[] {
+                                new { Value = DiscountType.Percentage, Text = "Percentage" },
+                                new { Value = DiscountType.FixedAmount, Text = "Fixed Amount" }
+                            }, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Value, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="valuePrefix">@(Model.Type == DiscountType.Percentage ? "%" : "$")</span>
+                                @Html.TextBoxFor(m => m.Value, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Value, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MinimumPurchase, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                @Html.TextBoxFor(m => m.MinimumPurchase, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.MinimumPurchase, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UsageLimit, new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.UsageLimit, new { @class = "form-control", type = "number", min = "1" })
+                            @Html.ValidationMessageFor(m => m.UsageLimit, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Validity Period</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.StartDate, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EndDate, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(m => m.IsActive) Active
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Usage Statistics</h4>
+                </div>
+                <div class="panel-body">
+                    <p><strong>Times Used:</strong> @Model.UsageCount</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+        @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default btn-lg" })
+    </div>
+}
+
+@section scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            $('#Type').change(function () {
+                var type = $(this).val();
+                if (type === '@((int)DiscountType.Percentage)' || type === 'Percentage') {
+                    $('#valuePrefix').text('%');
+                } else {
+                    $('#valuePrefix').text('$');
+                }
+            });
+        });
+    </script>
+}

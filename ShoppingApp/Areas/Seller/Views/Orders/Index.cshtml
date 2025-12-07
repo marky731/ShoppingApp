@@ -1,0 +1,114 @@
+@model PagedList.IPagedList<ShoppingApp.Models.ViewModels.SellerOrderListItemViewModel>
+@{
+    ViewBag.Title = "Orders";
+}
+
+<h1 class="page-header">Orders</h1>
+
+<!-- Filters -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            <div class="form-group">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Order # or customer..." />
+            </div>
+            <div class="form-group">
+                @Html.DropDownList("status", new SelectList(new[] {
+                    new { Value = "", Text = "All Status" },
+                    new { Value = "Pending", Text = "Pending" },
+                    new { Value = "Confirmed", Text = "Confirmed" },
+                    new { Value = "Processing", Text = "Processing" },
+                    new { Value = "Shipped", Text = "Shipped" },
+                    new { Value = "Delivered", Text = "Delivered" },
+                    new { Value = "Cancelled", Text = "Cancelled" }
+                }, "Value", "Text", ViewBag.Status), new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-default">Filter</button>
+            <a href="@Url.Action("Index")" class="btn btn-link">Clear</a>
+        }
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Details", new { id = order.Id })">
+                                <strong>#@order.OrderNumber</strong>
+                            </a>
+                        </td>
+                        <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            @order.CustomerName
+                            <br />
+                            <small class="text-muted">@order.CustomerEmail</small>
+                        </td>
+                        <td>@order.ItemCount items</td>
+                        <td><strong>$@order.Total.ToString("N2")</strong></td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case OrderStatus.Pending:
+                                    <span class="label label-warning">Pending</span>
+                                    break;
+                                case OrderStatus.Confirmed:
+                                    <span class="label label-info">Confirmed</span>
+                                    break;
+                                case OrderStatus.Processing:
+                                    <span class="label label-primary">Processing</span>
+                                    break;
+                                case OrderStatus.Shipped:
+                                    <span class="label label-info">Shipped</span>
+                                    break;
+                                case OrderStatus.Delivered:
+                                    <span class="label label-success">Delivered</span>
+                                    break;
+                                case OrderStatus.Cancelled:
+                                    <span class="label label-danger">Cancelled</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("View", "Details", new { id = order.Id }, new { @class = "btn btn-sm btn-default" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="text-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = ViewBag.Search, status = ViewBag.Status, fromDate = ViewBag.FromDate, toDate = ViewBag.ToDate }))
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>No orders found</h4>
+        <p>Orders from your shop will appear here.</p>
+    </div>
+}
