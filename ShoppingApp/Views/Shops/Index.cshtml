@@ -1,0 +1,71 @@
+@model IEnumerable<ShoppingApp.Models.ViewModels.ShopCardViewModel>
+@{
+    ViewBag.Title = "Shops";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>All Shops</h1>
+        <p class="text-muted">Browse our verified sellers</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p>No shops available at the moment.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var shop in Model)
+            {
+                <div class="col-md-4 col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body text-center">
+                            @if (!string.IsNullOrEmpty(shop.LogoUrl))
+                            {
+                                <img src="@shop.LogoUrl" alt="@shop.Name" class="img-circle" style="width: 80px; height: 80px; object-fit: cover; margin-bottom: 15px;" />
+                            }
+                            else
+                            {
+                                <div style="width: 80px; height: 80px; background-color: #eee; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                                    <span class="glyphicon glyphicon-shopping-cart" style="font-size: 30px; color: #999;"></span>
+                                </div>
+                            }
+                            <h4>
+                                <a href="@Url.Action("Details", "Shops", new { id = shop.ShopId })">@shop.Name</a>
+                            </h4>
+                            @if (!string.IsNullOrEmpty(shop.Description))
+                            {
+                                <p class="text-muted" style="height: 40px; overflow: hidden;">
+                                    @(shop.Description.Length > 80 ? shop.Description.Substring(0, 80) + "..." : shop.Description)
+                                </p>
+                            }
+                            <p>
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(shop.Rating))
+                                    {
+                                        <span class="glyphicon glyphicon-star text-warning"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="glyphicon glyphicon-star-empty text-muted"></span>
+                                    }
+                                }
+                                <span class="text-muted">(@shop.Rating.ToString("0.0"))</span>
+                            </p>
+                            <p class="text-muted">
+                                <span class="glyphicon glyphicon-list-alt"></span> @shop.ProductCount products
+                            </p>
+                            <a href="@Url.Action("Details", "Shops", new { id = shop.ShopId })" class="btn btn-primary btn-block">
+                                View Shop
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

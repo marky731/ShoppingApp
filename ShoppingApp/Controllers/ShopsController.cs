@@ -12,6 +12,27 @@ namespace ShoppingApp.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         private const int PageSize = 12;
 
+        // GET: Shops
+        public ActionResult Index()
+        {
+            var shops = db.Shops
+                .Where(s => s.IsApproved)
+                .OrderByDescending(s => s.AverageRating)
+                .ThenByDescending(s => s.TotalSales)
+                .Select(s => new ShopCardViewModel
+                {
+                    ShopId = s.ShopId,
+                    Name = s.ShopName,
+                    Description = s.Description,
+                    LogoUrl = s.LogoImageUrl,
+                    Rating = s.AverageRating,
+                    ProductCount = db.Products.Count(p => p.ShopId == s.ShopId && p.IsActive)
+                })
+                .ToList();
+
+            return View(shops);
+        }
+
         // GET: Shops/Details/5
         public ActionResult Details(int id, int page = 1)
         {

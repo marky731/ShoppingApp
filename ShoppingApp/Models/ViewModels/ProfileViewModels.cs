@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ShoppingApp.Models.Domain;
@@ -11,6 +12,7 @@ namespace ShoppingApp.Models.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }
+        public DateTime CreatedAt { get; set; }
         public int OrderCount { get; set; }
         public int ReviewCount { get; set; }
         public int FavoriteCount { get; set; }

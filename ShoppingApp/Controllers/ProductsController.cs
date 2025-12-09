@@ -93,16 +93,35 @@ namespace ShoppingApp.Controllers
             return View(viewModel);
         }
 
-        // GET: Products/Details/5
-        public ActionResult Details(int id)
+        // GET: Products/Details/5 or Products/Details/slug
+        public ActionResult Details(string id)
         {
-            var product = db.Products
-                .Include(p => p.Shop)
-                .Include(p => p.Category)
-                .Include(p => p.Images)
-                .Include(p => p.Specifications)
-                .Include(p => p.Reviews.Select(r => r.User))
-                .FirstOrDefault(p => p.ProductId == id && p.IsActive);
+            Product product = null;
+
+            // Try to parse as integer ID first
+            int productId;
+            if (int.TryParse(id, out productId))
+            {
+                product = db.Products
+                    .Include(p => p.Shop)
+                    .Include(p => p.Category)
+                    .Include(p => p.Images)
+                    .Include(p => p.Specifications)
+                    .Include(p => p.Reviews.Select(r => r.User))
+                    .FirstOrDefault(p => p.ProductId == productId && p.IsActive);
+            }
+
+            // If not found by ID, try to find by slug
+            if (product == null)
+            {
+                product = db.Products
+                    .Include(p => p.Shop)
+                    .Include(p => p.Category)
+                    .Include(p => p.Images)
+                    .Include(p => p.Specifications)
+                    .Include(p => p.Reviews.Select(r => r.User))
+                    .FirstOrDefault(p => p.Slug == id && p.IsActive);
+            }
 
             if (product == null)
             {
@@ -116,16 +135,16 @@ namespace ShoppingApp.Controllers
 
             if (!string.IsNullOrEmpty(userId))
             {
-                isFavorite = db.Favorites.Any(f => f.UserId == userId && f.ProductId == id);
+                isFavorite = db.Favorites.Any(f => f.UserId == userId && f.ProductId == product.ProductId);
 
                 // Check if user has purchased and received this product and hasn't reviewed it yet
                 canReview = db.ShopOrders
                     .Any(so => so.Order.UserId == userId
                         && so.ShopOrderStatus == OrderStatus.Delivered
-                        && so.OrderItems.Any(oi => oi.ProductId == id))
-                    && !db.Reviews.Any(r => r.UserId == userId && r.ProductId == id);
+                        && so.OrderItems.Any(oi => oi.ProductId == product.ProductId))
+                    && !db.Reviews.Any(r => r.UserId == userId && r.ProductId == product.ProductId);
 
-                var cartItem = db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == id);
+                var cartItem = db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == product.ProductId);
                 cartQuantity = cartItem?.Quantity ?? 0;
             }
 
@@ -153,8 +172,8 @@ namespace ShoppingApp.Controllers
             return View(viewModel);
         }
 
-        // GET: Products/BySlug/{slug}
-        public ActionResult BySlug(string slug)
+        // Keep BySlug for backwards compatibility - redirects to Details
+        public ActionResult BySlugRedirect(string slug)
         {
             var product = db.Products.FirstOrDefault(p => p.Slug == slug && p.IsActive);
             if (product == null)

@@ -6,6 +6,12 @@ namespace ShoppingApp.Models.Identity
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        static ApplicationDbContext()
+        {
+            // Set database initializer to run migrations and seed data
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, ShoppingApp.Migrations.Configuration>());
+        }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

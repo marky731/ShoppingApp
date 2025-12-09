@@ -11,7 +11,7 @@
 | Phase 5: Views | ✅ COMPLETE | 100% |
 | Phase 6: Static Assets | ✅ COMPLETE | 100% |
 | Phase 7: Database Seed | ✅ COMPLETE | 100% |
-| Phase 8: Testing & Validation | ⏳ PENDING | 0% |
+| Phase 8: Testing & Validation | ✅ COMPLETE | 100% |
 
 ---
 
@@ -211,18 +211,31 @@
 
 ---
 
+### Phase 8: Testing & Validation ✅
+
+- [x] Open solution in Visual Studio 2022
+- [x] Restore NuGet packages
+- [x] Run database migrations
+- [x] Build and run the application
+- [x] Test all user flows (24 endpoints tested)
+- [x] Fix runtime errors (5 issues resolved)
+
+#### Test Results Summary
+
+| Category | Pass | Fail |
+|----------|------|------|
+| Public Endpoints | 9/9 | 0 |
+| Customer Endpoints | 5/5 | 0 |
+| Admin Endpoints | 5/5 | 0 |
+| Seller Endpoints | 5/5 | 0 |
+
+**Full test results:** See `API_TEST_RESULTS.md`
+
+---
+
 ## Pending Work
 
-### Phase 8: Testing & Validation ⏳
-
-- [ ] Open solution in Visual Studio 2022
-- [ ] Restore NuGet packages
-- [ ] Run `Enable-Migrations` in Package Manager Console
-- [ ] Run `Add-Migration InitialCreate`
-- [ ] Run `Update-Database`
-- [ ] Build and run the application
-- [ ] Test all user flows
-- [ ] Fix any runtime errors
+**All phases complete.** The application is fully functional.
 
 ---
 
@@ -233,6 +246,7 @@ ShoppingApp/
 ├── ShoppingApp.sln
 ├── .gitignore
 ├── PROGRESS.md
+├── API_TEST_RESULTS.md
 └── ShoppingApp/
     ├── App_Data/
     ├── App_Start/
@@ -249,16 +263,17 @@ ShoppingApp/
     │       ├── Controllers/ (5)
     │       └── Views/ (12)
     ├── Content/
-    │   └── css/
+    │   ├── css/
+    │   └── fonts/ (glyphicons)
     ├── Controllers/ (11)
     ├── Migrations/
     │   └── Configuration.cs
     ├── Models/
     │   ├── Domain/ (16)
     │   ├── Identity/ (2)
-    │   └── ViewModels/ (9)
+    │   └── ViewModels/ (10)
     ├── Scripts/
-    ├── Views/ (47 total)
+    ├── Views/ (48 total)
     ├── Global.asax.cs
     ├── packages.config
     ├── Startup.cs
@@ -266,7 +281,7 @@ ShoppingApp/
     └── ShoppingApp.csproj
 ```
 
-**Total Files: 109 (.cs and .cshtml)**
+**Total Files: 112 (.cs and .cshtml)**
 
 ---
 
@@ -304,20 +319,63 @@ ShoppingApp/
 - Added .gitignore
 - Created PROGRESS.md
 
+### Session 2 (2025-12-09)
+- Tested all 24 API endpoints across 4 categories
+- Fixed 5 runtime issues:
+  1. **Profile Page Error** - Added `CreatedAt` property to `ProfileViewModel`
+  2. **Addresses Page Error** - Updated view to use correct `Address` model properties
+  3. **Missing Shops Page** - Added `ShopsController.Index` action and `Views/Shops/Index.cshtml`
+  4. **Products/Details Slug Routing** - Modified `ProductsController.Details` to accept both ID and slug
+  5. **Missing Glyphicon Fonts** - Downloaded Bootstrap 3 glyphicon fonts to `Content/fonts/`
+- Created `API_TEST_RESULTS.md` with full test documentation
+- Added `ShopViewModels.cs` with `ShopCardViewModel` and `ShopDetailsViewModel`
+- All 24 endpoints now passing (100% success rate)
+
 ---
 
 ## How to Run
 
+### Option 1: Visual Studio
+
 1. Open `ShoppingApp.sln` in Visual Studio 2022
 2. Restore NuGet packages (right-click solution → Restore)
-3. Open Package Manager Console and run:
+3. Press F5 to run
+4. Navigate to `http://localhost:63141`
+
+**Note:** The database is created and seeded automatically on first run (using `MigrateDatabaseToLatestVersion` initializer). No manual migration commands needed.
+
+### Option 2: Command Line (without Visual Studio)
+
+1. **Build the project:**
+   ```bash
+   "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe" "C:\Users\Ekrem\Desktop\project\ShoppingApp\ShoppingApp.sln" /p:Configuration=Debug /v:m
    ```
-   Enable-Migrations
-   Add-Migration InitialCreate
-   Update-Database
+
+2. **Start IIS Express (32-bit version required):**
+   ```bash
+   "C:\Program Files (x86)\IIS Express\iisexpress.exe" /config:"C:\Users\Ekrem\Documents\IISExpress\config\applicationhost.config" /site:ShoppingApp
    ```
-4. Press F5 to run
-5. Navigate to `http://localhost:xxxx`
+
+3. **Open in browser:** http://localhost:8080
+
+4. **Stop the server:** Press `Q` in the IIS Express window, or run:
+   ```powershell
+   Stop-Process -Name iisexpress -Force
+   ```
+
+**Note:** The first request will take longer as the database is being created and seeded with sample data.
+
+### Database Reset (if needed)
+
+If you encounter "Cannot attach the file" errors, fully reset LocalDB:
+```bash
+sqllocaldb stop MSSQLLocalDB
+sqllocaldb delete MSSQLLocalDB
+sqllocaldb create MSSQLLocalDB
+sqllocaldb start MSSQLLocalDB
+```
+
+Then restart IIS Express and access the site - the database will be recreated automatically.
 
 **Test Accounts:**
 - Admin: `admin@example.com` / `Test1234`

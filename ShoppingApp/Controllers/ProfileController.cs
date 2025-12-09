@@ -47,6 +47,7 @@ namespace ShoppingApp.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Phone = user.Phone,
+                CreatedAt = user.CreatedAt,
                 OrderCount = db.Orders.Count(o => o.UserId == userId),
                 ReviewCount = db.Reviews.Count(r => r.UserId == userId),
                 FavoriteCount = db.Favorites.Count(f => f.UserId == userId),

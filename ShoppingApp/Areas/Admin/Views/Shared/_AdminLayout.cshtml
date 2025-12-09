@@ -42,9 +42,9 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-top: 50px;">
         <div class="row">
-            <div class="col-sm-3 col-md-2 sidebar" style="background-color: #222; min-height: calc(100vh - 50px); padding-top: 20px;">
+            <div class="col-sm-3 col-md-2 sidebar" style="background-color: #222; min-height: calc(100vh - 50px); padding-top: 20px; position: fixed; overflow-y: auto;">
                 <ul class="nav nav-sidebar">
                     <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">
                         <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" style="color: #9d9d9d;">
