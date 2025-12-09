@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using ShoppingApp.Models.Domain;
 using ShoppingApp.Models.Identity;
+using ShoppingApp.Models.ViewModels;
 
 namespace ShoppingApp.Controllers
 {
@@ -21,13 +22,28 @@ namespace ShoppingApp.Controllers
             var favorites = db.Favorites
                 .Include(f => f.Product.Shop)
                 .Include(f => f.Product.Category)
+                .Include(f => f.Product.Reviews)
                 .Where(f => f.UserId == userId)
                 .OrderByDescending(f => f.CreatedAt)
                 .ToList();
 
-            var products = favorites.Select(f => f.Product).ToList();
+            var productCards = favorites.Select(f => new ProductCardViewModel
+            {
+                Id = f.Product.ProductId,
+                Name = f.Product.ProductName,
+                Slug = f.Product.Slug,
+                ImageUrl = f.Product.MainImageUrl,
+                ShopName = f.Product.Shop?.ShopName ?? "Unknown",
+                Price = f.Product.Price,
+                OriginalPrice = f.Product.Price, // No discount field in Product model
+                DiscountPercentage = 0,
+                Rating = f.Product.Reviews.Any() ? (int)Math.Round(f.Product.Reviews.Average(r => r.Rating)) : 0,
+                ReviewCount = f.Product.Reviews.Count(),
+                Stock = f.Product.StockQuantity,
+                IsFavorite = true
+            }).ToList();
 
-            return View(products);
+            return View(productCards);
         }
 
         // POST: Favorites/Toggle

@@ -45,4 +45,20 @@ namespace ShoppingApp.Models.ViewModels
         public bool CanReview { get; set; }
         public int CartQuantity { get; set; }
     }
+
+    public class ProductCardViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Slug { get; set; }
+        public string ImageUrl { get; set; }
+        public string ShopName { get; set; }
+        public decimal Price { get; set; }
+        public decimal OriginalPrice { get; set; }
+        public int DiscountPercentage { get; set; }
+        public int Rating { get; set; }
+        public int ReviewCount { get; set; }
+        public int Stock { get; set; }
+        public bool IsFavorite { get; set; }
+    }
 }
