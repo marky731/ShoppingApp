@@ -17,7 +17,8 @@ namespace ShoppingApp.Areas.Seller
             context.MapRoute(
                 "Seller_default",
                 "Seller/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "ShoppingApp.Areas.Seller.Controllers" }
             );
         }
     }

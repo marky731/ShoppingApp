@@ -18,15 +18,23 @@ namespace ShoppingApp.Areas.Admin.Controllers
         {
             var pendingReviews = db.Reviews
                 .Include(r => r.Product)
+                .Include(r => r.Product.Shop)
                 .Include(r => r.User)
                 .Where(r => r.Status == ReviewStatus.Pending)
                 .OrderBy(r => r.CreatedAt)
-                .ToPagedList(page, 10);
+                .ToList();
 
-            var viewModel = new PendingReviewsViewModel
+            var viewModel = pendingReviews.Select(r => new PendingReviewViewModel
             {
-                PendingReviews = pendingReviews
-            };
+                Id = r.ReviewId,
+                ProductName = r.Product?.ProductName ?? "Unknown",
+                Title = r.Title,
+                Content = r.Comment,
+                Rating = r.Rating,
+                CustomerName = r.User != null ? r.User.FirstName + " " + r.User.LastName : "Unknown",
+                ShopName = r.Product?.Shop?.ShopName ?? "Unknown",
+                CreatedAt = r.CreatedAt
+            });
 
             return View(viewModel);
         }

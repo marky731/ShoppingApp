@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -36,13 +37,23 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 query = query.Where(so => so.ShopOrderStatus == status.Value);
             }
 
-            var viewModel = new SellerOrderListViewModel
-            {
-                Orders = query.OrderByDescending(so => so.Order.OrderDate).ToPagedList(page, 10),
-                StatusFilter = status
-            };
+            var shopOrders = query.OrderByDescending(so => so.Order.OrderDate).ToList();
 
-            return View(viewModel);
+            var viewModel = shopOrders.Select(so => new SellerOrderListItemViewModel
+            {
+                Id = so.ShopOrderId,
+                OrderNumber = so.Order?.OrderId.ToString() ?? "N/A",
+                CreatedAt = so.Order?.OrderDate ?? DateTime.MinValue,
+                CustomerName = so.Order?.User != null ? so.Order.User.FirstName + " " + so.Order.User.LastName : "Unknown",
+                CustomerEmail = so.Order?.User?.Email ?? "",
+                ItemCount = so.OrderItems?.Count ?? 0,
+                Total = so.ShopTotal,
+                Status = so.ShopOrderStatus
+            });
+
+            ViewBag.StatusFilter = status;
+
+            return View(viewModel.ToPagedList(page, 10));
         }
 
         // GET: Seller/Orders/Details/5

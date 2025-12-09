@@ -14,7 +14,26 @@ namespace ShoppingApp.Models.ViewModels
         public int TotalOrders { get; set; }
         public decimal TotalRevenue { get; set; }
         public int PendingOrders { get; set; }
-        public IEnumerable<ShopOrder> RecentOrders { get; set; }
+        public IEnumerable<DashboardRecentOrderViewModel> RecentOrders { get; set; }
+        public IEnumerable<DashboardLowStockViewModel> LowStockProducts { get; set; }
+    }
+
+    public class DashboardRecentOrderViewModel
+    {
+        public int Id { get; set; }
+        public string OrderNumber { get; set; }
+        public string CustomerName { get; set; }
+        public int ItemCount { get; set; }
+        public decimal Total { get; set; }
+        public OrderStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class DashboardLowStockViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Stock { get; set; }
     }
 
     public class CreateShopViewModel
@@ -263,6 +282,178 @@ namespace ShoppingApp.Models.ViewModels
 
         [Display(Name = "Active")]
         public bool IsActive { get; set; }
+
+        public int UsageCount { get; set; }
+    }
+
+    // ViewModels expected by Views
+    public class ShopViewModel
+    {
+        [Required]
+        [StringLength(255)]
+        [Display(Name = "Shop Name")]
+        public string Name { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [StringLength(20)]
+        public string Phone { get; set; }
+
+        [StringLength(255)]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [StringLength(500)]
+        public string Address { get; set; }
+    }
+
+    public class SellerProductListItemViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Sku { get; set; }
+        public string ImageUrl { get; set; }
+        public string CategoryName { get; set; }
+        public decimal Price { get; set; }
+        public decimal? DiscountedPrice { get; set; }
+        public int Stock { get; set; }
+        public int TotalSales { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class SellerProductViewModel
+    {
+        public int? Id { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public string Name { get; set; }
+
+        [StringLength(50)]
+        public string Sku { get; set; }
+
+        [Required]
+        [Display(Name = "Category")]
+        public int CategoryId { get; set; }
+
+        [StringLength(100)]
+        public string Brand { get; set; }
+
+        [StringLength(500)]
+        [Display(Name = "Short Description")]
+        public string ShortDescription { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [Required]
+        [Range(0.01, double.MaxValue)]
+        public decimal Price { get; set; }
+
+        [Display(Name = "Compare At Price")]
+        public decimal? CompareAtPrice { get; set; }
+
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int Stock { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
+        public IEnumerable<Category> Categories { get; set; }
+    }
+
+    public class SellerOrderListItemViewModel
+    {
+        public int Id { get; set; }
+        public string OrderNumber { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
+        public int ItemCount { get; set; }
+        public decimal Total { get; set; }
+        public OrderStatus Status { get; set; }
+    }
+
+    public class SellerOrderDetailsViewModelNew
+    {
+        public int Id { get; set; }
+        public string OrderNumber { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
+        public OrderStatus Status { get; set; }
+        public IEnumerable<OrderItemViewModel> Items { get; set; }
+        public decimal Subtotal { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public string DiscountCode { get; set; }
+        public decimal Total { get; set; }
+        public string ShippingAddress { get; set; }
+        public string Notes { get; set; }
+    }
+
+    public class OrderItemViewModel
+    {
+        public int Id { get; set; }
+        public string ProductName { get; set; }
+        public string ProductImageUrl { get; set; }
+        public string Sku { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Total { get; set; }
+    }
+
+    public class DiscountListItemViewModel
+    {
+        public int Id { get; set; }
+        public string Code { get; set; }
+        public DiscountType Type { get; set; }
+        public decimal Value { get; set; }
+        public int UsageCount { get; set; }
+        public int? UsageLimit { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal? MinimumPurchase { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class DiscountViewModel
+    {
+        public int? Id { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        [Display(Name = "Discount Code")]
+        public string Code { get; set; }
+
+        [StringLength(500)]
+        public string Description { get; set; }
+
+        [Required]
+        [Display(Name = "Discount Type")]
+        public DiscountType Type { get; set; }
+
+        [Required]
+        [Range(0.01, double.MaxValue)]
+        public decimal Value { get; set; }
+
+        [Display(Name = "Minimum Purchase")]
+        public decimal? MinimumPurchase { get; set; }
+
+        [Display(Name = "Usage Limit")]
+        public int? UsageLimit { get; set; }
+
+        [Display(Name = "Start Date")]
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; }
+
+        [Display(Name = "End Date")]
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
 
         public int UsageCount { get; set; }
     }

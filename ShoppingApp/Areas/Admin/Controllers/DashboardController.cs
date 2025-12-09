@@ -19,8 +19,10 @@ namespace ShoppingApp.Areas.Admin.Controllers
             {
                 TotalUsers = db.Users.Count(),
                 TotalSellers = db.Shops.Count(s => s.IsApproved),
+                TotalShops = db.Shops.Count(s => s.IsApproved),
                 TotalProducts = db.Products.Count(p => p.IsActive),
                 TotalOrders = db.Orders.Count(),
+                TotalCategories = db.Categories.Count(),
                 TotalRevenue = db.Orders.Sum(o => (decimal?)o.TotalAmount) ?? 0,
                 PendingSellers = db.Shops.Count(s => !s.IsApproved),
                 PendingReviews = db.Reviews.Count(r => r.Status == ReviewStatus.Pending),
@@ -29,6 +31,10 @@ namespace ShoppingApp.Areas.Admin.Controllers
                     .Include(o => o.ShopOrders)
                     .OrderByDescending(o => o.OrderDate)
                     .Take(10)
+                    .ToList(),
+                RecentUsers = db.Users
+                    .OrderByDescending(u => u.CreatedAt)
+                    .Take(5)
                     .ToList()
             };
 

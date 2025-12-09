@@ -21,12 +21,20 @@ namespace ShoppingApp.Areas.Admin.Controllers
                 .Include(s => s.Seller)
                 .Where(s => !s.IsApproved)
                 .OrderBy(s => s.CreatedAt)
-                .ToPagedList(page, 10);
+                .ToList();
 
-            var viewModel = new PendingSellersViewModel
+            var viewModel = pendingShops.Select(s => new PendingSellerViewModel
             {
-                PendingShops = pendingShops
-            };
+                Id = s.ShopId,
+                ShopName = s.ShopName,
+                LogoUrl = s.LogoImageUrl,
+                OwnerName = s.Seller != null ? s.Seller.FirstName + " " + s.Seller.LastName : "Unknown",
+                OwnerEmail = s.Seller != null ? s.Seller.Email : "",
+                Description = s.Description,
+                Phone = s.Seller?.PhoneNumber,
+                Email = s.Seller?.Email,
+                CreatedAt = s.CreatedAt
+            });
 
             return View(viewModel);
         }

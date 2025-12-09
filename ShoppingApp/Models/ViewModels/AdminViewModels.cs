@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using PagedList;
@@ -10,12 +11,15 @@ namespace ShoppingApp.Models.ViewModels
     {
         public int TotalUsers { get; set; }
         public int TotalSellers { get; set; }
+        public int TotalShops { get; set; }
         public int TotalProducts { get; set; }
         public int TotalOrders { get; set; }
+        public int TotalCategories { get; set; }
         public decimal TotalRevenue { get; set; }
         public int PendingSellers { get; set; }
         public int PendingReviews { get; set; }
         public IEnumerable<Order> RecentOrders { get; set; }
+        public IEnumerable<ApplicationUser> RecentUsers { get; set; }
     }
 
     public class UserListViewModel
@@ -82,5 +86,74 @@ namespace ShoppingApp.Models.ViewModels
         public Review Review { get; set; }
         public Product Product { get; set; }
         public ApplicationUser User { get; set; }
+    }
+
+    public class AdminUserListItemViewModel
+    {
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public IEnumerable<string> Roles { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class PendingSellerViewModel
+    {
+        public int Id { get; set; }
+        public string ShopName { get; set; }
+        public string LogoUrl { get; set; }
+        public string OwnerName { get; set; }
+        public string OwnerEmail { get; set; }
+        public string Description { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class CategoryListItemViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int? ParentId { get; set; }
+        public string ParentName { get; set; }
+        public int ProductCount { get; set; }
+        public int DisplayOrder { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class CategoryViewModel
+    {
+        [Required]
+        [StringLength(100)]
+        public string Name { get; set; }
+
+        [StringLength(500)]
+        public string Description { get; set; }
+
+        [Display(Name = "Parent Category")]
+        public int? ParentId { get; set; }
+
+        [Display(Name = "Display Order")]
+        public int DisplayOrder { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
+        public IEnumerable<Category> ParentCategories { get; set; }
+    }
+
+    public class PendingReviewViewModel
+    {
+        public int Id { get; set; }
+        public string ProductName { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public int Rating { get; set; }
+        public string CustomerName { get; set; }
+        public string ShopName { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

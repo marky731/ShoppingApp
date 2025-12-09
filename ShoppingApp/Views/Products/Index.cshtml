@@ -30,7 +30,7 @@
                                 <option value="@category.CategoryId" @(Model.Filters.CategoryId == category.CategoryId ? "selected" : "")>
                                     @category.CategoryName
                                 </option>
-                                @foreach (var sub in category.SubCategories)
+                                foreach (var sub in category.SubCategories)
                                 {
                                     <option value="@sub.CategoryId" @(Model.Filters.CategoryId == sub.CategoryId ? "selected" : "")>
                                         &nbsp;&nbsp;- @sub.CategoryName

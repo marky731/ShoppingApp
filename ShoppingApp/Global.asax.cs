@@ -1,6 +1,9 @@
+using System.Data.Entity;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using ShoppingApp.Migrations;
+using ShoppingApp.Models.Identity;
 
 namespace ShoppingApp
 {
@@ -12,6 +15,9 @@ namespace ShoppingApp
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Initialize database with migrations and seed data
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
         }
     }
 }

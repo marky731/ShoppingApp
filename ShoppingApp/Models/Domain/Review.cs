@@ -44,5 +44,8 @@ namespace ShoppingApp.Models.Domain
 
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }
+
+        // Seller response to this review (one-to-one)
+        public virtual ReviewResponse Response { get; set; }
     }
 }

@@ -30,6 +30,20 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return View("PendingApproval", shop);
             }
 
+            var recentShopOrders = db.ShopOrders
+                .Include(so => so.Order.User)
+                .Include(so => so.OrderItems)
+                .Where(so => so.ShopId == shop.ShopId)
+                .OrderByDescending(so => so.Order.OrderDate)
+                .Take(5)
+                .ToList();
+
+            var lowStockProducts = db.Products
+                .Where(p => p.ShopId == shop.ShopId && p.IsActive && p.StockQuantity <= 10)
+                .OrderBy(p => p.StockQuantity)
+                .Take(5)
+                .ToList();
+
             var viewModel = new SellerDashboardViewModel
             {
                 Shop = shop,
@@ -39,13 +53,22 @@ namespace ShoppingApp.Areas.Seller.Controllers
                     .Where(so => so.ShopId == shop.ShopId && so.ShopOrderStatus == OrderStatus.Delivered)
                     .Sum(so => (decimal?)so.ShopTotal) ?? 0,
                 PendingOrders = db.ShopOrders.Count(so => so.ShopId == shop.ShopId && so.ShopOrderStatus == OrderStatus.Pending),
-                RecentOrders = db.ShopOrders
-                    .Include(so => so.Order.User)
-                    .Include(so => so.OrderItems)
-                    .Where(so => so.ShopId == shop.ShopId)
-                    .OrderByDescending(so => so.Order.OrderDate)
-                    .Take(5)
-                    .ToList()
+                RecentOrders = recentShopOrders.Select(so => new DashboardRecentOrderViewModel
+                {
+                    Id = so.ShopOrderId,
+                    OrderNumber = so.Order?.OrderId.ToString() ?? "N/A",
+                    CustomerName = so.Order?.User != null ? so.Order.User.FirstName + " " + so.Order.User.LastName : "Unknown",
+                    ItemCount = so.OrderItems?.Count ?? 0,
+                    Total = so.ShopTotal,
+                    Status = so.ShopOrderStatus,
+                    CreatedAt = so.Order?.OrderDate ?? System.DateTime.MinValue
+                }),
+                LowStockProducts = lowStockProducts.Select(p => new DashboardLowStockViewModel
+                {
+                    Id = p.ProductId,
+                    Name = p.ProductName,
+                    Stock = p.StockQuantity
+                })
             };
 
             return View(viewModel);

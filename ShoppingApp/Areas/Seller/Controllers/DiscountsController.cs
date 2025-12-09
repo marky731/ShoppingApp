@@ -33,11 +33,23 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 query = query.Where(d => d.IsActive == isActive.Value);
             }
 
-            var viewModel = new DiscountListViewModel
+            var discounts = query.OrderByDescending(d => d.CreatedAt).ToList();
+
+            var viewModel = discounts.Select(d => new DiscountListItemViewModel
             {
-                Discounts = query.OrderByDescending(d => d.CreatedAt).ToPagedList(page, 10),
-                IsActive = isActive
-            };
+                Id = d.DiscountId,
+                Code = d.Code,
+                Type = d.DiscountType,
+                Value = d.Value,
+                UsageCount = d.UsageCount,
+                UsageLimit = d.UsageLimit,
+                StartDate = null,
+                EndDate = d.ExpiresAt,
+                MinimumPurchase = d.MinimumOrderAmount,
+                IsActive = d.IsActive
+            });
+
+            ViewBag.IsActive = isActive;
 
             return View(viewModel);
         }
@@ -53,13 +65,13 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            return View(new CreateDiscountViewModel());
+            return View(new DiscountViewModel());
         }
 
         // POST: Seller/Discounts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateDiscountViewModel model)
+        public ActionResult Create(DiscountViewModel model)
         {
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
@@ -84,13 +96,13 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 {
                     ShopId = shop.ShopId,
                     Code = code,
-                    DiscountType = model.DiscountType,
+                    DiscountType = model.Type,
                     Value = model.Value,
-                    MinimumOrderAmount = model.MinimumOrderAmount,
+                    MinimumOrderAmount = model.MinimumPurchase ?? 0,
                     UsageLimit = model.UsageLimit,
-                    PerUserLimit = model.PerUserLimit,
-                    ExpiresAt = model.ExpiresAt,
-                    IsActive = true,
+                    PerUserLimit = 1,
+                    ExpiresAt = model.EndDate,
+                    IsActive = model.IsActive,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -122,16 +134,16 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return HttpNotFound();
             }
 
-            var viewModel = new EditDiscountViewModel
+            var viewModel = new DiscountViewModel
             {
-                DiscountId = discount.DiscountId,
+                Id = discount.DiscountId,
                 Code = discount.Code,
-                DiscountType = discount.DiscountType,
+                Type = discount.DiscountType,
                 Value = discount.Value,
-                MinimumOrderAmount = discount.MinimumOrderAmount,
+                MinimumPurchase = discount.MinimumOrderAmount,
                 UsageLimit = discount.UsageLimit,
-                PerUserLimit = discount.PerUserLimit,
-                ExpiresAt = discount.ExpiresAt,
+                StartDate = null,
+                EndDate = discount.ExpiresAt,
                 IsActive = discount.IsActive,
                 UsageCount = discount.UsageCount
             };
@@ -142,7 +154,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
         // POST: Seller/Discounts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(EditDiscountViewModel model)
+        public ActionResult Edit(DiscountViewModel model)
         {
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
@@ -152,7 +164,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == model.DiscountId && d.ShopId == shop.ShopId);
+            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == model.Id && d.ShopId == shop.ShopId);
 
             if (discount == null)
             {
@@ -164,7 +176,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 var code = model.Code.ToUpper();
 
                 // Check if code already exists (excluding current discount)
-                if (db.Discounts.Any(d => d.Code == code && d.DiscountId != model.DiscountId))
+                if (db.Discounts.Any(d => d.Code == code && d.DiscountId != model.Id))
                 {
                     ModelState.AddModelError("Code", "This discount code already exists.");
                     model.UsageCount = discount.UsageCount;
@@ -172,12 +184,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 }
 
                 discount.Code = code;
-                discount.DiscountType = model.DiscountType;
+                discount.DiscountType = model.Type;
                 discount.Value = model.Value;
-                discount.MinimumOrderAmount = model.MinimumOrderAmount;
+                discount.MinimumOrderAmount = model.MinimumPurchase ?? 0;
                 discount.UsageLimit = model.UsageLimit;
-                discount.PerUserLimit = model.PerUserLimit;
-                discount.ExpiresAt = model.ExpiresAt;
+                discount.ExpiresAt = model.EndDate;
                 discount.IsActive = model.IsActive;
 
                 db.SaveChanges();

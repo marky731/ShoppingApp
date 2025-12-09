@@ -18,14 +18,22 @@ namespace ShoppingApp.Areas.Admin.Controllers
             var categories = db.Categories
                 .Include(c => c.ParentCategory)
                 .Include(c => c.SubCategories)
+                .Include(c => c.Products)
                 .OrderBy(c => c.ParentCategoryId)
                 .ThenBy(c => c.CategoryName)
                 .ToList();
 
-            var viewModel = new CategoryListViewModel
+            var viewModel = categories.Select(c => new CategoryListItemViewModel
             {
-                Categories = categories
-            };
+                Id = c.CategoryId,
+                Name = c.CategoryName,
+                Description = null, // Category model doesn't have Description
+                ParentId = c.ParentCategoryId,
+                ParentName = c.ParentCategory?.CategoryName,
+                ProductCount = c.Products.Count,
+                DisplayOrder = 0, // Category model doesn't have DisplayOrder
+                IsActive = true // Category model doesn't have IsActive
+            });
 
             return View(viewModel);
         }

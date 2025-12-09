@@ -31,31 +31,49 @@ namespace ShoppingApp.Areas.Admin.Controllers
         }
 
         // GET: Admin/Users
-        public ActionResult Index(string searchTerm, string role, bool? isActive, int page = 1)
+        public ActionResult Index(string search, string role, string status, int page = 1)
         {
             var query = db.Users.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrEmpty(search))
             {
-                query = query.Where(u => u.Email.Contains(searchTerm) ||
-                    u.FirstName.Contains(searchTerm) ||
-                    u.LastName.Contains(searchTerm));
+                query = query.Where(u => u.Email.Contains(search) ||
+                    u.FirstName.Contains(search) ||
+                    u.LastName.Contains(search));
             }
 
-            if (isActive.HasValue)
+            if (!string.IsNullOrEmpty(status))
             {
-                query = query.Where(u => u.IsActive == isActive.Value);
+                bool isActive = status == "active";
+                query = query.Where(u => u.IsActive == isActive);
             }
 
-            var viewModel = new UserListViewModel
-            {
-                Users = query.OrderByDescending(u => u.CreatedAt).ToPagedList(page, 20),
-                SearchTerm = searchTerm,
-                RoleFilter = role,
-                IsActiveFilter = isActive
-            };
+            // Get all users and their roles
+            var users = query.OrderByDescending(u => u.CreatedAt).ToList();
 
-            return View(viewModel);
+            // Map to ViewModels with roles
+            var userViewModels = users.Select(u => new AdminUserListItemViewModel
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Roles = UserManager.GetRoles(u.Id),
+                CreatedAt = u.CreatedAt,
+                IsActive = u.IsActive
+            });
+
+            // Filter by role if specified
+            if (!string.IsNullOrEmpty(role))
+            {
+                userViewModels = userViewModels.Where(u => u.Roles.Contains(role));
+            }
+
+            ViewBag.Search = search;
+            ViewBag.Role = role;
+            ViewBag.Status = status;
+
+            return View(userViewModels.ToPagedList(page, 20));
         }
 
         // GET: Admin/Users/Details/5

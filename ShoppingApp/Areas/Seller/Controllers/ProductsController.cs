@@ -17,7 +17,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Seller/Products
-        public ActionResult Index(string searchTerm, bool? isActive, int page = 1)
+        public ActionResult Index(string search, int? categoryId, string status, int page = 1)
         {
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
@@ -31,24 +31,48 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 .Include(p => p.Category)
                 .Where(p => p.ShopId == shop.ShopId);
 
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrEmpty(search))
             {
-                query = query.Where(p => p.ProductName.Contains(searchTerm));
+                query = query.Where(p => p.ProductName.Contains(search));
             }
 
-            if (isActive.HasValue)
+            if (categoryId.HasValue)
             {
-                query = query.Where(p => p.IsActive == isActive.Value);
+                query = query.Where(p => p.CategoryId == categoryId.Value);
             }
 
-            var viewModel = new SellerProductListViewModel
+            if (!string.IsNullOrEmpty(status))
             {
-                Products = query.OrderByDescending(p => p.CreatedAt).ToPagedList(page, 10),
-                SearchTerm = searchTerm,
-                IsActive = isActive
-            };
+                if (status == "active")
+                    query = query.Where(p => p.IsActive);
+                else if (status == "inactive")
+                    query = query.Where(p => !p.IsActive);
+                else if (status == "lowstock")
+                    query = query.Where(p => p.StockQuantity <= 10);
+            }
 
-            return View(viewModel);
+            var products = query.OrderByDescending(p => p.CreatedAt).ToList();
+
+            var viewModel = products.Select(p => new SellerProductListItemViewModel
+            {
+                Id = p.ProductId,
+                Name = p.ProductName,
+                Sku = p.Model ?? "",
+                ImageUrl = p.MainImageUrl,
+                CategoryName = p.Category?.CategoryName ?? "Uncategorized",
+                Price = p.Price,
+                DiscountedPrice = null,
+                Stock = p.StockQuantity,
+                TotalSales = 0, // Would need to calculate from order items
+                IsActive = p.IsActive
+            });
+
+            ViewBag.Search = search;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.Status = status;
+            ViewBag.Categories = new SelectList(db.Categories.OrderBy(c => c.CategoryName).ToList(), "CategoryId", "CategoryName", categoryId);
+
+            return View(viewModel.ToPagedList(page, 10));
         }
 
         // GET: Seller/Products/Create

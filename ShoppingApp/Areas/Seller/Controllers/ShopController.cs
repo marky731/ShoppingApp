@@ -40,13 +40,13 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Edit");
             }
 
-            return View(new CreateShopViewModel());
+            return View(new ShopViewModel());
         }
 
         // POST: Seller/Shop/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CreateShopViewModel model)
+        public async Task<ActionResult> Create(ShopViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -62,10 +62,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 var shop = new Shop
                 {
                     SellerId = userId,
-                    ShopName = model.ShopName,
+                    ShopName = model.Name,
                     Description = model.Description,
-                    LogoImageUrl = model.LogoImageUrl,
-                    BannerImageUrl = model.BannerImageUrl,
                     IsApproved = false,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow

@@ -8,7 +8,7 @@ using ShoppingApp.Models.Identity;
 
 namespace ShoppingApp.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
+    public sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
         public Configuration()
         {
