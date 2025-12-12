@@ -16,42 +16,18 @@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Title, new { @class = "col-md-3 control-label" })
+                    @Html.LabelFor(m => m.AddressLabel, new { @class = "col-md-3 control-label" })
                     <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "e.g., Home, Work, etc." })
-                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(m => m.AddressLabel, new { @class = "form-control", placeholder = "e.g., Home, Work, etc." })
+                        @Html.ValidationMessageFor(m => m.AddressLabel, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.FullName, new { @class = "col-md-3 control-label" })
+                    @Html.LabelFor(m => m.StreetAddress, new { @class = "col-md-3 control-label" })
                     <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Phone, new { @class = "col-md-3 control-label" })
-                    <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.AddressLine1, new { @class = "col-md-3 control-label" })
-                    <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.AddressLine1, new { @class = "form-control", placeholder = "Street address" })
-                        @Html.ValidationMessageFor(m => m.AddressLine1, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.AddressLine2, new { @class = "col-md-3 control-label" })
-                    <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.AddressLine2, new { @class = "form-control", placeholder = "Apartment, suite, unit, etc. (optional)" })
-                        @Html.ValidationMessageFor(m => m.AddressLine2, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(m => m.StreetAddress, new { @class = "form-control", placeholder = "Street address, apartment, suite, etc." })
+                        @Html.ValidationMessageFor(m => m.StreetAddress, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -60,14 +36,6 @@
                     <div class="col-md-9">
                         @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.State, new { @class = "col-md-3 control-label" })
-                    <div class="col-md-9">
-                        @Html.TextBoxFor(m => m.State, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -84,16 +52,6 @@
                     <div class="col-md-9">
                         @Html.TextBoxFor(m => m.Country, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Country, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-md-offset-3 col-md-9">
-                        <div class="checkbox">
-                            <label>
-                                @Html.CheckBoxFor(m => m.IsDefault) Set as default address
-                            </label>
-                        </div>
                     </div>
                 </div>
 

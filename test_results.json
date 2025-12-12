@@ -1,0 +1,194 @@
+﻿[
+    {
+        "Category":  "Public",
+        "Endpoint":  "/",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Home page"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Products",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Products listing"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Products/Details/1",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Product details by ID"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Products/Details/premium-smartphone-pro",
+        "Method":  "GET",
+        "Status":  0,
+        "Result":  "FAIL",
+        "Notes":  "Error: The remote server returned an error: (404) Not Fou"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Shops",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Shops listing"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Shops/Details/1",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Shop details"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Account/Login",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Login page"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Account/Register",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Register page"
+    },
+    {
+        "Category":  "Public",
+        "Endpoint":  "/Account/ForgotPassword",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Forgot password page"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Cart",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Shopping cart"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Favorites",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Favorites list"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Orders",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Order history"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Profile",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "User profile"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Address list"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses/Create",
+        "Method":  "GET",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Address create form"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses/Create",
+        "Method":  "POST",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Create new address"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses/Edit/{id}",
+        "Method":  "GET",
+        "Status":  0,
+        "Result":  "FAIL",
+        "Notes":  "Error: The remote server returned an error: (500) Interna"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses/Edit/{id}",
+        "Method":  "POST",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Update address"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Addresses/Delete/{id}",
+        "Method":  "POST",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Delete address"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Cart/Add",
+        "Method":  "POST",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Add item to cart"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Cart/Update",
+        "Method":  "POST",
+        "Status":  200,
+        "Result":  "PASS",
+        "Notes":  "Update cart quantity"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Cart/*",
+        "Method":  "POST",
+        "Status":  0,
+        "Result":  "FAIL",
+        "Notes":  "Error: The remote server returned an error: (500) Interna"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Favorites/Toggle/{id}",
+        "Method":  "POST",
+        "Status":  0,
+        "Result":  "FAIL",
+        "Notes":  "Error: The remote server returned an error: (500) Interna"
+    },
+    {
+        "Category":  "Customer",
+        "Endpoint":  "/Profile/Edit",
+        "Method":  "GET",
+        "Status":  0,
+        "Result":  "FAIL",
+        "Notes":  "Error: The remote server returned an error: (500) Interna"
+    }
+]

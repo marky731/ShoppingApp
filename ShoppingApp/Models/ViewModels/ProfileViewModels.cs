@@ -21,6 +21,8 @@ namespace ShoppingApp.Models.ViewModels
 
     public class EditProfileViewModel
     {
+        public string Email { get; set; }
+
         [Required]
         [StringLength(100)]
         [Display(Name = "First Name")]

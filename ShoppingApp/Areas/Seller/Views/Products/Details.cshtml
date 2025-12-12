@@ -1,0 +1,191 @@
+@model ShoppingApp.Models.Domain.Product
+@{
+    ViewBag.Title = "Product Details";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="page-header">
+            @Model.ProductName
+            <small>
+                @if (Model.IsActive)
+                {
+                    <span class="label label-success">Active</span>
+                }
+                else
+                {
+                    <span class="label label-default">Inactive</span>
+                }
+            </small>
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Product Image</h4>
+            </div>
+            <div class="panel-body text-center">
+                @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+                {
+                    <img src="@Model.MainImageUrl" alt="@Model.ProductName" class="img-responsive" style="max-height: 300px; margin: 0 auto;" />
+                }
+                else
+                {
+                    <div class="text-muted" style="padding: 50px;">
+                        <span class="glyphicon glyphicon-picture" style="font-size: 48px;"></span>
+                        <p>No image</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (Model.Images != null && Model.Images.Any())
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Additional Images</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        @foreach (var image in Model.Images)
+                        {
+                            <div class="col-xs-4" style="margin-bottom: 10px;">
+                                <img src="@image.ImageUrl" alt="Product image" class="img-thumbnail" style="height: 60px; object-fit: cover;" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Product Information</h4>
+            </div>
+            <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>Category</dt>
+                    <dd>@(Model.Category != null ? Model.Category.CategoryName : "Uncategorized")</dd>
+
+                    <dt>Brand</dt>
+                    <dd>@(!string.IsNullOrEmpty(Model.Brand) ? Model.Brand : "-")</dd>
+
+                    <dt>Model/SKU</dt>
+                    <dd>@(!string.IsNullOrEmpty(Model.Model) ? Model.Model : "-")</dd>
+
+                    <dt>Price</dt>
+                    <dd><strong class="text-success">$@Model.Price.ToString("N2")</strong></dd>
+
+                    <dt>Stock</dt>
+                    <dd>
+                        @if (Model.StockQuantity <= 0)
+                        {
+                            <span class="label label-danger">Out of Stock</span>
+                        }
+                        else if (Model.StockQuantity <= 10)
+                        {
+                            <span class="label label-warning">@Model.StockQuantity units (Low Stock)</span>
+                        }
+                        else
+                        {
+                            <span class="label label-success">@Model.StockQuantity units</span>
+                        }
+                    </dd>
+
+                    <dt>Created</dt>
+                    <dd>@Model.CreatedAt.ToString("MMM dd, yyyy")</dd>
+
+                    <dt>Last Updated</dt>
+                    <dd>@Model.UpdatedAt.ToString("MMM dd, yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Description</h4>
+            </div>
+            <div class="panel-body">
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p>@Model.Description</p>
+                }
+                else
+                {
+                    <p class="text-muted">No description provided.</p>
+                }
+            </div>
+        </div>
+
+        @if (Model.Specifications != null && Model.Specifications.Any())
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Specifications</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            @foreach (var spec in Model.Specifications.OrderBy(s => s.DisplayOrder))
+                            {
+                                <tr>
+                                    <th style="width: 30%;">@spec.SpecName</th>
+                                    <td>@spec.SpecValue</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Recent Reviews (@Model.Reviews.Count())</h4>
+                </div>
+                <div class="panel-body">
+                    @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt).Take(5))
+                    {
+                        <div class="media" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    @(review.User != null ? review.User.FirstName : "Anonymous")
+                                    <small class="text-muted">@review.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                </h5>
+                                <div style="color: #f0ad4e;">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <span class="glyphicon glyphicon-star"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="glyphicon glyphicon-star-empty"></span>
+                                        }
+                                    }
+                                </div>
+                                <p>@review.Comment</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+        @Html.ActionLink("Edit Product", "Edit", new { id = Model.ProductId }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Back to Products", "Index", null, new { @class = "btn btn-default" })
+    </div>
+</div>

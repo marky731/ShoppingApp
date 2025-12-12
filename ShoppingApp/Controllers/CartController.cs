@@ -129,14 +129,14 @@ namespace ShoppingApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST: Cart/Remove
+        // POST: Cart/Remove/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Remove(int productId)
+        public ActionResult Remove(int id)
         {
             var userId = User.Identity.GetUserId();
             var cartItem = db.CartItems
-                .FirstOrDefault(c => c.UserId == userId && c.ProductId == productId);
+                .FirstOrDefault(c => c.UserId == userId && c.ProductId == id);
 
             if (cartItem != null)
             {

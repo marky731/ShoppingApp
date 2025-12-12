@@ -75,6 +75,7 @@ namespace ShoppingApp.Controllers
 
             var viewModel = new EditProfileViewModel
             {
+                Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Phone = user.Phone

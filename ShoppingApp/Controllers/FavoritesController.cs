@@ -46,15 +46,15 @@ namespace ShoppingApp.Controllers
             return View(productCards);
         }
 
-        // POST: Favorites/Toggle
+        // POST: Favorites/Toggle/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Toggle(int productId, string returnUrl)
+        public ActionResult Toggle(int id, string returnUrl)
         {
             var userId = User.Identity.GetUserId();
 
             var existing = db.Favorites
-                .FirstOrDefault(f => f.UserId == userId && f.ProductId == productId);
+                .FirstOrDefault(f => f.UserId == userId && f.ProductId == id);
 
             if (existing != null)
             {
@@ -63,13 +63,13 @@ namespace ShoppingApp.Controllers
             }
             else
             {
-                var product = db.Products.FirstOrDefault(p => p.ProductId == productId && p.IsActive);
+                var product = db.Products.FirstOrDefault(p => p.ProductId == id && p.IsActive);
                 if (product != null)
                 {
                     var favorite = new Favorite
                     {
                         UserId = userId,
-                        ProductId = productId,
+                        ProductId = id,
                         CreatedAt = DateTime.UtcNow
                     };
                     db.Favorites.Add(favorite);

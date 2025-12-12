@@ -1,0 +1,75 @@
+=========================================
+SELLER & ADMIN CRUD TEST SUITE
+=========================================
+Target: http://localhost:8080
+Date: Fri, Dec 12, 2025  5:17:45 PM
+
+
+=========================================
+TESTING SELLER ENDPOINTS
+=========================================
+
+Logging in as seller...
+[0;32m✅ Successfully logged in as seller[0m
+
+--- Testing Seller GET Endpoints ---
+[0;32m✅ PASS[0m [Seller] GET /Seller/Dashboard | Status: 200 | Dashboard
+[0;32m✅ PASS[0m [Seller] GET /Seller/Products | Status: 200 | Products list
+[0;32m✅ PASS[0m [Seller] GET /Seller/Products/Create | Status: 200 | Create product form
+[0;32m✅ PASS[0m [Seller] GET /Seller/Orders | Status: 200 | Orders list
+[0;32m✅ PASS[0m [Seller] GET /Seller/Discounts | Status: 200 | Discounts list
+[0;32m✅ PASS[0m [Seller] GET /Seller/Discounts/Create | Status: 200 | Create discount form
+[0;32m✅ PASS[0m [Seller] GET /Seller/Shop/Edit | Status: 200 | Shop settings
+
+--- Testing Seller Product CRUD ---
+[0;32m✅ PASS[0m [Seller] POST /Seller/Products/Create | Status: 200 | Create product
+[0;32m✅ PASS[0m [Seller] GET /Seller/Products/Edit/{id} | Status: 200 | Product edit form
+[0;32m✅ PASS[0m [Seller] GET /Seller/Products/Details/{id} | Status: 200 | Product details
+[0;32m✅ PASS[0m [Seller] POST /Seller/Products/Edit/{id} | Status: 200 | Update product
+[0;32m✅ PASS[0m [Seller] POST /Seller/Products/Delete/{id} | Status: 200 | Delete product
+
+--- Testing Seller Discount CRUD ---
+[0;32m✅ PASS[0m [Seller] POST /Seller/Discounts/Create | Status: 200 | Create discount
+[0;32m✅ PASS[0m [Seller] GET /Seller/Discounts/Edit/{id} | Status: 200 | Discount edit form
+[0;32m✅ PASS[0m [Seller] POST /Seller/Discounts/Edit/{id} | Status: 200 | Update discount
+[0;32m✅ PASS[0m [Seller] POST /Seller/Discounts/Delete/{id} | Status: 200 | Delete discount
+
+--- Testing Seller Shop Update ---
+[0;32m✅ PASS[0m [Seller] POST /Seller/Shop/Edit | Status: 200 | Update shop
+
+=========================================
+TESTING ADMIN ENDPOINTS
+=========================================
+
+Logging in as admin...
+[0;32m✅ Successfully logged in as admin[0m
+
+--- Testing Admin GET Endpoints ---
+[0;32m✅ PASS[0m [Admin] GET /Admin/Dashboard | Status: 200 | Admin dashboard
+[0;32m✅ PASS[0m [Admin] GET /Admin/Users | Status: 200 | Users list
+[0;32m✅ PASS[0m [Admin] GET /Admin/Sellers/Pending | Status: 200 | Pending sellers
+[0;32m✅ PASS[0m [Admin] GET /Admin/Categories | Status: 200 | Categories list
+[0;31m❌ FAIL[0m [Admin] GET /Admin/Categories/Create | Status: 500 (expected 200) | Create category form
+[0;32m✅ PASS[0m [Admin] GET /Admin/Reviews/Pending | Status: 200 | Pending reviews
+
+--- Testing Admin Category CRUD ---
+[0;31m❌ FAIL[0m [Admin] POST /Admin/Categories/Create | Status: 500 (expected 200 302) | Create category
+[0;31m❌ FAIL[0m [Admin] GET /Admin/Categories/Edit/{id} | Status: 500 (expected 200) | Category edit form
+[0;31m❌ FAIL[0m [Admin] POST /Admin/Categories/Edit/{id} | Status: 500 (expected 200 302) | Update category
+[0;32m✅ PASS[0m [Admin] POST /Admin/Categories/Delete/{id} | Status: 200 | Delete category
+
+--- Testing Admin User Management ---
+[0;32m✅ PASS[0m [Admin] POST /Admin/Users/Suspend/{id} | Status: 200 | Suspend user
+[0;32m✅ PASS[0m [Admin] POST /Admin/Users/Activate/{id} | Status: 200 | Activate user
+
+=========================================
+TEST SUMMARY
+=========================================
+
+Total Tests: 29
+[0;32mPassed: 25[0m
+[0;31mFailed: 4[0m
+Pass Rate: 86.2%
+
+Full results saved to: seller_admin_test_results.txt
+=========================================
