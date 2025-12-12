@@ -1,0 +1,107 @@
+@{
+    ViewBag.Title = "Contact Us";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>Contact Us</h1>
+        <p class="lead">We'd love to hear from you. Get in touch with our team.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Send Us a Message</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" method="post" action="@Url.Action("Contact", "Home")">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <label for="name" class="col-md-3 control-label">Name</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Your name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="col-md-3 control-label">Email</label>
+                            <div class="col-md-9">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="your.email@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject" class="col-md-3 control-label">Subject</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="What is this regarding?" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="col-md-3 control-label">Message</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control" id="message" name="message" rows="6" placeholder="Your message..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Contact Information</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>Customer Support</h4>
+                    <p>
+                        <strong>Email:</strong> support@shoppingapp.com<br>
+                        <strong>Phone:</strong> 1-800-SHOP-APP<br>
+                        <strong>Hours:</strong> Mon-Fri, 9am-6pm EST
+                    </p>
+
+                    <hr>
+
+                    <h4>Business Inquiries</h4>
+                    <p>
+                        <strong>Email:</strong> business@shoppingapp.com<br>
+                        <strong>Phone:</strong> 1-800-BIZ-SHOP
+                    </p>
+
+                    <hr>
+
+                    <h4>Seller Support</h4>
+                    <p>
+                        <strong>Email:</strong> sellers@shoppingapp.com<br>
+                        <strong>Portal:</strong> <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })">Seller Dashboard</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Mailing Address</h3>
+                </div>
+                <div class="panel-body">
+                    <address>
+                        <strong>ShoppingApp Inc.</strong><br>
+                        123 Commerce Street<br>
+                        Suite 456<br>
+                        New York, NY 10001<br>
+                        United States
+                    </address>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+@{
+    ViewBag.Title = "About Us";
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1>About ShoppingApp</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Our Story</h2>
+            <p class="lead">
+                ShoppingApp is a modern e-commerce platform connecting buyers with quality sellers worldwide.
+            </p>
+            <p>
+                Founded with the vision of creating a seamless online shopping experience, we bring together
+                independent sellers and customers in a secure, user-friendly marketplace. Our platform enables
+                sellers to showcase their products while providing shoppers with a wide variety of choices.
+            </p>
+
+            <h3>What We Offer</h3>
+            <ul>
+                <li><strong>Diverse Product Range:</strong> From electronics to fashion, home goods to accessories</li>
+                <li><strong>Trusted Sellers:</strong> All sellers are verified and monitored for quality</li>
+                <li><strong>Secure Transactions:</strong> Your payments and data are protected</li>
+                <li><strong>Customer Support:</strong> We're here to help with any questions or concerns</li>
+            </ul>
+
+            <h3>Our Mission</h3>
+            <p>
+                To create a marketplace where quality meets convenience, empowering small businesses
+                and providing customers with exceptional shopping experiences.
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">By the Numbers</h3>
+                </div>
+                <div class="panel-body">
+                    <dl>
+                        <dt>Active Sellers</dt>
+                        <dd>1,000+</dd>
+
+                        <dt>Products Available</dt>
+                        <dd>50,000+</dd>
+
+                        <dt>Happy Customers</dt>
+                        <dd>25,000+</dd>
+
+                        <dt>Countries Served</dt>
+                        <dd>15</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Get in Touch</h3>
+                </div>
+                <div class="panel-body">
+                    <p>Have questions? Want to learn more?</p>
+                    <p>
+                        <a href="@Url.Action("Contact", "Home")" class="btn btn-primary btn-block">
+                            Contact Us
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

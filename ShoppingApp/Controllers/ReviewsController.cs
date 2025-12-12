@@ -14,14 +14,33 @@ namespace ShoppingApp.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Reviews/Create
-        public ActionResult Create(int productId, int orderId)
+        public ActionResult Create(int productId, int? orderId = null)
         {
             var userId = User.Identity.GetUserId();
+
+            // If orderId not provided, find a delivered order with this product
+            if (!orderId.HasValue)
+            {
+                var deliveredOrder = db.ShopOrders
+                    .Where(so => so.Order.UserId == userId
+                        && so.ShopOrderStatus == OrderStatus.Delivered
+                        && so.OrderItems.Any(oi => oi.ProductId == productId))
+                    .Select(so => so.Order.OrderId)
+                    .FirstOrDefault();
+
+                if (deliveredOrder == 0)
+                {
+                    TempData["Error"] = "You can only review products from delivered orders.";
+                    return RedirectToAction("Details", "Products", new { id = productId });
+                }
+
+                orderId = deliveredOrder;
+            }
 
             // Verify user ordered this product and it was delivered
             var canReview = db.ShopOrders
                 .Any(so => so.Order.UserId == userId
-                    && so.Order.OrderId == orderId
+                    && so.Order.OrderId == orderId.Value
                     && so.ShopOrderStatus == OrderStatus.Delivered
                     && so.OrderItems.Any(oi => oi.ProductId == productId));
 
@@ -33,7 +52,7 @@ namespace ShoppingApp.Controllers
 
             // Check if already reviewed
             var existingReview = db.Reviews.FirstOrDefault(r =>
-                r.UserId == userId && r.ProductId == productId && r.OrderId == orderId);
+                r.UserId == userId && r.ProductId == productId && r.OrderId == orderId.Value);
 
             if (existingReview != null)
             {
@@ -48,9 +67,9 @@ namespace ShoppingApp.Controllers
             }
 
             ViewBag.Product = product;
-            ViewBag.OrderId = orderId;
+            ViewBag.OrderId = orderId.Value;
 
-            return View(new Review { ProductId = productId, OrderId = orderId });
+            return View(new Review { ProductId = productId, OrderId = orderId.Value });
         }
 
         // POST: Reviews/Create

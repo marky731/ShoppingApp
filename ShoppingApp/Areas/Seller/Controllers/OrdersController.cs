@@ -70,7 +70,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
             var shopOrder = db.ShopOrders
                 .Include(so => so.Order.User)
                 .Include(so => so.Order.ShippingAddress)
-                .Include(so => so.OrderItems.Select(oi => oi.Product))
+                .Include(so => so.OrderItems.Select(oi => oi.Product.Images))
                 .FirstOrDefault(so => so.ShopOrderId == id && so.ShopId == shop.ShopId);
 
             if (shopOrder == null)
@@ -78,10 +78,34 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return HttpNotFound();
             }
 
-            var viewModel = new SellerOrderDetailsViewModel
+            var shippingAddr = shopOrder.Order?.ShippingAddress;
+            var shippingAddressStr = shippingAddr != null
+                ? $"{shippingAddr.StreetAddress}, {shippingAddr.City}, {shippingAddr.PostalCode}, {shippingAddr.Country}"
+                : "N/A";
+
+            var viewModel = new SellerOrderDetailsViewModelNew
             {
-                ShopOrder = shopOrder,
-                OrderItems = shopOrder.OrderItems.ToList()
+                Id = shopOrder.ShopOrderId,
+                OrderNumber = shopOrder.Order?.OrderId.ToString() ?? "N/A",
+                CreatedAt = shopOrder.Order?.OrderDate ?? DateTime.MinValue,
+                CustomerName = shopOrder.Order?.User != null ? shopOrder.Order.User.FirstName + " " + shopOrder.Order.User.LastName : "Unknown",
+                CustomerEmail = shopOrder.Order?.User?.Email ?? "",
+                Status = shopOrder.ShopOrderStatus,
+                Items = shopOrder.OrderItems.Select(oi => new OrderItemViewModel
+                {
+                    ProductName = oi.Product.Name,
+                    ProductSku = oi.Product.SKU,
+                    UnitPrice = oi.UnitPrice,
+                    Quantity = oi.Quantity,
+                    Total = oi.TotalPrice,
+                    ImageUrl = oi.Product.Images.FirstOrDefault()?.ImageUrl
+                }),
+                Subtotal = shopOrder.ShopTotal,
+                DiscountAmount = 0,
+                DiscountCode = "",
+                Total = shopOrder.ShopTotal,
+                ShippingAddress = shippingAddressStr,
+                Notes = ""
             };
 
             return View(viewModel);

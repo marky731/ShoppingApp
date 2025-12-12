@@ -1,4 +1,4 @@
-@model ShoppingApp.Models.ViewModels.SellerOrderDetailsViewModel
+@model ShoppingApp.Models.ViewModels.SellerOrderDetailsViewModelNew
 @{
     ViewBag.Title = "Order #" + Model.OrderNumber;
 }
@@ -83,15 +83,7 @@
             </div>
             <div class="panel-body">
                 <address>
-                    <strong>@Model.ShippingAddress.FullName</strong><br />
-                    @Model.ShippingAddress.AddressLine1<br />
-                    @if (!string.IsNullOrEmpty(Model.ShippingAddress.AddressLine2))
-                    {
-                        @Model.ShippingAddress.AddressLine2<br />
-                    }
-                    @Model.ShippingAddress.City, @Model.ShippingAddress.State @Model.ShippingAddress.PostalCode<br />
-                    @Model.ShippingAddress.Country<br />
-                    <span class="glyphicon glyphicon-phone"></span> @Model.ShippingAddress.Phone
+                    @Model.ShippingAddress
                 </address>
             </div>
         </div>
