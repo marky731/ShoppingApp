@@ -398,7 +398,9 @@ namespace ShoppingApp.Models.ViewModels
         public int Id { get; set; }
         public string ProductName { get; set; }
         public string ProductImageUrl { get; set; }
+        public string ImageUrl => ProductImageUrl; // Alias for views
         public string Sku { get; set; }
+        public string ProductSku => Sku; // Alias for views
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Total { get; set; }

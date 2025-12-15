@@ -26,11 +26,12 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            var shopId = shop.ShopId;
             var query = db.ShopOrders
                 .Include(so => so.Order.User)
                 .Include(so => so.Order.ShippingAddress)
                 .Include(so => so.OrderItems)
-                .Where(so => so.ShopId == shop.ShopId);
+                .Where(so => so.ShopId == shopId);
 
             if (status.HasValue)
             {
@@ -67,11 +68,12 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            var shopId = shop.ShopId;
             var shopOrder = db.ShopOrders
                 .Include(so => so.Order.User)
                 .Include(so => so.Order.ShippingAddress)
                 .Include(so => so.OrderItems.Select(oi => oi.Product.Images))
-                .FirstOrDefault(so => so.ShopOrderId == id && so.ShopId == shop.ShopId);
+                .FirstOrDefault(so => so.ShopOrderId == id && so.ShopId == shopId);
 
             if (shopOrder == null)
             {
@@ -116,6 +118,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateStatus(UpdateOrderStatusViewModel model)
         {
+            if (model == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
 
@@ -124,7 +131,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var shopOrder = db.ShopOrders.FirstOrDefault(so => so.ShopOrderId == model.ShopOrderId && so.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var shopOrderId = model.ShopOrderId;
+            var shopOrder = db.ShopOrders.FirstOrDefault(so => so.ShopOrderId == shopOrderId && so.ShopId == shopId);
 
             if (shopOrder == null)
             {

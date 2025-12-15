@@ -27,9 +27,10 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            var shopId = shop.ShopId;
             var query = db.Products
                 .Include(p => p.Category)
-                .Where(p => p.ShopId == shop.ShopId);
+                .Where(p => p.ShopId == shopId);
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -96,10 +97,16 @@ namespace ShoppingApp.Areas.Seller.Controllers
         }
 
         // POST: Seller/Products/Create
+        // Note: Parameter renamed from 'model' to 'viewModel' to avoid conflict with form field 'Model'
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateProductViewModel model)
+        public ActionResult Create(CreateProductViewModel viewModel)
         {
+            if (viewModel == null)
+            {
+                return RedirectToAction("Create");
+            }
+
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
 
@@ -110,20 +117,20 @@ namespace ShoppingApp.Areas.Seller.Controllers
 
             if (ModelState.IsValid)
             {
-                var slug = GenerateSlug(model.ProductName);
+                var slug = GenerateSlug(viewModel.ProductName);
 
                 var product = new Product
                 {
                     ShopId = shop.ShopId,
-                    CategoryId = model.CategoryId,
-                    ProductName = model.ProductName,
+                    CategoryId = viewModel.CategoryId,
+                    ProductName = viewModel.ProductName,
                     Slug = slug,
-                    Description = model.Description,
-                    Price = model.Price,
-                    StockQuantity = model.StockQuantity,
-                    MainImageUrl = model.MainImageUrl,
-                    Brand = model.Brand,
-                    Model = model.Model,
+                    Description = viewModel.Description,
+                    Price = viewModel.Price,
+                    StockQuantity = viewModel.StockQuantity,
+                    MainImageUrl = viewModel.MainImageUrl,
+                    Brand = viewModel.Brand,
+                    Model = viewModel.Model,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -133,9 +140,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 db.SaveChanges();
 
                 // Add specifications
-                if (model.Specifications != null)
+                if (viewModel.Specifications != null)
                 {
-                    foreach (var spec in model.Specifications.Where(s => !string.IsNullOrEmpty(s.SpecName)))
+                    foreach (var spec in viewModel.Specifications.Where(s => !string.IsNullOrEmpty(s.SpecName)))
                     {
                         var specification = new ProductSpecification
                         {
@@ -149,9 +156,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 }
 
                 // Add additional images
-                if (model.AdditionalImageUrls != null)
+                if (viewModel.AdditionalImageUrls != null)
                 {
-                    foreach (var imageUrl in model.AdditionalImageUrls.Where(u => !string.IsNullOrEmpty(u)))
+                    foreach (var imageUrl in viewModel.AdditionalImageUrls.Where(u => !string.IsNullOrEmpty(u)))
                     {
                         var image = new ProductImage
                         {
@@ -168,8 +175,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index");
             }
 
-            model.Categories = db.Categories.OrderBy(c => c.CategoryName).ToList();
-            return View(model);
+            viewModel.Categories = db.Categories.OrderBy(c => c.CategoryName).ToList();
+            return View(viewModel);
         }
 
         // GET: Seller/Products/Edit/5
@@ -183,10 +190,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            var shopId = shop.ShopId;
             var product = db.Products
                 .Include(p => p.Specifications)
                 .Include(p => p.Images)
-                .FirstOrDefault(p => p.ProductId == id && p.ShopId == shop.ShopId);
+                .FirstOrDefault(p => p.ProductId == id && p.ShopId == shopId);
 
             if (product == null)
             {
@@ -220,9 +228,10 @@ namespace ShoppingApp.Areas.Seller.Controllers
         }
 
         // POST: Seller/Products/Edit/5
+        // Note: Parameter renamed from 'model' to 'viewModel' to avoid conflict with form field 'Model'
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(EditProductViewModel model)
+        public ActionResult Edit(int id, EditProductViewModel viewModel)
         {
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
@@ -232,10 +241,14 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            // Extract to local variable to avoid closure issues in EF6
+            var shopId = shop.ShopId;
+            var productId = viewModel?.ProductId > 0 ? viewModel.ProductId : id;
+
             var product = db.Products
                 .Include(p => p.Specifications)
                 .Include(p => p.Images)
-                .FirstOrDefault(p => p.ProductId == model.ProductId && p.ShopId == shop.ShopId);
+                .FirstOrDefault(p => p.ProductId == productId && p.ShopId == shopId);
 
             if (product == null)
             {
@@ -244,23 +257,23 @@ namespace ShoppingApp.Areas.Seller.Controllers
 
             if (ModelState.IsValid)
             {
-                product.ProductName = model.ProductName;
-                product.Slug = GenerateSlug(model.ProductName);
-                product.Description = model.Description;
-                product.CategoryId = model.CategoryId;
-                product.Price = model.Price;
-                product.StockQuantity = model.StockQuantity;
-                product.MainImageUrl = model.MainImageUrl;
-                product.Brand = model.Brand;
-                product.Model = model.Model;
-                product.IsActive = model.IsActive;
+                product.ProductName = viewModel.ProductName;
+                product.Slug = GenerateSlug(viewModel.ProductName);
+                product.Description = viewModel.Description;
+                product.CategoryId = viewModel.CategoryId;
+                product.Price = viewModel.Price;
+                product.StockQuantity = viewModel.StockQuantity;
+                product.MainImageUrl = viewModel.MainImageUrl;
+                product.Brand = viewModel.Brand;
+                product.Model = viewModel.Model;
+                product.IsActive = viewModel.IsActive;
                 product.UpdatedAt = DateTime.UtcNow;
 
                 // Update specifications
                 db.ProductSpecifications.RemoveRange(product.Specifications);
-                if (model.Specifications != null)
+                if (viewModel.Specifications != null)
                 {
-                    foreach (var spec in model.Specifications.Where(s => !string.IsNullOrEmpty(s.SpecName)))
+                    foreach (var spec in viewModel.Specifications.Where(s => !string.IsNullOrEmpty(s.SpecName)))
                     {
                         var specification = new ProductSpecification
                         {
@@ -274,9 +287,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 }
 
                 // Add new images
-                if (model.AdditionalImageUrls != null)
+                if (viewModel.AdditionalImageUrls != null)
                 {
-                    foreach (var imageUrl in model.AdditionalImageUrls.Where(u => !string.IsNullOrEmpty(u)))
+                    foreach (var imageUrl in viewModel.AdditionalImageUrls.Where(u => !string.IsNullOrEmpty(u)))
                     {
                         var image = new ProductImage
                         {
@@ -293,9 +306,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index");
             }
 
-            model.Categories = db.Categories.OrderBy(c => c.CategoryName).ToList();
-            model.ExistingImages = product.Images.ToList();
-            return View(model);
+            viewModel.Categories = db.Categories.OrderBy(c => c.CategoryName).ToList();
+            viewModel.ExistingImages = product.Images.ToList();
+            return View(viewModel);
         }
 
         // GET: Seller/Products/Details/5
@@ -309,12 +322,13 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
+            var shopId = shop.ShopId;
             var product = db.Products
                 .Include(p => p.Category)
                 .Include(p => p.Specifications)
                 .Include(p => p.Images)
                 .Include(p => p.Reviews.Select(r => r.User))
-                .FirstOrDefault(p => p.ProductId == id && p.ShopId == shop.ShopId);
+                .FirstOrDefault(p => p.ProductId == id && p.ShopId == shopId);
 
             if (product == null)
             {
@@ -337,7 +351,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var product = db.Products.FirstOrDefault(p => p.ProductId == id && p.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var product = db.Products.FirstOrDefault(p => p.ProductId == id && p.ShopId == shopId);
 
             if (product == null)
             {
@@ -376,9 +391,10 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return Json(new { success = false, message = "Shop not found." });
             }
 
+            var shopId = shop.ShopId;
             var image = db.ProductImages
                 .Include(i => i.Product)
-                .FirstOrDefault(i => i.ImageId == imageId && i.Product.ShopId == shop.ShopId);
+                .FirstOrDefault(i => i.ImageId == imageId && i.Product.ShopId == shopId);
 
             if (image == null)
             {
@@ -393,6 +409,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
 
         private string GenerateSlug(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                return "product-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+
             var slug = name.ToLower();
             slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
             slug = Regex.Replace(slug, @"\s+", "-").Trim('-');

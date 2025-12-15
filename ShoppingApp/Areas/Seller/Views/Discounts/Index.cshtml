@@ -126,7 +126,7 @@ else
                 <p>Are you sure you want to delete discount <strong id="discountCode"></strong>?</p>
             </div>
             <div class="modal-footer">
-                @using (Html.BeginForm("Delete", "Discounts", FormMethod.Post, new { id = "deleteForm" }))
+                @using (Html.BeginForm("Delete", "Discounts", new { area = "Seller" }, FormMethod.Post, new { id = "deleteForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="deleteDiscountId" />

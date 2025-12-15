@@ -152,7 +152,7 @@ else
                 <p class="text-danger">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                @using (Html.BeginForm("Delete", "Products", FormMethod.Post, new { id = "deleteForm" }))
+                @using (Html.BeginForm("Delete", "Products", new { area = "Seller" }, FormMethod.Post, new { id = "deleteForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="deleteProductId" />

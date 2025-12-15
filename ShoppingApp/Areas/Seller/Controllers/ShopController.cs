@@ -115,6 +115,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
         [Authorize(Roles = "seller")]
         public ActionResult Edit(EditShopViewModel model)
         {
+            if (model == null)
+            {
+                return RedirectToAction("Edit");
+            }
+
             if (ModelState.IsValid)
             {
                 var userId = User.Identity.GetUserId();

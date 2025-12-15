@@ -92,7 +92,7 @@
                 @if (Model.CanCancel)
                 {
                     <hr />
-                    @using (Html.BeginForm("Cancel", "Orders", new { id = Model.Order.OrderId }, FormMethod.Post))
+                    using (Html.BeginForm("Cancel", "Orders", new { id = Model.Order.OrderId }, FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-danger btn-block" onclick="return confirm('Are you sure you want to cancel this order?');">

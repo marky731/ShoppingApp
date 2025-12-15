@@ -26,7 +26,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var query = db.Discounts.Where(d => d.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var query = db.Discounts.Where(d => d.ShopId == shopId);
 
             if (isActive.HasValue)
             {
@@ -73,6 +74,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(DiscountViewModel model)
         {
+            if (model == null)
+            {
+                return RedirectToAction("Create");
+            }
+
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
 
@@ -83,7 +89,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
 
             if (ModelState.IsValid)
             {
-                var code = model.Code.ToUpper();
+                var code = model.Code?.ToUpper() ?? "";
 
                 // Check if code already exists
                 if (db.Discounts.Any(d => d.Code == code))
@@ -127,7 +133,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == id && d.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == id && d.ShopId == shopId);
 
             if (discount == null)
             {
@@ -156,6 +163,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(DiscountViewModel model)
         {
+            if (model == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
 
@@ -164,7 +176,9 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == model.Id && d.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var discountId = model.Id;
+            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == discountId && d.ShopId == shopId);
 
             if (discount == null)
             {
@@ -173,7 +187,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
 
             if (ModelState.IsValid)
             {
-                var code = model.Code.ToUpper();
+                var code = model.Code?.ToUpper() ?? "";
 
                 // Check if code already exists (excluding current discount)
                 if (db.Discounts.Any(d => d.Code == code && d.DiscountId != model.Id))
@@ -214,7 +228,8 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == id && d.ShopId == shop.ShopId);
+            var shopId = shop.ShopId;
+            var discount = db.Discounts.FirstOrDefault(d => d.DiscountId == id && d.ShopId == shopId);
 
             if (discount == null)
             {

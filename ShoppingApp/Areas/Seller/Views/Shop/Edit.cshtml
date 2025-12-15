@@ -5,7 +5,7 @@
 
 <h1 class="page-header">Shop Settings</h1>
 
-@using (Html.BeginForm("Edit", "Shop", new { area = "Seller" }, FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Edit", "Shop", new { area = "Seller" }, FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.ShopId)

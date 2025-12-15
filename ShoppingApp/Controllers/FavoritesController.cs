@@ -46,15 +46,24 @@ namespace ShoppingApp.Controllers
             return View(productCards);
         }
 
-        // POST: Favorites/Toggle/{id}
+        // POST: Favorites/Toggle
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Toggle(int id, string returnUrl)
+        public ActionResult Toggle(int? id, int? productId, string returnUrl)
         {
+            // Support both 'id' and 'productId' parameter names
+            var actualId = id ?? productId;
+
+            if (!actualId.HasValue)
+            {
+                TempData["Error"] = "Product ID is required.";
+                return RedirectToAction("Index");
+            }
+
             var userId = User.Identity.GetUserId();
 
             var existing = db.Favorites
-                .FirstOrDefault(f => f.UserId == userId && f.ProductId == id);
+                .FirstOrDefault(f => f.UserId == userId && f.ProductId == actualId.Value);
 
             if (existing != null)
             {
@@ -63,13 +72,13 @@ namespace ShoppingApp.Controllers
             }
             else
             {
-                var product = db.Products.FirstOrDefault(p => p.ProductId == id && p.IsActive);
+                var product = db.Products.FirstOrDefault(p => p.ProductId == actualId.Value && p.IsActive);
                 if (product != null)
                 {
                     var favorite = new Favorite
                     {
                         UserId = userId,
-                        ProductId = id,
+                        ProductId = actualId.Value,
                         CreatedAt = DateTime.UtcNow
                     };
                     db.Favorites.Add(favorite);

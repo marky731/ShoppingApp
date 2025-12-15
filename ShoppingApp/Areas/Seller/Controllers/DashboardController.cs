@@ -30,16 +30,18 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 return View("PendingApproval", shop);
             }
 
+            var shopId = shop.ShopId;
+
             var recentShopOrders = db.ShopOrders
                 .Include(so => so.Order.User)
                 .Include(so => so.OrderItems)
-                .Where(so => so.ShopId == shop.ShopId)
+                .Where(so => so.ShopId == shopId)
                 .OrderByDescending(so => so.Order.OrderDate)
                 .Take(5)
                 .ToList();
 
             var lowStockProducts = db.Products
-                .Where(p => p.ShopId == shop.ShopId && p.IsActive && p.StockQuantity <= 10)
+                .Where(p => p.ShopId == shopId && p.IsActive && p.StockQuantity <= 10)
                 .OrderBy(p => p.StockQuantity)
                 .Take(5)
                 .ToList();
@@ -47,12 +49,12 @@ namespace ShoppingApp.Areas.Seller.Controllers
             var viewModel = new SellerDashboardViewModel
             {
                 Shop = shop,
-                TotalProducts = db.Products.Count(p => p.ShopId == shop.ShopId),
-                TotalOrders = db.ShopOrders.Count(so => so.ShopId == shop.ShopId),
+                TotalProducts = db.Products.Count(p => p.ShopId == shopId),
+                TotalOrders = db.ShopOrders.Count(so => so.ShopId == shopId),
                 TotalRevenue = db.ShopOrders
-                    .Where(so => so.ShopId == shop.ShopId && so.ShopOrderStatus == OrderStatus.Delivered)
+                    .Where(so => so.ShopId == shopId && so.ShopOrderStatus == OrderStatus.Delivered)
                     .Sum(so => (decimal?)so.ShopTotal) ?? 0,
-                PendingOrders = db.ShopOrders.Count(so => so.ShopId == shop.ShopId && so.ShopOrderStatus == OrderStatus.Pending),
+                PendingOrders = db.ShopOrders.Count(so => so.ShopId == shopId && so.ShopOrderStatus == OrderStatus.Pending),
                 RecentOrders = recentShopOrders.Select(so => new DashboardRecentOrderViewModel
                 {
                     Id = so.ShopOrderId,
