@@ -93,12 +93,12 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 Status = shopOrder.ShopOrderStatus,
                 Items = shopOrder.OrderItems.Select(oi => new OrderItemViewModel
                 {
-                    ProductName = oi.Product.Name,
-                    ProductSku = oi.Product.SKU,
-                    UnitPrice = oi.UnitPrice,
+                    ProductName = oi.Product.ProductName,
+                    Sku = oi.Product.ProductId.ToString(),
+                    UnitPrice = oi.PriceAtPurchase,
                     Quantity = oi.Quantity,
-                    Total = oi.TotalPrice,
-                    ImageUrl = oi.Product.Images.FirstOrDefault()?.ImageUrl
+                    Total = oi.PriceAtPurchase * oi.Quantity,
+                    ProductImageUrl = oi.Product.Images.FirstOrDefault()?.ImageUrl
                 }),
                 Subtotal = shopOrder.ShopTotal,
                 DiscountAmount = 0,
