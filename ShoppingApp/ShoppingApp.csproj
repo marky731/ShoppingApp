@@ -138,6 +138,7 @@
     <Compile Include="Areas\Admin\Controllers\ReviewsController.cs" />
     <Compile Include="Areas\Admin\Controllers\SellersController.cs" />
     <Compile Include="Areas\Admin\Controllers\UsersController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrdersController.cs" />
     <Compile Include="Areas\Seller\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Seller\Controllers\DiscountsController.cs" />
     <Compile Include="Areas\Seller\Controllers\OrdersController.cs" />
@@ -205,6 +206,7 @@
     <Content Include="Areas\Admin\Views\Sellers\Pending.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Areas\Admin\Views\Users\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Web.config" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Seller\Views\Dashboard\Index.cshtml" />
