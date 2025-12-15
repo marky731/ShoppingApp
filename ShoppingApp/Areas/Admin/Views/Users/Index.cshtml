@@ -89,7 +89,7 @@
                             {
                                 if (user.IsActive)
                                 {
-                                    using (Html.BeginForm("Suspend", "Users", new { id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                    using (Html.BeginForm("Suspend", "Users", new { area = "Admin", id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-xs btn-warning" onclick="return confirm('Are you sure you want to suspend this user?');">
@@ -99,7 +99,7 @@
                                 }
                                 else
                                 {
-                                    using (Html.BeginForm("Activate", "Users", new { id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                    using (Html.BeginForm("Activate", "Users", new { area = "Admin", id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-xs btn-success">

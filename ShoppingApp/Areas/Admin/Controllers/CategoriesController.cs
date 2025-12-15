@@ -31,6 +31,7 @@ namespace ShoppingApp.Areas.Admin.Controllers
                 ParentId = c.ParentCategoryId,
                 ParentName = c.ParentCategory?.CategoryName,
                 ProductCount = c.Products.Count,
+                SubCategoryCount = c.SubCategories.Count,
                 DisplayOrder = 0, // Category model doesn't have DisplayOrder
                 IsActive = true // Category model doesn't have IsActive
             });

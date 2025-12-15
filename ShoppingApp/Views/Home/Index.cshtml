@@ -15,21 +15,25 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Shop by Category</h2>
-        <div class="row">
-            @foreach (var category in Model.Categories)
-            {
-                <div class="col-sm-4 col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-body text-center">
-                            <h4>
-                                <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
-                                    @category.CategoryName
+        <nav class="navbar navbar-default" style="margin-bottom: 20px;">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    @foreach (var category in Model.Categories)
+                    {
+                        if (category.SubCategories.Any())
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                                    @category.CategoryName <span class="caret"></span>
                                 </a>
-                            </h4>
-                            @if (category.SubCategories.Any())
-                            {
-                                <ul class="list-unstyled">
-                                    @foreach (var sub in category.SubCategories.Take(3))
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                                            All @category.CategoryName
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    @foreach (var sub in category.SubCategories)
                                     {
                                         <li>
                                             <a href="@Url.Action("Index", "Products", new { CategoryId = sub.CategoryId })">
@@ -38,12 +42,20 @@
                                         </li>
                                     }
                                 </ul>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                                    @category.CategoryName
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </nav>
     </div>
 </div>
 

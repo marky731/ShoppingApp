@@ -53,14 +53,14 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        @using (Html.BeginForm("Approve", "Reviews", new { id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        @using (Html.BeginForm("Approve", "Reviews", new { area = "Admin", id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
                         {
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-success btn-sm">
                                 <span class="glyphicon glyphicon-ok"></span> Approve
                             </button>
                         }
-                        @using (Html.BeginForm("Reject", "Reviews", new { id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        @using (Html.BeginForm("Reject", "Reviews", new { area = "Admin", id = review.Id }, FormMethod.Post, new { style = "display:inline" }))
                         {
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject this review?');">

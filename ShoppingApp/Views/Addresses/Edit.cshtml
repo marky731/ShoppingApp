@@ -10,7 +10,7 @@
                 <h2>Edit Address</h2>
             </div>
 
-            @using (Html.BeginForm("Edit", "Addresses", FormMethod.Post, new { @class = "form-horizontal" }))
+            @using (Html.BeginForm("Edit", "Addresses", new { area = "" }, FormMethod.Post, new { @class = "form-horizontal" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(m => m.Id)

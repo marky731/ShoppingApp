@@ -42,7 +42,7 @@
                             </td>
                             <td>$@item.Price.ToString("F2")</td>
                             <td>
-                                @using (Html.BeginForm("Update", "Cart", FormMethod.Post, new { @class = "form-inline" }))
+                                @using (Html.BeginForm("Update", "Cart", new { area = "" }, FormMethod.Post, new { @class = "form-inline" }))
                                 {
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="ProductId" value="@item.ProductId" />
@@ -56,7 +56,7 @@
                             </td>
                             <td><strong>$@item.ItemTotal.ToString("F2")</strong></td>
                             <td>
-                                @using (Html.BeginForm("Remove", "Cart", FormMethod.Post))
+                                @using (Html.BeginForm("Remove", "Cart", new { area = "" }, FormMethod.Post))
                                 {
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="productId" value="@item.ProductId" />

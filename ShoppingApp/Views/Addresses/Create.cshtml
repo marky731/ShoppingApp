@@ -10,7 +10,7 @@
                 <h2>Add New Address</h2>
             </div>
 
-            @using (Html.BeginForm("Create", "Addresses", FormMethod.Post, new { @class = "form-horizontal" }))
+            @using (Html.BeginForm("Create", "Addresses", new { area = "" }, FormMethod.Post, new { @class = "form-horizontal" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })

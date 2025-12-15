@@ -56,7 +56,14 @@
                         <td>
                             <div class="btn-group btn-group-sm">
                                 @Html.ActionLink("Edit", "Edit", new { id = category.Id }, new { @class = "btn btn-default" })
-                                @if (category.ProductCount == 0)
+                                @{
+                                    // Subcategories (have ParentId): can delete if no products
+                                    // Main categories (no ParentId): can delete if no products AND no subcategories
+                                    bool canDelete = category.ParentId.HasValue
+                                        ? category.ProductCount == 0
+                                        : (category.ProductCount == 0 && category.SubCategoryCount == 0);
+                                }
+                                @if (canDelete)
                                 {
                                     <button type="button" class="btn btn-danger btn-delete" data-id="@category.Id" data-name="@category.Name">
                                         Delete
@@ -94,7 +101,7 @@ else
                 <p class="text-danger">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                @using (Html.BeginForm("Delete", "Categories", FormMethod.Post, new { id = "deleteForm" }))
+                @using (Html.BeginForm("Delete", "Categories", new { area = "Admin" }, FormMethod.Post, new { id = "deleteForm" }))
                 {
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="deleteCategoryId" />

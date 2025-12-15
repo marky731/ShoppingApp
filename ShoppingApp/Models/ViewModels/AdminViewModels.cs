@@ -120,8 +120,10 @@ namespace ShoppingApp.Models.ViewModels
         public int? ParentId { get; set; }
         public string ParentName { get; set; }
         public int ProductCount { get; set; }
+        public int SubCategoryCount { get; set; }
         public int DisplayOrder { get; set; }
         public bool IsActive { get; set; }
+        public bool CanDelete => ProductCount == 0 && SubCategoryCount == 0;
     }
 
     public class CategoryViewModel

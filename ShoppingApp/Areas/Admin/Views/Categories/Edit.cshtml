@@ -5,7 +5,7 @@
 
 <h1 class="page-header">Edit Category</h1>
 
-@using (Html.BeginForm("Edit", "Categories", FormMethod.Post, new { @class = "form-horizontal" }))
+@using (Html.BeginForm("Edit", "Categories", new { area = "Admin" }, FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.CategoryId)

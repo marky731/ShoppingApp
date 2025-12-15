@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        @using (Html.BeginForm("Approve", "Sellers", new { id = seller.Id }, FormMethod.Post, new { style = "display:inline" }))
+                        @using (Html.BeginForm("Approve", "Sellers", new { area = "Admin", id = seller.Id }, FormMethod.Post, new { style = "display:inline" }))
                         {
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-success">
@@ -85,7 +85,7 @@ else
 <div class="modal fade" id="rejectModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            @using (Html.BeginForm("Reject", "Sellers", FormMethod.Post))
+            @using (Html.BeginForm("Reject", "Sellers", new { area = "Admin" }, FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" id="rejectSellerId" />

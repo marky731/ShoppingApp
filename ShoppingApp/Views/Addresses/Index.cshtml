@@ -40,7 +40,7 @@
                                 <div class="panel-footer">
                                     @Html.ActionLink("Edit", "Edit", new { id = address.AddressId }, new { @class = "btn btn-sm btn-default" })
 
-                                    using (Html.BeginForm("Delete", "Addresses", new { id = address.AddressId }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Are you sure you want to delete this address?');" }))
+                                    using (Html.BeginForm("Delete", "Addresses", new { area = "", id = address.AddressId }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Are you sure you want to delete this address?');" }))
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
