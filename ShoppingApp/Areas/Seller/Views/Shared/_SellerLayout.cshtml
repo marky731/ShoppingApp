@@ -1,3 +1,20 @@
+@using Microsoft.AspNet.Identity
+@using ShoppingApp.Models.Identity
+@{
+    var userId = User.Identity.GetUserId();
+    string shopSlug = null;
+    if (!string.IsNullOrEmpty(userId))
+    {
+        using (var db = new ApplicationDbContext())
+        {
+            var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
+            if (shop != null)
+            {
+                shopSlug = shop.ShopId.ToString();
+            }
+        }
+    }
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +37,11 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>@Html.ActionLink("View Store", "Index", "Home", new { area = "" }, null)</li>
+                    @if (!string.IsNullOrEmpty(shopSlug))
+                    {
+                        <li><a href="@Url.Action("Details", "Shops", new { area = "", id = shopSlug })"><span class="glyphicon glyphicon-eye-open"></span> View My Shop</a></li>
+                    }
+                    <li>@Html.ActionLink("Go to Store", "Index", "Home", new { area = "" }, null)</li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             @User.Identity.Name <span class="caret"></span>
