@@ -50,11 +50,10 @@
                             <li>@Html.ActionLink("Profile", "Index", "Profile", new { area = "" }, null)</li>
                             <li role="separator" class="divider"></li>
                             <li>
-                                @using (Html.BeginForm("Logout", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm" }))
-                                {
+                                <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post" id="logoutForm">
                                     @Html.AntiForgeryToken()
                                     <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
-                                }
+                                </form>
                             </li>
                         </ul>
                     </li>
