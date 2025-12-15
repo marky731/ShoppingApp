@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using PagedList;
@@ -44,6 +45,12 @@ namespace ShoppingApp.Models.ViewModels
         public bool IsFavorite { get; set; }
         public bool CanReview { get; set; }
         public int CartQuantity { get; set; }
+
+        // Review status helpers
+        public bool HasPurchased { get; set; }
+        public bool HasDeliveredOrder { get; set; }
+        public bool HasReviewed { get; set; }
+        public ReviewStatus? UserReviewStatus { get; set; }
     }
 
     public class ProductCardViewModel
@@ -60,5 +67,21 @@ namespace ShoppingApp.Models.ViewModels
         public int ReviewCount { get; set; }
         public int Stock { get; set; }
         public bool IsFavorite { get; set; }
+    }
+
+    // ===== Customer Review ViewModels =====
+
+    public class CustomerReviewViewModel
+    {
+        public int ReviewId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string ProductImageUrl { get; set; }
+        public int Rating { get; set; }
+        public string Title { get; set; }
+        public string Comment { get; set; }
+        public ReviewStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public ReviewResponse Response { get; set; }
     }
 }

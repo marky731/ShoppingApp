@@ -1,0 +1,145 @@
+@model PagedList.IPagedList<ShoppingApp.Models.ViewModels.SellerReviewListItemViewModel>
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Customer Reviews";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+
+<div class="page-header">
+    <h1>Customer Reviews</h1>
+</div>
+
+<!-- Statistics -->
+<div class="row" style="margin-bottom: 20px;">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Total Reviews</h3>
+            </div>
+            <div class="panel-body text-center">
+                <h2>@ViewBag.TotalReviews</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Average Rating</h3>
+            </div>
+            <div class="panel-body text-center">
+                <h2>
+                    @(((double)ViewBag.AverageRating).ToString("F1"))
+                    <span class="glyphicon glyphicon-star" style="color: gold;"></span>
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Response Rate</h3>
+            </div>
+            <div class="panel-body text-center">
+                <h2>@(((double)ViewBag.ResponseRate).ToString("F0"))%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter by rating -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <strong>Filter by Rating:</strong>
+        <ul class="nav nav-pills" style="display: inline-block; margin-left: 10px;">
+            <li class="@(ViewBag.RatingFilter == null ? "active" : "")">
+                <a href="@Url.Action("Index", new { area = "Seller" })">All</a>
+            </li>
+            @for (int i = 5; i >= 1; i--)
+            {
+                <li class="@(ViewBag.RatingFilter != null && (int)ViewBag.RatingFilter == i ? "active" : "")">
+                    <a href="@Url.Action("Index", new { area = "Seller", rating = i })">
+                        @i <span class="glyphicon glyphicon-star" style="color: gold;"></span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Date</th>
+                    <th>Response</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="media">
+                                @if (!string.IsNullOrEmpty(review.ProductImageUrl))
+                                {
+                                    <div class="media-left">
+                                        <img src="@review.ProductImageUrl" alt="" style="width: 40px; height: 40px; object-fit: cover;" class="img-thumbnail" />
+                                    </div>
+                                }
+                                <div class="media-body">
+                                    @review.ProductName
+                                </div>
+                            </div>
+                        </td>
+                        <td>@review.CustomerName</td>
+                        <td>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="glyphicon glyphicon-star@(i <= review.Rating ? "" : "-empty")" style="color: gold;"></span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(review.Title))
+                            {
+                                <strong>@review.Title</strong><br />
+                            }
+                            @(review.Comment.Length > 50 ? review.Comment.Substring(0, 50) + "..." : review.Comment)
+                        </td>
+                        <td>@review.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            @if (review.HasResponse)
+                            {
+                                <span class="label label-success">Responded</span>
+                            }
+                            else
+                            {
+                                <span class="label label-warning">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("View", "Details", new { area = "Seller", id = review.ReviewId }, new { @class = "btn btn-default btn-sm" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { area = "Seller", page, rating = ViewBag.RatingFilter }))
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>No reviews yet</h4>
+        <p>When customers leave reviews for your products, they will appear here.</p>
+    </div>
+}

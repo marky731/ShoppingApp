@@ -142,6 +142,7 @@
     <Compile Include="Areas\Seller\Controllers\DiscountsController.cs" />
     <Compile Include="Areas\Seller\Controllers\OrdersController.cs" />
     <Compile Include="Areas\Seller\Controllers\ProductsController.cs" />
+    <Compile Include="Areas\Seller\Controllers\ReviewsController.cs" />
     <Compile Include="Areas\Seller\Controllers\ShopController.cs" />
     <Compile Include="Areas\Seller\SellerAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -199,6 +200,7 @@
     <Content Include="Areas\Admin\Views\Categories\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Categories\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Dashboard\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Reviews\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Reviews\Pending.cshtml" />
     <Content Include="Areas\Admin\Views\Sellers\Pending.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
@@ -215,6 +217,8 @@
     <Content Include="Areas\Seller\Views\Products\Details.cshtml" />
     <Content Include="Areas\Seller\Views\Products\Edit.cshtml" />
     <Content Include="Areas\Seller\Views\Products\Index.cshtml" />
+    <Content Include="Areas\Seller\Views\Reviews\Details.cshtml" />
+    <Content Include="Areas\Seller\Views\Reviews\Index.cshtml" />
     <Content Include="Areas\Seller\Views\Shared\_SellerLayout.cshtml" />
     <Content Include="Areas\Seller\Views\Shop\Create.cshtml" />
     <Content Include="Areas\Seller\Views\Shop\Edit.cshtml" />
@@ -259,6 +263,8 @@
     <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Reviews\Create.cshtml" />
+    <Content Include="Views\Reviews\Edit.cshtml" />
+    <Content Include="Views\Reviews\Index.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />

@@ -34,6 +34,9 @@ namespace ShoppingApp.Models.Domain
         [StringLength(100)]
         public string Country { get; set; }
 
+        // Soft delete - hidden from user but preserved for order history
+        public bool IsActive { get; set; } = true;
+
         // Navigation
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }

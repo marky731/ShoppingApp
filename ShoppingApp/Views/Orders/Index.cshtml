@@ -68,8 +68,16 @@
 else
 {
     <div class="alert alert-info">
-        <p>You haven't placed any orders yet.</p>
-        <p>@Html.ActionLink("Start Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })</p>
+        @if (Model.StatusFilter.HasValue)
+        {
+            <p>No orders found with status "@Model.StatusFilter.Value".</p>
+            <p>@Html.ActionLink("View All Orders", "Index", null, new { @class = "btn btn-default" })</p>
+        }
+        else
+        {
+            <p>You haven't placed any orders yet.</p>
+            <p>@Html.ActionLink("Start Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })</p>
+        }
     </div>
 }
 

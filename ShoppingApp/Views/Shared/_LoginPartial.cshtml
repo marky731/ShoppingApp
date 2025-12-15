@@ -16,6 +16,7 @@
         <ul class="dropdown-menu">
             <li>@Html.ActionLink("My Profile", "Index", "Profile", new { area = "" }, null)</li>
             <li>@Html.ActionLink("My Orders", "Index", "Orders", new { area = "" }, null)</li>
+            <li>@Html.ActionLink("My Reviews", "Index", "Reviews", new { area = "" }, null)</li>
             <li>@Html.ActionLink("My Addresses", "Index", "Addresses", new { area = "" }, null)</li>
             <li role="separator" class="divider"></li>
             @if (User.IsInRole("seller"))

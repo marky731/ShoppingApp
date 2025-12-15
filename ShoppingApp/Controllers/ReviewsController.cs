@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using ShoppingApp.Models.Domain;
 using ShoppingApp.Models.Identity;
+using ShoppingApp.Models.ViewModels;
 
 namespace ShoppingApp.Controllers
 {
@@ -12,6 +13,41 @@ namespace ShoppingApp.Controllers
     public class ReviewsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        // GET: Reviews (My Reviews)
+        public ActionResult Index(ReviewStatus? status = null)
+        {
+            var userId = User.Identity.GetUserId();
+
+            var query = db.Reviews
+                .Include(r => r.Product)
+                .Include(r => r.Responses)
+                .Where(r => r.UserId == userId);
+
+            if (status.HasValue)
+            {
+                query = query.Where(r => r.Status == status.Value);
+            }
+
+            var reviews = query.OrderByDescending(r => r.CreatedAt).ToList();
+
+            var viewModel = reviews.Select(r => new CustomerReviewViewModel
+            {
+                ReviewId = r.ReviewId,
+                ProductId = r.ProductId,
+                ProductName = r.Product?.ProductName ?? "Unknown",
+                ProductImageUrl = r.Product?.MainImageUrl,
+                Rating = r.Rating,
+                Title = r.Title,
+                Comment = r.Comment,
+                Status = r.Status,
+                CreatedAt = r.CreatedAt,
+                Response = r.Response
+            });
+
+            ViewBag.StatusFilter = status;
+            return View(viewModel);
+        }
 
         // GET: Reviews/Create
         public ActionResult Create(int productId, int? orderId = null)
@@ -78,6 +114,9 @@ namespace ShoppingApp.Controllers
         public ActionResult Create(Review model)
         {
             var userId = User.Identity.GetUserId();
+
+            // UserId is set by controller, not form - remove from validation
+            ModelState.Remove("UserId");
 
             // Verify user ordered this product and it was delivered
             var canReview = db.ShopOrders
@@ -160,6 +199,12 @@ namespace ShoppingApp.Controllers
         public ActionResult Edit(int id, Review model)
         {
             var userId = User.Identity.GetUserId();
+
+            // These are set by controller, not form - remove from validation
+            ModelState.Remove("UserId");
+            ModelState.Remove("ProductId");
+            ModelState.Remove("OrderId");
+
             var review = db.Reviews.FirstOrDefault(r => r.ReviewId == id && r.UserId == userId);
 
             if (review == null)

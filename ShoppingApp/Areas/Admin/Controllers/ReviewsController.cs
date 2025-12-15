@@ -44,6 +44,7 @@ namespace ShoppingApp.Areas.Admin.Controllers
         {
             var review = db.Reviews
                 .Include(r => r.Product)
+                .Include(r => r.Product.Shop)
                 .Include(r => r.User)
                 .Include(r => r.Order)
                 .FirstOrDefault(r => r.ReviewId == id);

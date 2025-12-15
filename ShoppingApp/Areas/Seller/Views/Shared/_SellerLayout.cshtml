@@ -58,6 +58,9 @@
                     <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Orders" ? "active" : "")">
                         @Html.ActionLink("Orders", "Index", "Orders", new { area = "Seller" }, null)
                     </li>
+                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Reviews" ? "active" : "")">
+                        @Html.ActionLink("Reviews", "Index", "Reviews", new { area = "Seller" }, null)
+                    </li>
                     <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Discounts" ? "active" : "")">
                         @Html.ActionLink("Discounts", "Index", "Discounts", new { area = "Seller" }, null)
                     </li>

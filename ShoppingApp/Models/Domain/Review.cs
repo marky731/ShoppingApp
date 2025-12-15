@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using ShoppingApp.Models.Identity;
 
 namespace ShoppingApp.Models.Domain
@@ -45,7 +47,10 @@ namespace ShoppingApp.Models.Domain
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }
 
-        // Seller response to this review (one-to-one)
-        public virtual ReviewResponse Response { get; set; }
+        // Seller response to this review (logically one response, but EF requires collection)
+        public virtual ICollection<ReviewResponse> Responses { get; set; } = new List<ReviewResponse>();
+
+        // Helper property to get the single response
+        public ReviewResponse Response => Responses?.FirstOrDefault();
     }
 }

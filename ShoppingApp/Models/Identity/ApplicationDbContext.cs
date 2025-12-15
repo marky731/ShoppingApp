@@ -187,10 +187,10 @@ namespace ShoppingApp.Models.Identity
                 .HasForeignKey(r => r.OrderId)
                 .WillCascadeOnDelete(false);
 
-            // ReviewResponse relationship (One-to-Many from EF perspective)
+            // ReviewResponse relationship (One-to-Many, but logically one-to-one)
             modelBuilder.Entity<ReviewResponse>()
                 .HasRequired(rr => rr.Review)
-                .WithMany()
+                .WithMany(r => r.Responses)
                 .HasForeignKey(rr => rr.ReviewId)
                 .WillCascadeOnDelete(true);
 

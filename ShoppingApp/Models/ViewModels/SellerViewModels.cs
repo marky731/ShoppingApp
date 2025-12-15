@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web;
 using PagedList;
 using ShoppingApp.Models.Domain;
+using ShoppingApp.Models.Identity;
 
 namespace ShoppingApp.Models.ViewModels
 {
@@ -458,5 +459,29 @@ namespace ShoppingApp.Models.ViewModels
         public bool IsActive { get; set; } = true;
 
         public int UsageCount { get; set; }
+    }
+
+    // ===== Seller Review ViewModels =====
+
+    public class SellerReviewListItemViewModel
+    {
+        public int ReviewId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string ProductImageUrl { get; set; }
+        public string CustomerName { get; set; }
+        public int Rating { get; set; }
+        public string Title { get; set; }
+        public string Comment { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool HasResponse { get; set; }
+    }
+
+    public class SellerReviewDetailsViewModel
+    {
+        public Review Review { get; set; }
+        public Product Product { get; set; }
+        public ApplicationUser Customer { get; set; }
+        public ReviewResponse Response { get; set; }
     }
 }

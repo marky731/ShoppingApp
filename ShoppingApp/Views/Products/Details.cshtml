@@ -4,6 +4,21 @@
     ViewBag.Title = Model.Product.ProductName;
 }
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Error"]
+    </div>
+}
+
 <div class="row">
     <div class="col-md-5">
         @if (!string.IsNullOrEmpty(Model.Product.MainImageUrl))
@@ -130,10 +145,55 @@
     <div class="col-md-12">
         <h3>Customer Reviews (@Model.Reviews.Count())</h3>
 
-        @if (Model.CanReview)
+        @if (Request.IsAuthenticated)
         {
-            <p>
-                @Html.ActionLink("Write a Review", "Create", "Reviews", new { productId = Model.Product.ProductId }, new { @class = "btn btn-success" })
+            if (Model.CanReview)
+            {
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok-circle"></span>
+                    You can review this product!
+                    @Html.ActionLink("Write a Review", "Create", "Reviews", new { productId = Model.Product.ProductId }, new { @class = "btn btn-success", style = "margin-left: 10px;" })
+                </div>
+            }
+            else if (Model.HasReviewed)
+            {
+                <div class="alert alert-info">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    @if (Model.UserReviewStatus == ShoppingApp.Models.Domain.ReviewStatus.Pending)
+                    {
+                        <text>You have already submitted a review for this product. It is currently <strong>pending moderation</strong>.</text>
+                        @Html.ActionLink("View My Reviews", "Index", "Reviews", null, new { @class = "btn btn-default btn-sm", style = "margin-left: 10px;" })
+                    }
+                    else if (Model.UserReviewStatus == ShoppingApp.Models.Domain.ReviewStatus.Approved)
+                    {
+                        <text>You have already reviewed this product.</text>
+                    }
+                    else
+                    {
+                        <text>Your review for this product was not approved.</text>
+                    }
+                </div>
+            }
+            else if (Model.HasPurchased && !Model.HasDeliveredOrder)
+            {
+                <div class="alert alert-warning">
+                    <span class="glyphicon glyphicon-time"></span>
+                    You can write a review once your order has been <strong>delivered</strong>.
+                    @Html.ActionLink("Check Order Status", "Index", "Orders", null, new { @class = "btn btn-default btn-sm", style = "margin-left: 10px;" })
+                </div>
+            }
+            else if (!Model.HasPurchased)
+            {
+                <p class="text-muted">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    Purchase this product to leave a review.
+                </p>
+            }
+        }
+        else
+        {
+            <p class="text-muted">
+                @Html.ActionLink("Log in", "Login", "Account", new { returnUrl = Request.Url.PathAndQuery }, null) to leave a review.
             </p>
         }
 

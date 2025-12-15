@@ -1,0 +1,112 @@
+@model ShoppingApp.Models.Domain.Review
+@{
+    ViewBag.Title = "Write a Review";
+    var product = ViewBag.Product as ShoppingApp.Models.Domain.Product;
+}
+
+<h2>Write a Review</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Your Review</h3>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Create", "Reviews", new { area = "" }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                    <input type="hidden" name="OrderId" value="@Model.OrderId" />
+
+                    <div class="form-group">
+                        <label>Rating <span class="text-danger">*</span></label>
+                        <div class="rating-input">
+                            @for (int i = 5; i >= 1; i--)
+                            {
+                                <label class="star-label" style="cursor: pointer; font-size: 24px;">
+                                    <input type="radio" name="Rating" value="@i" style="display: none;" required />
+                                    <span class="glyphicon glyphicon-star-empty" data-value="@i" style="color: gold;"></span>
+                                </label>
+                            }
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Title, "Review Title")
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Sum up your experience in a few words" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Comment, "Your Review")
+                        @Html.TextAreaFor(m => m.Comment, new { @class = "form-control", rows = 5, placeholder = "Share details of your experience with this product" })
+                        @Html.ValidationMessageFor(m => m.Comment, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-ok"></span> Submit Review
+                        </button>
+                        @Html.ActionLink("Cancel", "Details", "Products", new { id = Model.ProductId }, new { @class = "btn btn-default" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        @if (product != null)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Product</h3>
+                </div>
+                <div class="panel-body">
+                    @if (!string.IsNullOrEmpty(product.MainImageUrl))
+                    {
+                        <img src="@product.MainImageUrl" alt="@product.ProductName" class="img-responsive img-thumbnail" style="margin-bottom: 10px;" />
+                    }
+                    <h4>@product.ProductName</h4>
+                    <p class="text-muted">$@product.Price.ToString("F2")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var selectedRating = 0;
+
+            $('.star-label span').hover(
+                function () {
+                    var value = $(this).data('value');
+                    highlightStars(value);
+                },
+                function () {
+                    highlightStars(selectedRating);
+                }
+            );
+
+            $('.star-label input').change(function () {
+                selectedRating = $(this).val();
+                highlightStars(selectedRating);
+            });
+
+            function highlightStars(rating) {
+                $('.star-label span').each(function () {
+                    var value = $(this).data('value');
+                    if (value <= rating) {
+                        $(this).removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+                    } else {
+                        $(this).removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+                    }
+                });
+            }
+        });
+    </script>
+}

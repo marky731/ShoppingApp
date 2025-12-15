@@ -1,0 +1,142 @@
+@model ShoppingApp.Models.ViewModels.SellerReviewDetailsViewModel
+@{
+    ViewBag.Title = "Review Details";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+
+<div class="page-header">
+    <div class="pull-right">
+        @Html.ActionLink("Back to Reviews", "Index", new { area = "Seller" }, new { @class = "btn btn-default" })
+    </div>
+    <h1>Review Details</h1>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Error"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Review Panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="pull-right">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="glyphicon glyphicon-star@(i <= Model.Review.Rating ? "" : "-empty")" style="color: gold; font-size: 18px;"></span>
+                    }
+                </div>
+                <h4 class="panel-title">Customer Review</h4>
+            </div>
+            <div class="panel-body">
+                @if (!string.IsNullOrEmpty(Model.Review.Title))
+                {
+                    <h3>@Model.Review.Title</h3>
+                }
+                <p style="font-size: 16px;">@Model.Review.Comment</p>
+                <hr />
+                <p class="text-muted">
+                    <span class="glyphicon glyphicon-user"></span> @Model.Customer.FirstName @Model.Customer.LastName
+                    <span class="glyphicon glyphicon-time" style="margin-left: 20px;"></span> @Model.Review.CreatedAt.ToString("MMMM dd, yyyy")
+                </p>
+            </div>
+        </div>
+
+        <!-- Response Section -->
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">Your Response</h4>
+            </div>
+            <div class="panel-body">
+                @if (Model.Response != null)
+                {
+                    <div class="well">
+                        <p style="font-size: 15px;">@Model.Response.ResponseText</p>
+                        <p class="text-muted"><small>Responded on @Model.Response.CreatedAt.ToString("MMMM dd, yyyy")</small></p>
+                    </div>
+
+                    <hr />
+                    <h5>Update Response</h5>
+                    using (Html.BeginForm("Respond", "Reviews", new { area = "Seller", id = Model.Review.ReviewId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <textarea name="responseText" class="form-control" rows="3" placeholder="Update your response...">@Model.Response.ResponseText</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-edit"></span> Update Response
+                        </button>
+                    }
+
+                    using (Html.BeginForm("DeleteResponse", "Reviews", new { area = "Seller", id = Model.Response.ResponseId }, FormMethod.Post, new { style = "display: inline; margin-left: 10px;" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this response?');">
+                            <span class="glyphicon glyphicon-trash"></span> Delete Response
+                        </button>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Responding to reviews helps build trust with customers and shows that you value their feedback.</p>
+                    using (Html.BeginForm("Respond", "Reviews", new { area = "Seller", id = Model.Review.ReviewId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label>Write a Response</label>
+                            <textarea name="responseText" class="form-control" rows="4" placeholder="Thank the customer or address their concerns..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-send"></span> Submit Response
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Product Info Sidebar -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Product</h4>
+            </div>
+            <div class="panel-body">
+                @if (!string.IsNullOrEmpty(Model.Product.MainImageUrl))
+                {
+                    <img src="@Model.Product.MainImageUrl" alt="@Model.Product.ProductName" class="img-responsive img-thumbnail" style="margin-bottom: 10px;" />
+                }
+                <h4>@Model.Product.ProductName</h4>
+                <p class="text-success"><strong>$@Model.Product.Price.ToString("F2")</strong></p>
+                <p>
+                    <span class="glyphicon glyphicon-star" style="color: gold;"></span>
+                    @Model.Product.AverageRating.ToString("F1") (@Model.Product.TotalReviews reviews)
+                </p>
+                @Html.ActionLink("View Product", "Details", "Products", new { area = "Seller", id = Model.Product.ProductId }, new { @class = "btn btn-default btn-block" })
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Customer</h4>
+            </div>
+            <div class="panel-body">
+                <p><strong>@Model.Customer.FirstName @Model.Customer.LastName</strong></p>
+                <p class="text-muted">@Model.Customer.Email</p>
+            </div>
+        </div>
+    </div>
+</div>

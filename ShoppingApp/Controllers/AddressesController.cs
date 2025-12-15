@@ -17,20 +17,21 @@ namespace ShoppingApp.Controllers
         public ActionResult Index()
         {
             var userId = User.Identity.GetUserId();
-            var addresses = db.Addresses.Where(a => a.UserId == userId).ToList();
+            var addresses = db.Addresses.Where(a => a.UserId == userId && a.IsActive).ToList();
             return View(addresses);
         }
 
         // GET: Addresses/Create
-        public ActionResult Create()
+        public ActionResult Create(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View(new AddressViewModel());
         }
 
         // POST: Addresses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(AddressViewModel model)
+        public ActionResult Create(AddressViewModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -49,9 +50,15 @@ namespace ShoppingApp.Controllers
                 db.SaveChanges();
 
                 TempData["Success"] = "Address added successfully.";
+
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction("Index");
             }
 
+            ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
 
@@ -115,22 +122,15 @@ namespace ShoppingApp.Controllers
         public ActionResult Delete(int id)
         {
             var userId = User.Identity.GetUserId();
-            var address = db.Addresses.FirstOrDefault(a => a.AddressId == id && a.UserId == userId);
+            var address = db.Addresses.FirstOrDefault(a => a.AddressId == id && a.UserId == userId && a.IsActive);
 
             if (address == null)
             {
                 return HttpNotFound();
             }
 
-            // Check if address is used in any orders
-            var hasOrders = db.Orders.Any(o => o.ShippingAddressId == id);
-            if (hasOrders)
-            {
-                TempData["Error"] = "Cannot delete this address as it is associated with existing orders.";
-                return RedirectToAction("Index");
-            }
-
-            db.Addresses.Remove(address);
+            // Soft delete - hide from user but preserve for order history
+            address.IsActive = false;
             db.SaveChanges();
 
             TempData["Success"] = "Address deleted successfully.";

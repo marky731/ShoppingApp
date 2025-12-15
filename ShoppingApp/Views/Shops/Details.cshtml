@@ -112,9 +112,7 @@
                 <div class="row">
                     @foreach (var product in Model.Products)
                     {
-                        <div class="col-xs-6 col-sm-4">
-                            @Html.Partial("_ProductCard", product)
-                        </div>
+                        @Html.Partial("_ProductCard", product)
                     }
                 </div>
 

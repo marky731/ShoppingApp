@@ -30,7 +30,7 @@ namespace ShoppingApp.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            var addresses = db.Addresses.Where(a => a.UserId == userId).ToList();
+            var addresses = db.Addresses.Where(a => a.UserId == userId && a.IsActive).ToList();
 
             var cartViewModel = new CartViewModel
             {
@@ -66,8 +66,8 @@ namespace ShoppingApp.Controllers
         {
             var userId = User.Identity.GetUserId();
 
-            // Verify address belongs to user
-            var address = db.Addresses.FirstOrDefault(a => a.AddressId == model.SelectedAddressId && a.UserId == userId);
+            // Verify address belongs to user and is active
+            var address = db.Addresses.FirstOrDefault(a => a.AddressId == model.SelectedAddressId && a.UserId == userId && a.IsActive);
             if (address == null)
             {
                 TempData["Error"] = "Please select a valid shipping address.";

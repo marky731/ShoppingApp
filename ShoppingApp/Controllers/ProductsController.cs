@@ -108,6 +108,7 @@ namespace ShoppingApp.Controllers
                     .Include(p => p.Images)
                     .Include(p => p.Specifications)
                     .Include(p => p.Reviews.Select(r => r.User))
+                    .Include(p => p.Reviews.Select(r => r.Responses))
                     .FirstOrDefault(p => p.ProductId == productId && p.IsActive);
             }
 
@@ -120,6 +121,7 @@ namespace ShoppingApp.Controllers
                     .Include(p => p.Images)
                     .Include(p => p.Specifications)
                     .Include(p => p.Reviews.Select(r => r.User))
+                    .Include(p => p.Reviews.Select(r => r.Responses))
                     .FirstOrDefault(p => p.Slug == id && p.IsActive);
             }
 
@@ -132,17 +134,33 @@ namespace ShoppingApp.Controllers
             var isFavorite = false;
             var canReview = false;
             var cartQuantity = 0;
+            var hasPurchased = false;
+            var hasDeliveredOrder = false;
+            var hasReviewed = false;
+            ReviewStatus? userReviewStatus = null;
 
             if (!string.IsNullOrEmpty(userId))
             {
                 isFavorite = db.Favorites.Any(f => f.UserId == userId && f.ProductId == product.ProductId);
 
-                // Check if user has purchased and received this product and hasn't reviewed it yet
-                canReview = db.ShopOrders
+                // Check if user has purchased this product
+                hasPurchased = db.ShopOrders
+                    .Any(so => so.Order.UserId == userId
+                        && so.OrderItems.Any(oi => oi.ProductId == product.ProductId));
+
+                // Check if any order with this product is delivered
+                hasDeliveredOrder = db.ShopOrders
                     .Any(so => so.Order.UserId == userId
                         && so.ShopOrderStatus == OrderStatus.Delivered
-                        && so.OrderItems.Any(oi => oi.ProductId == product.ProductId))
-                    && !db.Reviews.Any(r => r.UserId == userId && r.ProductId == product.ProductId);
+                        && so.OrderItems.Any(oi => oi.ProductId == product.ProductId));
+
+                // Check if user already reviewed this product
+                var existingReview = db.Reviews.FirstOrDefault(r => r.UserId == userId && r.ProductId == product.ProductId);
+                hasReviewed = existingReview != null;
+                userReviewStatus = existingReview?.Status;
+
+                // Can review if has delivered order and hasn't reviewed yet
+                canReview = hasDeliveredOrder && !hasReviewed;
 
                 var cartItem = db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == product.ProductId);
                 cartQuantity = cartItem?.Quantity ?? 0;
@@ -166,7 +184,11 @@ namespace ShoppingApp.Controllers
                     .ToList(),
                 IsFavorite = isFavorite,
                 CanReview = canReview,
-                CartQuantity = cartQuantity
+                CartQuantity = cartQuantity,
+                HasPurchased = hasPurchased,
+                HasDeliveredOrder = hasDeliveredOrder,
+                HasReviewed = hasReviewed,
+                UserReviewStatus = userReviewStatus
             };
 
             return View(viewModel);

@@ -1,0 +1,154 @@
+@model ShoppingApp.Models.ViewModels.ReviewModerationViewModel
+@using ShoppingApp.Models.Domain
+@{
+    ViewBag.Title = "Review Moderation";
+}
+
+<div class="page-header">
+    <div class="pull-right">
+        @Html.ActionLink("Back to Pending Reviews", "Pending", new { area = "Admin" }, new { @class = "btn btn-default" })
+    </div>
+    <h1>Review Moderation</h1>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @TempData["Error"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Review Content -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="pull-right">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="glyphicon glyphicon-star@(i <= Model.Review.Rating ? "" : "-empty")" style="color: gold; font-size: 18px;"></span>
+                    }
+                </div>
+                <h4 class="panel-title">Review Content</h4>
+            </div>
+            <div class="panel-body">
+                @if (!string.IsNullOrEmpty(Model.Review.Title))
+                {
+                    <h3>@Model.Review.Title</h3>
+                }
+                <p style="font-size: 16px;">@Model.Review.Comment</p>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>Customer</dt>
+                    <dd>@Model.User.FirstName @Model.User.LastName (@Model.User.Email)</dd>
+                    <dt>Submitted</dt>
+                    <dd>@Model.Review.CreatedAt.ToString("MMMM dd, yyyy HH:mm")</dd>
+                    <dt>Status</dt>
+                    <dd>
+                        @switch (Model.Review.Status)
+                        {
+                            case ReviewStatus.Pending:
+                                <span class="label label-warning">Pending</span>
+                                break;
+                            case ReviewStatus.Approved:
+                                <span class="label label-success">Approved</span>
+                                break;
+                            case ReviewStatus.Rejected:
+                                <span class="label label-danger">Rejected</span>
+                                break;
+                        }
+                    </dd>
+                </dl>
+            </div>
+            @if (Model.Review.Status == ReviewStatus.Pending)
+            {
+                <div class="panel-footer">
+                    @using (Html.BeginForm("Approve", "Reviews", new { area = "Admin", id = Model.Review.ReviewId }, FormMethod.Post, new { style = "display: inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">
+                            <span class="glyphicon glyphicon-ok"></span> Approve Review
+                        </button>
+                    }
+                    @using (Html.BeginForm("Reject", "Reviews", new { area = "Admin", id = Model.Review.ReviewId }, FormMethod.Post, new { style = "display: inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this review?');">
+                            <span class="glyphicon glyphicon-remove"></span> Reject Review
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Review Guidelines -->
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4 class="panel-title">Moderation Guidelines</h4>
+            </div>
+            <div class="panel-body">
+                <p><strong>Approve if:</strong></p>
+                <ul>
+                    <li>Review is relevant to the product</li>
+                    <li>Contains constructive feedback</li>
+                    <li>No offensive language or spam</li>
+                    <li>Customer has actually purchased and received the product</li>
+                </ul>
+                <p><strong>Reject if:</strong></p>
+                <ul>
+                    <li>Contains inappropriate content</li>
+                    <li>Spam or promotional content</li>
+                    <li>Not related to the product</li>
+                    <li>Fake or malicious review</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Product Information -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Product Information</h4>
+            </div>
+            <div class="panel-body">
+                @if (!string.IsNullOrEmpty(Model.Product.MainImageUrl))
+                {
+                    <img src="@Model.Product.MainImageUrl" alt="@Model.Product.ProductName" class="img-responsive img-thumbnail" style="margin-bottom: 10px;" />
+                }
+                <h4>@Model.Product.ProductName</h4>
+                <p class="text-success"><strong>$@Model.Product.Price.ToString("F2")</strong></p>
+                <p>
+                    <span class="glyphicon glyphicon-star" style="color: gold;"></span>
+                    @Model.Product.AverageRating.ToString("F1") (@Model.Product.TotalReviews reviews)
+                </p>
+                <p class="text-muted">
+                    <small>Shop: @Model.Product.Shop.ShopName</small>
+                </p>
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Customer Information</h4>
+            </div>
+            <div class="panel-body">
+                <p><strong>@Model.User.FirstName @Model.User.LastName</strong></p>
+                <p>@Model.User.Email</p>
+                <p class="text-muted">
+                    <small>Member since @Model.User.CreatedAt.ToString("MMMM yyyy")</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
