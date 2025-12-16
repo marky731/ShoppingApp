@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Products";
-    ViewBag.RouteValues = new { SearchTerm = Model.Filters.SearchTerm, CategoryId = Model.Filters.CategoryId, MinPrice = Model.Filters.MinPrice, MaxPrice = Model.Filters.MaxPrice, Brand = Model.Filters.Brand, SortBy = Model.Filters.SortBy };
 }
 
 <h2>Products</h2>
@@ -18,7 +17,7 @@
                 {
                     <div class="form-group">
                         <label>Search</label>
-                        @Html.TextBoxFor(m => m.Filters.SearchTerm, new { @class = "form-control", placeholder = "Search..." })
+                        <input type="text" name="SearchTerm" value="@Model.Filters.SearchTerm" class="form-control" placeholder="Search..." />
                     </div>
 
                     <div class="form-group">
@@ -42,12 +41,12 @@
 
                     <div class="form-group">
                         <label>Min Price</label>
-                        @Html.TextBoxFor(m => m.Filters.MinPrice, new { @class = "form-control", placeholder = "Min price" })
+                        <input type="number" name="MinPrice" value="@Model.Filters.MinPrice" class="form-control" placeholder="Min price" />
                     </div>
 
                     <div class="form-group">
                         <label>Max Price</label>
-                        @Html.TextBoxFor(m => m.Filters.MaxPrice, new { @class = "form-control", placeholder = "Max price" })
+                        <input type="number" name="MaxPrice" value="@Model.Filters.MaxPrice" class="form-control" placeholder="Max price" />
                     </div>
 
                     <div class="form-group">
@@ -81,7 +80,15 @@
             </div>
 
             <div class="text-center">
-                @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, Model.Filters.SearchTerm, Model.Filters.CategoryId, Model.Filters.MinPrice, Model.Filters.MaxPrice, Model.Filters.Brand, Model.Filters.SortBy }))
+                @Html.PagedListPager(Model.Products, page => Url.Action("Index", new {
+                    Page = page,
+                    SearchTerm = Model.Filters.SearchTerm,
+                    CategoryId = Model.Filters.CategoryId,
+                    MinPrice = Model.Filters.MinPrice,
+                    MaxPrice = Model.Filters.MaxPrice,
+                    Brand = Model.Filters.Brand,
+                    SortBy = Model.Filters.SortBy
+                }))
             </div>
         }
         else
