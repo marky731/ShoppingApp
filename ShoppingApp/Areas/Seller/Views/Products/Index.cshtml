@@ -48,13 +48,13 @@
                     <th>Stock</th>
                     <th>Sales</th>
                     <th>Status</th>
-                    <th style="width: 150px;">Actions</th>
+                    <th style="width: 60px;"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var product in Model)
                 {
-                    <tr>
+                    <tr class="clickable" data-href="@Url.Action("Edit", new { id = product.Id })">
                         <td>
                             @if (!string.IsNullOrEmpty(product.ImageUrl))
                             {
@@ -109,13 +109,9 @@
                             }
                         </td>
                         <td>
-                            <div class="btn-group btn-group-sm">
-                                @Html.ActionLink("Edit", "Edit", new { id = product.Id }, new { @class = "btn btn-default" })
-                                @Html.ActionLink("View", "Details", new { id = product.Id }, new { @class = "btn btn-default" })
-                                <button type="button" class="btn btn-danger btn-delete" data-id="@product.Id" data-name="@product.Name">
-                                    Delete
-                                </button>
-                            </div>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="@product.Id" data-name="@product.Name">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
                         </td>
                     </tr>
                 }
@@ -167,7 +163,8 @@ else
 @section scripts {
     <script>
         $(document).ready(function () {
-            $('.btn-delete').click(function () {
+            $('.btn-delete').click(function (e) {
+                e.stopPropagation(); // Prevent row click navigation
                 var id = $(this).data('id');
                 var name = $(this).data('name');
                 $('#deleteProductId').val(id);

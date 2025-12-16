@@ -9,6 +9,15 @@ $(function () {
         $('.alert-dismissible').fadeOut('slow');
     }, 5000);
 
+    // Make elements with .clickable class navigate to their data-href
+    $('.clickable[data-href]').click(function (e) {
+        // Don't navigate if clicking on a button, link, or input
+        if ($(e.target).closest('a, button, input, .btn').length) {
+            return;
+        }
+        window.location.href = $(this).data('href');
+    });
+
     // Confirm delete actions
     $('[data-confirm]').click(function (e) {
         if (!confirm($(this).data('confirm'))) {

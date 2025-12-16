@@ -48,17 +48,15 @@
                     <th>Items</th>
                     <th>Total</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th style="width: 40px;"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var order in Model)
                 {
-                    <tr>
+                    <tr class="clickable" data-href="@Url.Action("Details", new { id = order.Id })">
                         <td>
-                            <a href="@Url.Action("Details", new { id = order.Id })">
-                                <strong>#@order.OrderNumber</strong>
-                            </a>
+                            <strong>#@order.OrderNumber</strong>
                         </td>
                         <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
                         <td>
@@ -92,7 +90,7 @@
                             }
                         </td>
                         <td>
-                            @Html.ActionLink("View", "Details", new { id = order.Id }, new { @class = "btn btn-sm btn-default" })
+                            <span class="glyphicon glyphicon-chevron-right text-muted"></span>
                         </td>
                     </tr>
                 }

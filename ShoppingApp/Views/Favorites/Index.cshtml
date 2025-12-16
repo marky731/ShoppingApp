@@ -24,18 +24,16 @@
             @foreach (var product in Model)
             {
                 <div class="col-xs-6 col-sm-4 col-md-3">
-                    <div class="product-card panel panel-default">
+                    <div class="product-card panel panel-default clickable" data-href="@Url.Action("Details", "Products", new { id = product.Slug })">
                         <div class="product-image">
-                            <a href="@Url.Action("Details", "Products", new { id = product.Slug })">
-                                @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                {
-                                    <img src="@product.ImageUrl" alt="@product.Name" class="img-responsive" />
-                                }
-                                else
-                                {
-                                    <img src="~/Content/images/no-image.png" alt="@product.Name" class="img-responsive" />
-                                }
-                            </a>
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Name" class="img-responsive" />
+                            }
+                            else
+                            {
+                                <img src="~/Content/images/no-image.png" alt="@product.Name" class="img-responsive" />
+                            }
                             @if (product.DiscountPercentage > 0)
                             {
                                 <span class="discount-badge">-@product.DiscountPercentage%</span>
@@ -45,9 +43,7 @@
                             </button>
                         </div>
                         <div class="panel-body">
-                            <h4 class="product-name">
-                                <a href="@Url.Action("Details", "Products", new { id = product.Slug })">@product.Name</a>
-                            </h4>
+                            <h4 class="product-name">@product.Name</h4>
                             <p class="product-shop text-muted">
                                 <small>by @product.ShopName</small>
                             </p>
@@ -97,8 +93,9 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            // Remove from favorites
-            $('.btn-unfavorite').click(function () {
+            // Remove from favorites (stop propagation to prevent card click)
+            $('.btn-unfavorite').click(function (e) {
+                e.stopPropagation();
                 var btn = $(this);
                 var productId = btn.data('product-id');
 
@@ -114,8 +111,9 @@
                 });
             });
 
-            // Add to cart
-            $('.btn-add-cart').click(function () {
+            // Add to cart (stop propagation to prevent card click)
+            $('.btn-add-cart').click(function (e) {
+                e.stopPropagation();
                 var productId = $(this).data('product-id');
                 $.post('@Url.Action("AddJson", "Cart")', { productId: productId, quantity: 1 }, function (result) {
                     if (result.success) {
