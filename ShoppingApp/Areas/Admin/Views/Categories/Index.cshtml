@@ -3,88 +3,85 @@
     ViewBag.Title = "Categories";
 }
 
-<div class="page-header">
-    <div class="pull-right">
-        @Html.ActionLink("Add Category", "Create", null, new { @class = "btn btn-primary" })
-    </div>
+<div class="page-header-modern">
     <h1>Categories</h1>
+    <a href="@Url.Action("Create")" class="btn-modern btn-modern-primary">
+        <span class="glyphicon glyphicon-plus" style="margin-right: 8px;"></span>
+        Add Category
+    </a>
 </div>
 
 @if (Model.Any())
 {
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
+    <table class="table table-modern">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Parent</th>
+                <th>Products</th>
+                <th>Order</th>
+                <th>Status</th>
+                <th style="width: 140px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
                 <tr>
-                    <th>Name</th>
-                    <th>Parent</th>
-                    <th>Products</th>
-                    <th>Order</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <td>
+                        @if (category.ParentId.HasValue)
+                        {
+                            <span style="color: var(--text-muted); margin-left: 20px;">|-- </span>
+                        }
+                        <strong style="color: var(--text-primary);">@category.Name</strong>
+                        @if (!string.IsNullOrEmpty(category.Description))
+                        {
+                            <br />
+                            <small style="color: var(--text-muted);">@category.Description</small>
+                        }
+                    </td>
+                    <td style="color: var(--text-secondary);">@(category.ParentName ?? "-")</td>
+                    <td style="color: var(--text-secondary);">@category.ProductCount</td>
+                    <td style="color: var(--text-muted);">@category.DisplayOrder</td>
+                    <td>
+                        @if (category.IsActive)
+                        {
+                            <span class="badge-modern badge-active">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge-modern badge-inactive">Inactive</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", new { id = category.Id })" class="btn btn-default btn-xs" style="border-radius: 6px;">Edit</a>
+                        @{
+                            // Subcategories (have ParentId): can delete if no products
+                            // Main categories (no ParentId): can delete if no products AND no subcategories
+                            bool canDelete = category.ParentId.HasValue
+                                ? category.ProductCount == 0
+                                : (category.ProductCount == 0 && category.SubCategoryCount == 0);
+                        }
+                        @if (canDelete)
+                        {
+                            <button type="button" class="btn btn-danger btn-xs btn-delete" style="border-radius: 6px;" data-id="@category.Id" data-name="@category.Name">
+                                Delete
+                            </button>
+                        }
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in Model)
-                {
-                    <tr>
-                        <td>
-                            @if (category.ParentId.HasValue)
-                            {
-                                <span class="text-muted" style="margin-left: 20px;">|-- </span>
-                            }
-                            <strong>@category.Name</strong>
-                            @if (!string.IsNullOrEmpty(category.Description))
-                            {
-                                <br />
-                                <small class="text-muted">@category.Description</small>
-                            }
-                        </td>
-                        <td>@(category.ParentName ?? "-")</td>
-                        <td>@category.ProductCount</td>
-                        <td>@category.DisplayOrder</td>
-                        <td>
-                            @if (category.IsActive)
-                            {
-                                <span class="label label-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="label label-default">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                @Html.ActionLink("Edit", "Edit", new { id = category.Id }, new { @class = "btn btn-default" })
-                                @{
-                                    // Subcategories (have ParentId): can delete if no products
-                                    // Main categories (no ParentId): can delete if no products AND no subcategories
-                                    bool canDelete = category.ParentId.HasValue
-                                        ? category.ProductCount == 0
-                                        : (category.ProductCount == 0 && category.SubCategoryCount == 0);
-                                }
-                                @if (canDelete)
-                                {
-                                    <button type="button" class="btn btn-danger btn-delete" data-id="@category.Id" data-name="@category.Name">
-                                        Delete
-                                    </button>
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
 }
 else
 {
-    <div class="alert alert-info">
-        <h4>No categories found</h4>
-        <p>Create categories to organize products on your platform.</p>
-        <p>
-            @Html.ActionLink("Add Category", "Create", null, new { @class = "btn btn-primary" })
-        </p>
+    <div style="text-align: center; padding: 60px 20px;">
+        <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 24px;">No categories found. Create categories to organize products.</p>
+        <a href="@Url.Action("Create")" class="btn-modern btn-modern-primary">
+            <span class="glyphicon glyphicon-plus" style="margin-right: 8px;"></span>
+            Add Category
+        </a>
     </div>
 }
 

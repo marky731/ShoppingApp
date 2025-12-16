@@ -3,6 +3,7 @@
 @{
     var userId = User.Identity.GetUserId();
     string shopSlug = null;
+    string shopName = "Seller Dashboard";
     if (!string.IsNullOrEmpty(userId))
     {
         using (var db = new ApplicationDbContext())
@@ -11,9 +12,11 @@
             if (shop != null)
             {
                 shopSlug = shop.ShopId.ToString();
+                shopName = shop.ShopName ?? "Seller Dashboard";
             }
         }
     }
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
 }
 <!DOCTYPE html>
 <html>
@@ -22,93 +25,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Seller Dashboard</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/pagedlist")
 </head>
-<body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("ShoppingApp - Seller", "Index", "Dashboard", new { area = "Seller" }, new { @class = "navbar-brand" })
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Modern Sidebar -->
+        <div class="modern-sidebar dashboard-sidebar">
+            <div class="sidebar-header">
+                <h4>Seller Dashboard</h4>
+                <p class="subtitle">@shopName</p>
             </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    @if (!string.IsNullOrEmpty(shopSlug))
-                    {
-                        <li><a href="@Url.Action("Details", "Shops", new { area = "", id = shopSlug })"><span class="glyphicon glyphicon-eye-open"></span> View My Shop</a></li>
-                    }
-                    <li>@Html.ActionLink("Go to Store", "Index", "Home", new { area = "" }, null)</li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            @User.Identity.Name <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Profile", "Index", "Profile", new { area = "" }, null)</li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                                <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post" id="logoutForm">
-                                    @Html.AntiForgeryToken()
-                                    <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+
+            <ul class="nav-sidebar">
+                <li class="@(currentController == "Dashboard" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })">
+                        <span class="nav-icon glyphicon glyphicon-th-large"></span>
+                        Overview
+                    </a>
+                </li>
+                <li class="@(currentController == "Products" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Products", new { area = "Seller" })">
+                        <span class="nav-icon glyphicon glyphicon-shopping-cart"></span>
+                        Products
+                    </a>
+                </li>
+                <li class="@(currentController == "Orders" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Orders", new { area = "Seller" })">
+                        <span class="nav-icon glyphicon glyphicon-list-alt"></span>
+                        Orders
+                    </a>
+                </li>
+                <li class="@(currentController == "Discounts" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Discounts", new { area = "Seller" })">
+                        <span class="nav-icon glyphicon glyphicon-tag"></span>
+                        Discounts
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="@Url.Action("Index", "Home", new { area = "" })">
+                    <span class="nav-icon glyphicon glyphicon-arrow-left"></span>
+                    Back to Store
+                </a>
             </div>
         </div>
-    </nav>
 
-    <div class="container-fluid" style="padding-top: 50px;">
-        <div class="row">
-            <div class="col-sm-3 col-md-2 sidebar" style="background-color: #f5f5f5; min-height: calc(100vh - 50px); padding-top: 20px; position: fixed; overflow-y: auto;">
-                <ul class="nav nav-sidebar">
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">
-                        @Html.ActionLink("Dashboard", "Index", "Dashboard", new { area = "Seller" }, null)
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Shop" ? "active" : "")">
-                        @Html.ActionLink("My Shop", "Edit", "Shop", new { area = "Seller" }, null)
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Products" ? "active" : "")">
-                        @Html.ActionLink("Products", "Index", "Products", new { area = "Seller" }, null)
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Orders" ? "active" : "")">
-                        @Html.ActionLink("Orders", "Index", "Orders", new { area = "Seller" }, null)
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Reviews" ? "active" : "")">
-                        @Html.ActionLink("Reviews", "Index", "Reviews", new { area = "Seller" }, null)
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["controller"].ToString() == "Discounts" ? "active" : "")">
-                        @Html.ActionLink("Discounts", "Index", "Discounts", new { area = "Seller" }, null)
-                    </li>
-                </ul>
-            </div>
-            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" style="padding-top: 20px;">
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        @TempData["Success"]
-                    </div>
-                }
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        @TempData["Error"]
-                    </div>
-                }
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @TempData["Success"]
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @TempData["Error"]
+                </div>
+            }
 
-                @RenderBody()
-            </div>
+            @RenderBody()
         </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/site")
     @RenderSection("scripts", required: false)
 </body>
 </html>

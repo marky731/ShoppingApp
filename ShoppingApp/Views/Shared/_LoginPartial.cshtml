@@ -1,46 +1,121 @@
 @using Microsoft.AspNet.Identity
+@using ShoppingApp.Models.Identity
 
 @if (Request.IsAuthenticated)
 {
     var userId = User.Identity.GetUserId();
+    string userEmail = User.Identity.Name;
+    string userName = User.Identity.Name;
+    string userRole = "Customer";
+
+    using (var db = new ApplicationDbContext())
+    {
+        var user = db.Users.Find(userId);
+        if (user != null)
+        {
+            userName = user.FullName ?? user.UserName;
+            userEmail = user.Email;
+        }
+    }
+
+    if (User.IsInRole("admin"))
+    {
+        userRole = "Admin";
+    }
+    else if (User.IsInRole("seller"))
+    {
+        userRole = "Seller";
+    }
+
+    <!-- Favorites -->
     <li>
-        <a href="@Url.Action("Index", "Cart", new { area = "" })">
-            <span class="glyphicon glyphicon-shopping-cart"></span> Cart
-            <span class="badge cart-count" style="display:none;"></span>
+        <a href="@Url.Action("Index", "Favorites", new { area = "" })" title="Favorites">
+            <span class="glyphicon glyphicon-heart"></span>
         </a>
     </li>
+
+    <!-- Cart -->
     <li>
-        @Html.ActionLink("Favorites", "Index", "Favorites", new { area = "" }, null)
+        <a href="@Url.Action("Index", "Cart", new { area = "" })" title="Shopping Cart">
+            <span class="glyphicon glyphicon-shopping-cart"></span>
+            <span class="icon-badge cart-count" style="display:none;"></span>
+        </a>
     </li>
-    <li class="dropdown">
+
+    <!-- Profile Dropdown -->
+    <li class="dropdown profile-dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            @User.Identity.Name <span class="caret"></span>
+            <span class="glyphicon glyphicon-user"></span>
         </a>
-        <ul class="dropdown-menu">
-            <li>@Html.ActionLink("My Profile", "Index", "Profile", new { area = "" }, null)</li>
-            <li>@Html.ActionLink("My Orders", "Index", "Orders", new { area = "" }, null)</li>
-            <li>@Html.ActionLink("My Reviews", "Index", "Reviews", new { area = "" }, null)</li>
-            <li>@Html.ActionLink("My Addresses", "Index", "Addresses", new { area = "" }, null)</li>
-            <li role="separator" class="divider"></li>
-            @if (User.IsInRole("seller"))
-            {
-                <li>@Html.ActionLink("Seller Dashboard", "Index", "Dashboard", new { area = "Seller" }, null)</li>
-                <li role="separator" class="divider"></li>
-            }
-            else
-            {
-                <li>@Html.ActionLink("Become a Seller", "Create", "Shop", new { area = "Seller" }, null)</li>
-                <li role="separator" class="divider"></li>
-            }
-            @if (User.IsInRole("admin"))
-            {
-                <li>@Html.ActionLink("Admin Dashboard", "Index", "Dashboard", new { area = "Admin" }, null)</li>
-                <li role="separator" class="divider"></li>
-            }
-            <li>
-                <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post" id="logoutForm" class="navbar-right">
+        <ul class="dropdown-menu dropdown-menu-right">
+            <!-- Profile Header -->
+            <li class="dropdown-header">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                    <div class="profile-info">
+                        <h5>@userName</h5>
+                        <p>@userEmail</p>
+                        <span class="role-badge @userRole.ToLower()">@userRole</span>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Menu Items -->
+            <li class="profile-menu">
+                <a href="@Url.Action("Index", "Orders", new { area = "" })">
+                    <span class="menu-icon glyphicon glyphicon-list-alt"></span>
+                    My Orders
+                </a>
+                <a href="@Url.Action("Index", "Favorites", new { area = "" })">
+                    <span class="menu-icon glyphicon glyphicon-heart"></span>
+                    My Favorites
+                </a>
+                <a href="@Url.Action("Index", "Cart", new { area = "" })">
+                    <span class="menu-icon glyphicon glyphicon-shopping-cart"></span>
+                    Shopping Cart
+                </a>
+                <a href="@Url.Action("Index", "Addresses", new { area = "" })">
+                    <span class="menu-icon glyphicon glyphicon-map-marker"></span>
+                    My Addresses
+                </a>
+
+                @if (User.IsInRole("seller"))
+                {
+                    <div class="divider"></div>
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })">
+                        <span class="menu-icon glyphicon glyphicon-dashboard"></span>
+                        Seller Dashboard
+                    </a>
+                }
+                else
+                {
+                    <div class="divider"></div>
+                    <a href="@Url.Action("Create", "Shop", new { area = "Seller" })">
+                        <span class="menu-icon glyphicon glyphicon-plus"></span>
+                        Become a Seller
+                    </a>
+                }
+
+                @if (User.IsInRole("admin"))
+                {
+                    <div class="divider"></div>
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" style="color: var(--danger-red);">
+                        <span class="menu-icon glyphicon glyphicon-cog"></span>
+                        Admin Dashboard
+                    </a>
+                }
+            </li>
+
+            <!-- Logout -->
+            <li class="profile-logout">
+                <form action="@Url.Action("Logout", "Account", new { area = "" })" method="post" id="logoutForm">
                     @Html.AntiForgeryToken()
-                    <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
+                    <button type="submit">
+                        <span class="glyphicon glyphicon-log-out"></span>
+                        Logout
+                    </button>
                 </form>
             </li>
         </ul>
@@ -48,6 +123,10 @@
 }
 else
 {
-    <li>@Html.ActionLink("Log in", "Login", "Account", new { area = "" }, null)</li>
-    <li>@Html.ActionLink("Register", "Register", "Account", new { area = "" }, null)</li>
+    <li>
+        <a href="@Url.Action("Login", "Account", new { area = "" })" class="btn btn-link">Log in</a>
+    </li>
+    <li>
+        <a href="@Url.Action("Register", "Account", new { area = "" })" class="btn btn-primary btn-sm">Register</a>
+    </li>
 }

@@ -1,39 +1,40 @@
 @model ShoppingApp.Models.Domain.Product
 
-<div class="col-sm-6 col-md-3">
-    <div class="thumbnail clickable" data-href="@Url.Action("Details", "Products", new { id = Model.ProductId })">
+<div class="product-card" data-href="@Url.Action("Details", "Products", new { id = Model.ProductId })">
+    <div class="product-card-image">
         @if (!string.IsNullOrEmpty(Model.MainImageUrl))
         {
-            <img src="@Model.MainImageUrl" alt="@Model.ProductName" style="height: 200px; object-fit: cover;">
+            <img src="@Model.MainImageUrl" alt="@Model.ProductName">
         }
         else
         {
-            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="@Model.ProductName" style="height: 200px; object-fit: cover;">
+            <img src="https://via.placeholder.com/300x300?text=No+Image" alt="@Model.ProductName">
         }
-        <div class="caption">
-            <h4>
-                @(Model.ProductName.Length > 30 ? Model.ProductName.Substring(0, 27) + "..." : Model.ProductName)
-            </h4>
-            <p class="text-muted">
-                @Model.Shop.ShopName
-            </p>
-            <p>
-                <span class="label label-warning">
-                    <span class="glyphicon glyphicon-star"></span> @Model.AverageRating.ToString("F1")
-                </span>
-                <span class="text-muted">(@Model.TotalReviews reviews)</span>
-            </p>
-            <h4 class="text-primary">$@Model.Price.ToString("F2")</h4>
-            <p>
-                @if (Model.StockQuantity > 0)
-                {
-                    <span class="label label-success">In Stock</span>
-                }
-                else
-                {
-                    <span class="label label-danger">Out of Stock</span>
-                }
-            </p>
+        @if (Request.IsAuthenticated)
+        {
+            <button type="button" class="product-card-favorite btn-add-favorite" data-product-id="@Model.ProductId" title="Add to favorites">
+                <span class="heart-icon glyphicon glyphicon-heart-empty"></span>
+            </button>
+        }
+    </div>
+    <div class="product-card-body">
+        <div class="product-card-title">
+            @(Model.ProductName.Length > 40 ? Model.ProductName.Substring(0, 37) + "..." : Model.ProductName)
         </div>
+        <div class="product-card-price">
+            $@Model.Price.ToString("F2")
+        </div>
+        @if (Model.StockQuantity > 0)
+        {
+            <button type="button" class="btn-add-cart" data-product-id="@Model.ProductId">
+                Add to Cart
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn-add-cart" disabled style="background-color: var(--text-muted);">
+                Out of Stock
+            </button>
+        }
     </div>
 </div>

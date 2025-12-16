@@ -1,27 +1,111 @@
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
+@using ShoppingApp.Models.Identity
+@using System.Data.Entity
+@{
+    var categoriesWithSubs = new List<dynamic>();
+    using (var db = new ApplicationDbContext())
+    {
+        var parentCategories = db.Categories
+            .Where(c => c.ParentCategoryId == null)
+            .OrderBy(c => c.CategoryName)
+            .Select(c => new { c.CategoryId, c.CategoryName })
+            .ToList();
+
+        foreach (var parent in parentCategories)
+        {
+            var subs = db.Categories
+                .Where(c => c.ParentCategoryId == parent.CategoryId)
+                .OrderBy(c => c.CategoryName)
+                .Select(c => new { c.CategoryId, c.CategoryName })
+                .ToList();
+
+            categoriesWithSubs.Add(new {
+                CategoryId = parent.CategoryId,
+                CategoryName = parent.CategoryName,
+                SubCategories = subs
+            });
+        }
+    }
+}
+
+<header class="site-header">
+    <!-- Top Row: Brand -->
+    <div class="header-top">
+        <div class="container">
+            <a class="site-brand" href="@Url.Action("Index", "Home", new { area = "" })">
+                MINIMAL<span>SHOP</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Categories + Search + Icons -->
+    <nav class="header-nav">
+        <div class="container">
+            <!-- Mobile Toggle -->
+            <button type="button" class="nav-toggle" data-toggle="collapse" data-target="#main-nav">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            @Html.ActionLink("ShoppingApp", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li>@Html.ActionLink("Products", "Index", "Products", new { area = "" }, null)</li>
-            </ul>
-            <form class="navbar-form navbar-left" action="@Url.Action("Index", "Products")" method="get">
-                <div class="form-group">
-                    <input type="text" name="SearchTerm" class="form-control" placeholder="Search products...">
+
+            <div class="collapse nav-collapse" id="main-nav">
+                <!-- Category Navigation -->
+                <ul class="nav-categories">
+                    <li>
+                        <a href="@Url.Action("Index", "Products", new { area = "" })">All</a>
+                    </li>
+                    @foreach (var category in categoriesWithSubs.Take(6))
+                    {
+                        if (category.SubCategories != null && category.SubCategories.Count > 0)
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    @category.CategoryName <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                                            All @category.CategoryName
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    @foreach (var sub in category.SubCategories)
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Products", new { CategoryId = sub.CategoryId })">
+                                                @sub.CategoryName
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                                    @category.CategoryName
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <!-- Right Section: Search + Icons -->
+                <div class="nav-right">
+                    <!-- Search Box -->
+                    <form action="@Url.Action("Index", "Products")" method="get" class="nav-search">
+                        <input type="text" name="SearchTerm" placeholder="Search products..." />
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </form>
+
+                    <!-- Icons -->
+                    <ul class="nav-icons">
+                        @Html.Partial("_LoginPartial")
+                    </ul>
                 </div>
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
-            <ul class="nav navbar-nav navbar-right">
-                @Html.Partial("_LoginPartial")
-            </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+</header>

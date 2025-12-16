@@ -4,20 +4,22 @@
     ViewBag.Title = "Shopping Cart";
 }
 
-<h2>Shopping Cart</h2>
+<div class="page-header">
+    <h1>Shopping Cart</h1>
+</div>
 
 @if (Model.Items.Any())
 {
     <div class="row">
         <div class="col-md-8">
-            <table class="table table-striped">
+            <table class="table table-modern">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Price</th>
                         <th style="width: 150px;">Quantity</th>
                         <th>Total</th>
-                        <th></th>
+                        <th style="width: 50px;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,17 +27,16 @@
                     {
                         <tr>
                             <td>
-                                <div class="media">
+                                <div style="display: flex; align-items: center; gap: 12px;">
                                     @if (!string.IsNullOrEmpty(item.ProductImage))
                                     {
-                                        <div class="media-left">
-                                            <img src="@item.ProductImage" alt="@item.ProductName" style="width: 60px; height: 60px; object-fit: cover;">
-                                        </div>
+                                        <img src="@item.ProductImage" alt="@item.ProductName" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
                                     }
-                                    <div class="media-body">
-                                        <h4 class="media-heading">
+                                    <div>
+                                        <strong>
                                             @Html.ActionLink(item.ProductName, "Details", "Products", new { id = item.ProductId }, null)
-                                        </h4>
+                                        </strong>
+                                        <br />
                                         <small class="text-muted">@item.ShopName</small>
                                     </div>
                                 </div>
@@ -60,7 +61,7 @@
                                 {
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.ProductId" />
-                                    <button type="submit" class="btn btn-danger btn-sm">
+                                    <button type="submit" class="btn btn-link text-danger" style="padding: 4px 8px;">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 }
@@ -73,24 +74,27 @@
             @using (Html.BeginForm("Clear", "Cart", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to clear your cart?');">
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to clear your cart?');">
                     <span class="glyphicon glyphicon-remove"></span> Clear Cart
                 </button>
             }
         </div>
 
         <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Order Summary</h3>
+            <div class="summary-card">
+                <h4>Order Summary</h4>
+                <div class="summary-row">
+                    <span>Items</span>
+                    <span>@Model.TotalItems</span>
                 </div>
-                <div class="panel-body">
-                    <p>Items: @Model.TotalItems</p>
-                    <hr />
-                    <h4>Subtotal: <span class="pull-right">$@Model.Subtotal.ToString("F2")</span></h4>
-                    <hr />
-                    @Html.ActionLink("Proceed to Checkout", "Index", "Checkout", null, new { @class = "btn btn-success btn-block btn-lg" })
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                    <span>Subtotal</span>
+                    <span>$@Model.Subtotal.ToString("F2")</span>
                 </div>
+                <a href="@Url.Action("Index", "Checkout")" class="btn btn-primary btn-block" style="margin-top: 20px;">
+                    Proceed to Checkout
+                </a>
             </div>
         </div>
     </div>
@@ -98,7 +102,10 @@
 else
 {
     <div class="alert alert-info">
-        <p>Your cart is empty.</p>
-        <p>@Html.ActionLink("Continue Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })</p>
+        <h4>Your cart is empty</h4>
+        <p>Browse our products and add items to your cart.</p>
+        <p>
+            @Html.ActionLink("Continue Shopping", "Index", "Products", null, new { @class = "btn btn-primary" })
+        </p>
     </div>
 }

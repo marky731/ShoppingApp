@@ -4,75 +4,123 @@
     ViewBag.Title = "Products";
 }
 
-<h2>Products</h2>
+<!-- Category Navigation -->
+<nav class="category-nav">
+    <a href="@Url.Action("Index", "Products")" class="@(Model.Filters.CategoryId == null ? "active" : "")">All Categories</a>
+    @foreach (var category in Model.Categories)
+    {
+        if (category.SubCategories != null && category.SubCategories.Any())
+        {
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle @(Model.Filters.CategoryId == category.CategoryId ? "active" : "")" data-toggle="dropdown">
+                    @category.CategoryName <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="@Url.Action("Index", new { CategoryId = category.CategoryId })">
+                            All @category.CategoryName
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    @foreach (var sub in category.SubCategories)
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", new { CategoryId = sub.CategoryId })">
+                                @sub.CategoryName
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", new { CategoryId = category.CategoryId })"
+               class="@(Model.Filters.CategoryId == category.CategoryId ? "active" : "")">
+                @category.CategoryName
+            </a>
+        }
+    }
+</nav>
 
 <div class="row">
+    <!-- Sidebar Filters -->
     <div class="col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Filters</h3>
-            </div>
-            <div class="panel-body">
-                @using (Html.BeginForm("Index", "Products", FormMethod.Get))
-                {
-                    <div class="form-group">
-                        <label>Search</label>
-                        <input type="text" name="SearchTerm" value="@Model.Filters.SearchTerm" class="form-control" placeholder="Search..." />
-                    </div>
+        <div class="sidebar-filter">
+            <h3>Filters</h3>
+            @using (Html.BeginForm("Index", "Products", FormMethod.Get))
+            {
+                <div class="form-group">
+                    <label>Search</label>
+                    <input type="text" name="SearchTerm" value="@Model.Filters.SearchTerm" class="form-control" placeholder="Search products..." />
+                </div>
 
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select name="CategoryId" class="form-control">
-                            <option value="">All Categories</option>
-                            @foreach (var category in Model.Categories)
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="CategoryId" class="form-control">
+                        <option value="">All Categories</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryId" @(Model.Filters.CategoryId == category.CategoryId ? "selected" : "")>
+                                @category.CategoryName
+                            </option>
+                            foreach (var sub in category.SubCategories)
                             {
-                                <option value="@category.CategoryId" @(Model.Filters.CategoryId == category.CategoryId ? "selected" : "")>
-                                    @category.CategoryName
+                                <option value="@sub.CategoryId" @(Model.Filters.CategoryId == sub.CategoryId ? "selected" : "")>
+                                    &nbsp;&nbsp;- @sub.CategoryName
                                 </option>
-                                foreach (var sub in category.SubCategories)
-                                {
-                                    <option value="@sub.CategoryId" @(Model.Filters.CategoryId == sub.CategoryId ? "selected" : "")>
-                                        &nbsp;&nbsp;- @sub.CategoryName
-                                    </option>
-                                }
                             }
-                        </select>
-                    </div>
+                        }
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label>Min Price</label>
-                        <input type="number" name="MinPrice" value="@Model.Filters.MinPrice" class="form-control" placeholder="Min price" />
-                    </div>
+                <div class="form-group">
+                    <label>Min Price</label>
+                    <input type="number" name="MinPrice" value="@Model.Filters.MinPrice" class="form-control" placeholder="Min" />
+                </div>
 
-                    <div class="form-group">
-                        <label>Max Price</label>
-                        <input type="number" name="MaxPrice" value="@Model.Filters.MaxPrice" class="form-control" placeholder="Max price" />
-                    </div>
+                <div class="form-group">
+                    <label>Max Price</label>
+                    <input type="number" name="MaxPrice" value="@Model.Filters.MaxPrice" class="form-control" placeholder="Max" />
+                </div>
 
-                    <div class="form-group">
-                        <label>Sort By</label>
-                        <select name="SortBy" class="form-control">
-                            <option value="newest" @(Model.Filters.SortBy == "newest" ? "selected" : "")>Newest</option>
-                            <option value="price_low" @(Model.Filters.SortBy == "price_low" ? "selected" : "")>Price: Low to High</option>
-                            <option value="price_high" @(Model.Filters.SortBy == "price_high" ? "selected" : "")>Price: High to Low</option>
-                            <option value="rating" @(Model.Filters.SortBy == "rating" ? "selected" : "")>Top Rated</option>
-                            <option value="popular" @(Model.Filters.SortBy == "popular" ? "selected" : "")>Most Popular</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Sort By</label>
+                    <select name="SortBy" class="form-control">
+                        <option value="newest" @(Model.Filters.SortBy == "newest" ? "selected" : "")>Newest</option>
+                        <option value="price_low" @(Model.Filters.SortBy == "price_low" ? "selected" : "")>Price: Low to High</option>
+                        <option value="price_high" @(Model.Filters.SortBy == "price_high" ? "selected" : "")>Price: High to Low</option>
+                        <option value="rating" @(Model.Filters.SortBy == "rating" ? "selected" : "")>Top Rated</option>
+                        <option value="popular" @(Model.Filters.SortBy == "popular" ? "selected" : "")>Most Popular</option>
+                    </select>
+                </div>
 
-                    <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
-                    <a href="@Url.Action("Index", "Products")" class="btn btn-default btn-block">Clear Filters</a>
-                }
-            </div>
+                <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-link btn-block">Clear Filters</a>
+            }
         </div>
     </div>
 
+    <!-- Products Grid -->
     <div class="col-md-9">
         @if (Model.Products.Any())
         {
-            <p class="text-muted">Showing @Model.Products.FirstItemOnPage - @Model.Products.LastItemOnPage of @Model.Products.TotalItemCount products</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <p class="text-muted" style="margin: 0;">
+                    Showing @Model.Products.FirstItemOnPage - @Model.Products.LastItemOnPage of @Model.Products.TotalItemCount products
+                </p>
+                <div class="sort-dropdown">
+                    <label>Sort by</label>
+                    <select onchange="window.location.href=this.value" class="form-control" style="width: auto; display: inline-block;">
+                        <option value="@Url.Action("Index", new { SearchTerm = Model.Filters.SearchTerm, CategoryId = Model.Filters.CategoryId, MinPrice = Model.Filters.MinPrice, MaxPrice = Model.Filters.MaxPrice, SortBy = "newest" })" @(Model.Filters.SortBy == "newest" ? "selected" : "")>Newest</option>
+                        <option value="@Url.Action("Index", new { SearchTerm = Model.Filters.SearchTerm, CategoryId = Model.Filters.CategoryId, MinPrice = Model.Filters.MinPrice, MaxPrice = Model.Filters.MaxPrice, SortBy = "price_low" })" @(Model.Filters.SortBy == "price_low" ? "selected" : "")>Price: Low to High</option>
+                        <option value="@Url.Action("Index", new { SearchTerm = Model.Filters.SearchTerm, CategoryId = Model.Filters.CategoryId, MinPrice = Model.Filters.MinPrice, MaxPrice = Model.Filters.MaxPrice, SortBy = "price_high" })" @(Model.Filters.SortBy == "price_high" ? "selected" : "")>Price: High to Low</option>
+                        <option value="@Url.Action("Index", new { SearchTerm = Model.Filters.SearchTerm, CategoryId = Model.Filters.CategoryId, MinPrice = Model.Filters.MinPrice, MaxPrice = Model.Filters.MaxPrice, SortBy = "rating" })" @(Model.Filters.SortBy == "rating" ? "selected" : "")>Top Rated</option>
+                    </select>
+                </div>
+            </div>
 
-            <div class="row">
+            <div class="product-grid">
                 @foreach (var product in Model.Products)
                 {
                     @Html.Partial("_ProductCard", product)
@@ -94,7 +142,8 @@
         else
         {
             <div class="alert alert-info">
-                <p>No products found matching your criteria.</p>
+                <h4>No products found</h4>
+                <p>Try adjusting your filters or search terms.</p>
             </div>
         }
     </div>

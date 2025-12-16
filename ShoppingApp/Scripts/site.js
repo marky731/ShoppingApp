@@ -1,4 +1,4 @@
-// ShoppingApp Custom JavaScript
+// MINIMALSHOP - Modern JavaScript
 
 $(function () {
     // Initialize tooltips
@@ -10,9 +10,17 @@ $(function () {
     }, 5000);
 
     // Make elements with .clickable class navigate to their data-href
-    $('.clickable[data-href]').click(function (e) {
-        // Don't navigate if clicking on a button, link, or input
-        if ($(e.target).closest('a, button, input, .btn').length) {
+    $(document).on('click', '.clickable[data-href]', function (e) {
+        // Don't navigate if clicking on a button, link, input, or interactive element
+        if ($(e.target).closest('a, button, input, .btn, .btn-add-favorite, .btn-add-cart, .product-card-favorite').length) {
+            return;
+        }
+        window.location.href = $(this).data('href');
+    });
+
+    // Make product cards clickable
+    $(document).on('click', '.product-card[data-href]', function (e) {
+        if ($(e.target).closest('button, .product-card-favorite, .btn-add-cart').length) {
             return;
         }
         window.location.href = $(this).data('href');
@@ -54,9 +62,10 @@ $(function () {
         updateCartCount();
     }
 
-    // Add to favorites via AJAX
+    // Add to favorites via AJAX (old style for backward compatibility)
     $('.btn-favorite').click(function (e) {
         e.preventDefault();
+        e.stopPropagation();
         var btn = $(this);
         var productId = btn.data('product-id');
         var action = btn.hasClass('favorited') ? 'Remove' : 'Add';
@@ -69,6 +78,55 @@ $(function () {
         });
     });
 
+    // Modern product card - Add to favorites
+    $(document).on('click', '.btn-add-favorite, .product-card-favorite', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var btn = $(this);
+        var productId = btn.data('product-id');
+        var isFavorited = btn.hasClass('favorited');
+        var action = isFavorited ? 'Remove' : 'Add';
+
+        $.post('/Favorites/' + action, { productId: productId }, function (result) {
+            if (result.success) {
+                btn.toggleClass('favorited');
+                var icon = btn.find('.heart-icon, .glyphicon');
+                if (btn.hasClass('favorited')) {
+                    icon.removeClass('glyphicon-heart-empty').addClass('glyphicon-heart');
+                } else {
+                    icon.removeClass('glyphicon-heart').addClass('glyphicon-heart-empty');
+                }
+            }
+        });
+    });
+
+    // Modern product card - Add to cart
+    $(document).on('click', '.btn-add-cart', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var btn = $(this);
+        var productId = btn.data('product-id');
+        var originalText = btn.text();
+
+        btn.prop('disabled', true).text('Adding...');
+
+        $.post('/Cart/AddJson', { productId: productId, quantity: 1 }, function (result) {
+            if (result.success) {
+                btn.text('Added!');
+                updateCartCount();
+                setTimeout(function () {
+                    btn.prop('disabled', false).text(originalText);
+                }, 1500);
+            } else {
+                btn.prop('disabled', false).text(originalText);
+                alert(result.message || 'Error adding to cart');
+            }
+        }).fail(function () {
+            btn.prop('disabled', false).text(originalText);
+            alert('Error adding to cart. Please try again.');
+        });
+    });
+
     // Product image gallery
     $('.product-gallery img').click(function () {
         var src = $(this).attr('src');
@@ -78,32 +136,25 @@ $(function () {
     });
 
     // Form validation styling
-    $.validator.setDefaults({
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.form-group').removeClass('has-error');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
+    if ($.validator) {
+        $.validator.setDefaults({
+            highlight: function (element) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorElement: 'span',
+            errorClass: 'help-block',
+            errorPlacement: function (error, element) {
+                if (element.parent('.input-group').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
             }
-        }
-    });
-
-    // Search autocomplete (placeholder for future implementation)
-    // var searchInput = $('input[name="SearchTerm"]');
-    // if (searchInput.length) {
-    //     searchInput.autocomplete({
-    //         source: '/Products/Search',
-    //         minLength: 2
-    //     });
-    // }
+        });
+    }
 
     // Print order
     $('.btn-print-order').click(function () {
@@ -122,5 +173,22 @@ $(function () {
     $('.scroll-to-top').click(function () {
         $('html, body').animate({ scrollTop: 0 }, 'slow');
         return false;
+    });
+
+    // Category dropdown hover (for desktop)
+    if ($(window).width() > 768) {
+        $('.category-nav .dropdown').hover(
+            function () {
+                $(this).find('.dropdown-menu').stop(true, true).fadeIn(200);
+            },
+            function () {
+                $(this).find('.dropdown-menu').stop(true, true).fadeOut(200);
+            }
+        );
+    }
+
+    // Mobile menu toggle
+    $('.navbar-toggle').click(function () {
+        $(this).toggleClass('active');
     });
 });

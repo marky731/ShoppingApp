@@ -1,27 +1,29 @@
 <footer>
-    <div class="row">
-        <div class="col-md-4">
-            <h4>ShoppingApp</h4>
-            <p>Your one-stop multi-vendor marketplace for all your shopping needs.</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h4>MINIMALSHOP</h4>
+                <p>Your one-stop multi-vendor marketplace for all your shopping needs.</p>
+            </div>
+            <div class="col-md-4">
+                <h4>Quick Links</h4>
+                <ul class="list-unstyled">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Products", "Index", "Products")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h4>Contact Us</h4>
+                <p>Email: support@minimalshop.com</p>
+                <p>Phone: +1 234 567 890</p>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h4>Quick Links</h4>
-            <ul class="list-unstyled">
-                <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                <li>@Html.ActionLink("Products", "Index", "Products")</li>
-                <li>@Html.ActionLink("About", "About", "Home")</li>
-                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-            </ul>
-        </div>
-        <div class="col-md-4">
-            <h4>Contact Us</h4>
-            <p>Email: support@shoppingapp.com</p>
-            <p>Phone: +1 234 567 890</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <p>&copy; @DateTime.Now.Year - ShoppingApp. All rights reserved.</p>
+        <div class="row footer-bottom">
+            <div class="col-md-12 text-center">
+                <p>&copy; @DateTime.Now.Year MINIMALSHOP. All rights reserved.</p>
+            </div>
         </div>
     </div>
 </footer>

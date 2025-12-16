@@ -208,3 +208,9 @@ ApplicationInsights.config
 .env
 .env.local
 .env.*.local
+
+
+*.jpg
+*.jpeg
+*.png
+*.img 

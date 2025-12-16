@@ -1,123 +1,81 @@
 @model PagedList.IPagedList<ShoppingApp.Models.ViewModels.AdminUserListItemViewModel>
 @{
-    ViewBag.Title = "Users";
+    ViewBag.Title = "User Management";
 }
 
-<h1 class="page-header">Users</h1>
-
-<!-- Filters -->
-<div class="panel panel-default">
-    <div class="panel-body">
-        @using (Html.BeginForm("Index", "Users", FormMethod.Get, new { @class = "form-inline" }))
-        {
-            <div class="form-group">
-                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by name or email..." />
-            </div>
-            <div class="form-group">
-                @Html.DropDownList("role", new SelectList(new[] {
-                    new { Value = "", Text = "All Roles" },
-                    new { Value = "customer", Text = "Customer" },
-                    new { Value = "seller", Text = "Seller" },
-                    new { Value = "admin", Text = "Admin" }
-                }, "Value", "Text", ViewBag.Role), new { @class = "form-control" })
-            </div>
-            <div class="form-group">
-                @Html.DropDownList("status", new SelectList(new[] {
-                    new { Value = "", Text = "All Status" },
-                    new { Value = "active", Text = "Active" },
-                    new { Value = "suspended", Text = "Suspended" }
-                }, "Value", "Text", ViewBag.Status), new { @class = "form-control" })
-            </div>
-            <button type="submit" class="btn btn-default">Filter</button>
-            <a href="@Url.Action("Index")" class="btn btn-link">Clear</a>
-        }
+<div class="page-header">
+    <h1>User Management</h1>
+    <div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
+        <div class="search-box" style="width: 200px;">
+            <form action="@Url.Action("Index")" method="get">
+                <input type="text" name="search" value="@ViewBag.Search" placeholder="Search users..." class="form-control" />
+            </form>
+        </div>
+        <select name="role" onchange="window.location.href='@Url.Action("Index")?role=' + this.value" class="form-control" style="width: auto;">
+            <option value="">All Roles</option>
+            <option value="admin" @(ViewBag.Role == "admin" ? "selected" : "")>Admin</option>
+            <option value="seller" @(ViewBag.Role == "seller" ? "selected" : "")>Seller</option>
+            <option value="customer" @(ViewBag.Role == "customer" ? "selected" : "")>Customer</option>
+        </select>
     </div>
 </div>
 
 @if (Model.Any())
 {
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Joined</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+    <table class="table table-modern">
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th style="width: 40px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr class="clickable" data-href="@Url.Action("Details", new { id = user.Id })">
+                    <td class="text-muted">@user.Id.Substring(0, Math.Min(6, user.Id.Length))</td>
+                    <td><strong>@user.FirstName @user.LastName</strong></td>
+                    <td class="text-muted">@user.Email</td>
+                    <td>
+                        @foreach (var role in user.Roles)
+                        {
+                            if (role.ToLower() == "admin")
+                            {
+                                <span class="role-badge admin">Admin</span>
+                            }
+                            else if (role.ToLower() == "seller")
+                            {
+                                <span class="role-badge seller">Seller</span>
+                            }
+                            else
+                            {
+                                <span class="role-badge customer">Customer</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (user.IsActive)
+                        {
+                            <span class="status-badge active">Active</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge inactive">Suspended</span>
+                        }
+                    </td>
+                    <td class="text-muted">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <span class="glyphicon glyphicon-chevron-right row-chevron"></span>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
-                    <tr>
-                        <td>
-                            <strong>@user.FirstName @user.LastName</strong>
-                        </td>
-                        <td>@user.Email</td>
-                        <td>
-                            @foreach (var role in user.Roles)
-                            {
-                                if (role == "admin")
-                                {
-                                    <span class="label label-danger">@role</span>
-                                }
-                                else if (role == "seller")
-                                {
-                                    <span class="label label-info">@role</span>
-                                }
-                                else
-                                {
-                                    <span class="label label-default">@role</span>
-                                }
-                            }
-                        </td>
-                        <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                        <td>
-                            @if (user.IsActive)
-                            {
-                                <span class="label label-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="label label-warning">Suspended</span>
-                            }
-                        </td>
-                        <td>
-                            @if (!user.Roles.Contains("admin"))
-                            {
-                                if (user.IsActive)
-                                {
-                                    using (Html.BeginForm("Suspend", "Users", new { area = "Admin", id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-xs btn-warning" onclick="return confirm('Are you sure you want to suspend this user?');">
-                                            Suspend
-                                        </button>
-                                    }
-                                }
-                                else
-                                {
-                                    using (Html.BeginForm("Activate", "Users", new { area = "Admin", id = user.Id }, FormMethod.Post, new { style = "display:inline" }))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-xs btn-success">
-                                            Activate
-                                        </button>
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <span class="text-muted">-</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
 
     <!-- Pagination -->
     <div class="text-center">
@@ -127,6 +85,7 @@
 else
 {
     <div class="alert alert-info">
-        No users found matching your criteria.
+        <h4>No users found</h4>
+        <p>No users match your search criteria.</p>
     </div>
 }

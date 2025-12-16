@@ -1,84 +1,119 @@
 @model ShoppingApp.Models.ViewModels.HomeViewModel
+@using Microsoft.AspNet.Identity
 
 @{
     ViewBag.Title = "Home";
+    var isAdmin = User.IsInRole("admin");
+    var isSeller = User.IsInRole("seller");
+    string userName = "";
+
+    if (Request.IsAuthenticated)
+    {
+        userName = User.Identity.Name;
+        using (var db = new ShoppingApp.Models.Identity.ApplicationDbContext())
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user != null && !string.IsNullOrEmpty(user.FullName))
+            {
+                userName = user.FullName.Split(' ')[0];
+            }
+        }
+    }
 }
 
-<div class="jumbotron">
-    <h1>Welcome to ShoppingApp</h1>
-    <p class="lead">Your one-stop multi-vendor marketplace for all your shopping needs.</p>
-    <p>
-        @Html.ActionLink("Browse Products", "Index", "Products", null, new { @class = "btn btn-primary btn-lg" })
-    </p>
+<!-- Hero Section -->
+<div class="hero-minimal">
+    @if (Request.IsAuthenticated)
+    {
+        <h1>Welcome back, @userName!</h1>
+        if (isAdmin)
+        {
+            <p>Manage your platform from the admin dashboard.</p>
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="btn btn-primary btn-hero">
+                Go to Admin Dashboard
+            </a>
+        }
+        else if (isSeller)
+        {
+            <p>Manage your shop and products from the seller dashboard.</p>
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })" class="btn btn-primary btn-hero">
+                Go to Seller Dashboard
+            </a>
+        }
+        else
+        {
+            <p>Discover amazing products from our curated collection.</p>
+            <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero">
+                Shop Now
+            </a>
+        }
+    }
+    else
+    {
+        <h1>Welcome to MINIMALSHOP</h1>
+        <p>Discover amazing products from our curated collection.</p>
+        <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero">
+            Shop Now
+        </a>
+    }
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <h2>Shop by Category</h2>
-        <nav class="navbar navbar-default" style="margin-bottom: 20px;">
-            <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    @foreach (var category in Model.Categories)
+<!-- Category Navigation -->
+<nav class="category-nav">
+    <a href="@Url.Action("Index", "Products")" class="active">All Categories</a>
+    @foreach (var category in Model.Categories)
+    {
+        if (category.SubCategories != null && category.SubCategories.Any())
+        {
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    @category.CategoryName <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                            All @category.CategoryName
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    @foreach (var sub in category.SubCategories)
                     {
-                        if (category.SubCategories.Any())
-                        {
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                                    @category.CategoryName <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
-                                            All @category.CategoryName
-                                        </a>
-                                    </li>
-                                    <li class="divider"></li>
-                                    @foreach (var sub in category.SubCategories)
-                                    {
-                                        <li>
-                                            <a href="@Url.Action("Index", "Products", new { CategoryId = sub.CategoryId })">
-                                                @sub.CategoryName
-                                            </a>
-                                        </li>
-                                    }
-                                </ul>
-                            </li>
-                        }
-                        else
-                        {
-                            <li>
-                                <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
-                                    @category.CategoryName
-                                </a>
-                            </li>
-                        }
+                        <li>
+                            <a href="@Url.Action("Index", "Products", new { CategoryId = sub.CategoryId })">
+                                @sub.CategoryName
+                            </a>
+                        </li>
                     }
                 </ul>
             </div>
-        </nav>
-    </div>
-</div>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", "Products", new { CategoryId = category.CategoryId })">
+                @category.CategoryName
+            </a>
+        }
+    }
+</nav>
 
-<div class="row">
-    <div class="col-md-12">
-        <h2>Featured Products</h2>
-        <div class="row">
-            @foreach (var product in Model.FeaturedProducts)
-            {
-                @Html.Partial("_ProductCard", product)
-            }
-        </div>
+<!-- Featured Products -->
+<section style="margin-bottom: 48px;">
+    <h2 style="margin-bottom: 24px;">Featured Products</h2>
+    <div class="product-grid">
+        @foreach (var product in Model.FeaturedProducts)
+        {
+            @Html.Partial("_ProductCard", product)
+        }
     </div>
-</div>
+</section>
 
-<div class="row">
-    <div class="col-md-12">
-        <h2>New Arrivals</h2>
-        <div class="row">
-            @foreach (var product in Model.NewArrivals)
-            {
-                @Html.Partial("_ProductCard", product)
-            }
-        </div>
+<!-- New Arrivals -->
+<section style="margin-bottom: 48px;">
+    <h2 style="margin-bottom: 24px;">New Arrivals</h2>
+    <div class="product-grid">
+        @foreach (var product in Model.NewArrivals)
+        {
+            @Html.Partial("_ProductCard", product)
+        }
     </div>
-</div>
+</section>

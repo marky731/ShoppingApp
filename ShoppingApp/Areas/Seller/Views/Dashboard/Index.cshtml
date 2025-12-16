@@ -1,98 +1,119 @@
 @model ShoppingApp.Models.ViewModels.SellerDashboardViewModel
 @{
-    ViewBag.Title = "Dashboard";
+    ViewBag.Title = "Overview";
 }
 
-<h1 class="page-header">Dashboard</h1>
+<style>
+    .stat-card {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        transition: box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .stat-card .stat-value {
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    .stat-card .stat-label {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+    }
+    .modern-panel {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .modern-panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .modern-panel-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    .modern-panel-footer {
+        padding: 12px 20px;
+        background-color: var(--bg-light);
+        text-align: right;
+    }
+    .modern-panel-footer a {
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .modern-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border-color);
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: background-color 0.15s ease;
+    }
+    .modern-list-item:hover {
+        background-color: var(--bg-light);
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+    .modern-list-item:last-child {
+        border-bottom: none;
+    }
+    .stock-badge {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="page-header-modern">
+    <h1>Overview</h1>
+</div>
 
 <!-- Stats Cards -->
 <div class="row">
     <div class="col-sm-6 col-md-3">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-shopping-cart" style="font-size: 40px;"></span>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 24px;">@Model.TotalOrders</div>
-                        <div>Total Orders</div>
-                    </div>
-                </div>
-            </div>
-            <a href="@Url.Action("Index", "Orders")">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+        <div class="stat-card">
+            <div class="stat-value">@Model.TotalOrders</div>
+            <div class="stat-label">Total Orders</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-usd" style="font-size: 40px;"></span>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 24px;">$@Model.TotalRevenue.ToString("N2")</div>
-                        <div>Total Revenue</div>
-                    </div>
-                </div>
-            </div>
-            <a href="@Url.Action("Index", "Orders")">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+        <div class="stat-card">
+            <div class="stat-value">$@Model.TotalRevenue.ToString("N0")</div>
+            <div class="stat-label">Total Revenue</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="panel panel-warning">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-tags" style="font-size: 40px;"></span>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 24px;">@Model.TotalProducts</div>
-                        <div>Products</div>
-                    </div>
-                </div>
-            </div>
-            <a href="@Url.Action("Index", "Products")">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+        <div class="stat-card">
+            <div class="stat-value">@Model.TotalProducts</div>
+            <div class="stat-label">Products</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-time" style="font-size: 40px;"></span>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 24px;">@Model.PendingOrders</div>
-                        <div>Pending Orders</div>
-                    </div>
-                </div>
-            </div>
-            <a href="@Url.Action("Index", "Orders", new { status = "Pending" })">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+        <div class="stat-card">
+            <div class="stat-value">@Model.PendingOrders</div>
+            <div class="stat-label">Pending Orders</div>
         </div>
     </div>
 </div>
