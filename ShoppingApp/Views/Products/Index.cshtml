@@ -4,45 +4,6 @@
     ViewBag.Title = "Products";
 }
 
-<!-- Category Navigation -->
-<nav class="category-nav">
-    <a href="@Url.Action("Index", "Products")" class="@(Model.Filters.CategoryId == null ? "active" : "")">All Categories</a>
-    @foreach (var category in Model.Categories)
-    {
-        if (category.SubCategories != null && category.SubCategories.Any())
-        {
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle @(Model.Filters.CategoryId == category.CategoryId ? "active" : "")" data-toggle="dropdown">
-                    @category.CategoryName <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="@Url.Action("Index", new { CategoryId = category.CategoryId })">
-                            All @category.CategoryName
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    @foreach (var sub in category.SubCategories)
-                    {
-                        <li>
-                            <a href="@Url.Action("Index", new { CategoryId = sub.CategoryId })">
-                                @sub.CategoryName
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </div>
-        }
-        else
-        {
-            <a href="@Url.Action("Index", new { CategoryId = category.CategoryId })"
-               class="@(Model.Filters.CategoryId == category.CategoryId ? "active" : "")">
-                @category.CategoryName
-            </a>
-        }
-    }
-</nav>
-
 <div class="row">
     <!-- Sidebar Filters -->
     <div class="col-md-3">

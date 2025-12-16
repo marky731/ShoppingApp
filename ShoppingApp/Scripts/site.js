@@ -4,6 +4,36 @@ $(function () {
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
+    // Discount code apply button
+    $(document).on('click', '#applyDiscountBtn', function () {
+        var code = $('#discountCodeInput').val();
+        var subtotal = parseFloat($('#checkoutSubtotal').data('subtotal')) || 0;
+        var messageDiv = $('#discountMessage');
+
+        if (!code || code.trim() === '') {
+            messageDiv.html('<span class="text-danger">Please enter a discount code.</span>');
+            return;
+        }
+
+        // Show loading state
+        messageDiv.html('<span class="text-info">Applying...</span>');
+
+        $.post('/Checkout/ApplyDiscount', { discountCode: code, subtotal: subtotal })
+            .done(function (result) {
+                if (result.success) {
+                    messageDiv.html('<span class="text-success">' + result.message + '</span>');
+                    $('#discountAmount').text('-$' + result.discountAmount.toFixed(2));
+                    $('#total').text('$' + result.newTotal.toFixed(2));
+                } else {
+                    messageDiv.html('<span class="text-danger">' + result.message + '</span>');
+                }
+            })
+            .fail(function (xhr, status, error) {
+                messageDiv.html('<span class="text-danger">Error applying discount. Please try again.</span>');
+                console.log('AJAX Error:', error);
+            });
+    });
+
     // Auto-dismiss alerts after 5 seconds
     setTimeout(function () {
         $('.alert-dismissible').fadeOut('slow');
@@ -57,10 +87,20 @@ $(function () {
         });
     }
 
-    // Load cart count on page load
-    if ($('.cart-count').length) {
-        updateCartCount();
+    // AJAX favorites count update
+    function updateFavoritesCount() {
+        $.get('/Favorites/Count', function (data) {
+            if (data.count > 0) {
+                $('.favorites-count').text(data.count).show();
+            } else {
+                $('.favorites-count').hide();
+            }
+        });
     }
+
+    // Load cart and favorites counts on page load
+    updateCartCount();
+    updateFavoritesCount();
 
     // Add to favorites via AJAX (old style for backward compatibility)
     $('.btn-favorite').click(function (e) {
@@ -74,6 +114,7 @@ $(function () {
             if (result.success) {
                 btn.toggleClass('favorited btn-default btn-danger');
                 btn.find('.btn-text').text(btn.hasClass('favorited') ? 'Remove from Favorites' : 'Add to Favorites');
+                updateFavoritesCount();
             }
         });
     });
@@ -96,6 +137,7 @@ $(function () {
                 } else {
                     icon.removeClass('glyphicon-heart').addClass('glyphicon-heart-empty');
                 }
+                updateFavoritesCount();
             }
         });
     });

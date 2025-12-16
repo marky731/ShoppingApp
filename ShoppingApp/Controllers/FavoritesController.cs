@@ -148,6 +148,19 @@ namespace ShoppingApp.Controllers
             return Json(new { success = true, message = "Product removed from favorites." });
         }
 
+        // GET: Favorites/Count (AJAX)
+        [AllowAnonymous]
+        public JsonResult Count()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { count = 0 }, JsonRequestBehavior.AllowGet);
+            }
+            var userId = User.Identity.GetUserId();
+            var count = db.Favorites.Count(f => f.UserId == userId);
+            return Json(new { count = count }, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

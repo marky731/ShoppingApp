@@ -52,10 +52,11 @@
                     <h3 class="panel-title">Discount Code</h3>
                 </div>
                 <div class="panel-body">
+                    <span id="checkoutSubtotal" data-subtotal="@Model.Cart.Subtotal"></span>
                     <div class="input-group">
-                        @Html.TextBoxFor(m => m.DiscountCode, new { @class = "form-control", placeholder = "Enter discount code" })
+                        @Html.TextBoxFor(m => m.DiscountCode, new { @class = "form-control", placeholder = "Enter discount code", id = "discountCodeInput" })
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" id="applyDiscount">Apply</button>
+                            <button type="button" class="btn btn-default" id="applyDiscountBtn">Apply</button>
                         </span>
                     </div>
                     <div id="discountMessage" class="help-block"></div>
@@ -105,28 +106,3 @@
     </div>
 }
 
-@section Scripts {
-    <script type="text/javascript">
-        $(function () {
-            var subtotal = @Model.Cart.Subtotal;
-
-            $('#applyDiscount').click(function () {
-                var code = $('#DiscountCode').val();
-                if (!code) {
-                    $('#discountMessage').html('<span class="text-danger">Please enter a discount code.</span>');
-                    return;
-                }
-
-                $.post('@Url.Action("ApplyDiscount", "Checkout")', { discountCode: code, subtotal: subtotal }, function (result) {
-                    if (result.success) {
-                        $('#discountMessage').html('<span class="text-success">' + result.message + '</span>');
-                        $('#discountAmount').text('-$' + result.discountAmount.toFixed(2));
-                        $('#total').text('$' + result.newTotal.toFixed(2));
-                    } else {
-                        $('#discountMessage').html('<span class="text-danger">' + result.message + '</span>');
-                    }
-                });
-            });
-        });
-    </script>
-}

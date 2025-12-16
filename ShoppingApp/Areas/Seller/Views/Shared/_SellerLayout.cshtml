@@ -61,6 +61,12 @@
                         Discounts
                     </a>
                 </li>
+                <li class="@(currentController == "Reviews" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Reviews", new { area = "Seller" })">
+                        <span class="nav-icon glyphicon glyphicon-star"></span>
+                        Reviews
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-footer">
