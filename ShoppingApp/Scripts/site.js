@@ -40,6 +40,11 @@ $(function () {
         });
     }
 
+    // Load cart count on page load
+    if ($('.cart-count').length) {
+        updateCartCount();
+    }
+
     // Add to favorites via AJAX
     $('.btn-favorite').click(function (e) {
         e.preventDefault();

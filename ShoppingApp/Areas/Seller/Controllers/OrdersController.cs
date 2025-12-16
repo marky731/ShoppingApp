@@ -16,7 +16,7 @@ namespace ShoppingApp.Areas.Seller.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Seller/Orders
-        public ActionResult Index(OrderStatus? status, int page = 1)
+        public ActionResult Index(string search, OrderStatus? status, DateTime? fromDate, DateTime? toDate, int page = 1)
         {
             var userId = User.Identity.GetUserId();
             var shop = db.Shops.FirstOrDefault(s => s.SellerId == userId);
@@ -33,9 +33,32 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 .Include(so => so.OrderItems)
                 .Where(so => so.ShopId == shopId);
 
+            // Filter by status
             if (status.HasValue)
             {
                 query = query.Where(so => so.ShopOrderStatus == status.Value);
+            }
+
+            // Filter by search (order number or customer name/email)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                query = query.Where(so =>
+                    so.Order.OrderId.ToString().Contains(search) ||
+                    so.Order.User.FirstName.ToLower().Contains(searchLower) ||
+                    so.Order.User.LastName.ToLower().Contains(searchLower) ||
+                    so.Order.User.Email.ToLower().Contains(searchLower));
+            }
+
+            // Filter by date range
+            if (fromDate.HasValue)
+            {
+                query = query.Where(so => so.Order.OrderDate >= fromDate.Value);
+            }
+            if (toDate.HasValue)
+            {
+                var toDateEnd = toDate.Value.AddDays(1); // Include the entire toDate day
+                query = query.Where(so => so.Order.OrderDate < toDateEnd);
             }
 
             var shopOrders = query.OrderByDescending(so => so.Order.OrderDate).ToList();
@@ -52,7 +75,11 @@ namespace ShoppingApp.Areas.Seller.Controllers
                 Status = so.ShopOrderStatus
             });
 
-            ViewBag.StatusFilter = status;
+            // Preserve filter values in ViewBag
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
 
             return View(viewModel.ToPagedList(page, 10));
         }

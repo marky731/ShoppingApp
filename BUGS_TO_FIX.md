@@ -1,40 +1,29 @@
 # Bugs To Fix - ShoppingApp
 
-## Filter Issues
+## Fixed Issues
 
-### 1. Seller Orders - Filters Not Working
+### 1. Seller Orders - Filters Not Working (FIXED)
 **Priority:** Medium
-**Status:** Open
+**Status:** Resolved
 **Location:**
-- View: `Areas/Seller/Views/Orders/Index.cshtml` (lines 14, 28-29)
-- Controller: `Areas/Seller/Controllers/OrdersController.cs` (line 19)
+- View: `Areas/Seller/Views/Orders/Index.cshtml`
+- Controller: `Areas/Seller/Controllers/OrdersController.cs`
 
-**Description:**
-The Seller Orders page displays filter inputs for `search`, `fromDate`, and `toDate`, but the controller only accepts `status` and `page` parameters. These filters appear in the UI but do nothing when used.
+**Issue:**
+The Seller Orders page displayed filter inputs for `search`, `fromDate`, and `toDate`, but the controller only accepted `status` and `page` parameters.
 
-**View has:**
-```html
-<input type="text" name="search" ... />
-<input type="date" name="fromDate" ... />
-<input type="date" name="toDate" ... />
-```
-
-**Controller accepts:**
-```csharp
-public ActionResult Index(OrderStatus? status, int page = 1)
-```
-
-**Fix Required:**
-Update the controller to accept and process `search`, `fromDate`, and `toDate` parameters:
+**Fix Applied:**
+Updated the controller `Index` action to accept and process all filter parameters:
 ```csharp
 public ActionResult Index(string search, OrderStatus? status, DateTime? fromDate, DateTime? toDate, int page = 1)
-{
-    // Add filtering logic for:
-    // - search: filter by order number or customer name/email
-    // - fromDate: filter orders >= fromDate
-    // - toDate: filter orders <= toDate
-}
 ```
+
+Added filtering logic for:
+- `search`: Filters by order number, customer name, or email
+- `fromDate`: Filters orders on or after the specified date
+- `toDate`: Filters orders on or before the specified date (inclusive)
+
+Added ViewBag values to preserve filter state in the form.
 
 ---
 
@@ -46,6 +35,7 @@ public ActionResult Index(string search, OrderStatus? status, DateTime? fromDate
 | OrdersController | Admin | search, status, shopId | OK |
 | UsersController | Admin | search, role, status | OK |
 | ProductsController | Seller | search, categoryId, status | OK |
+| OrdersController | Seller | search, status, fromDate, toDate | OK |
 | ReviewsController | Seller | rating | OK |
 | OrdersController | Customer | status | OK |
 | ReviewsController | Customer | status | OK |
@@ -60,4 +50,4 @@ public ActionResult Index(string search, OrderStatus? status, DateTime? fromDate
 
 ---
 
-*Last Updated: December 15, 2025*
+*Last Updated: December 16, 2025*

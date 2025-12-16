@@ -163,6 +163,56 @@ namespace ShoppingApp.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: Cart/AddJson (AJAX - for favorites page)
+        [HttpPost]
+        public JsonResult AddJson(int productId, int quantity = 1)
+        {
+            var userId = User.Identity.GetUserId();
+            var product = db.Products.Include(p => p.Shop).FirstOrDefault(p => p.ProductId == productId);
+
+            if (product == null || !product.IsActive || !product.Shop.IsApproved)
+            {
+                return Json(new { success = false, message = "Product not available." });
+            }
+
+            if (quantity > product.StockQuantity)
+            {
+                return Json(new { success = false, message = "Not enough stock available." });
+            }
+
+            var existingCartItem = db.CartItems
+                .FirstOrDefault(c => c.UserId == userId && c.ProductId == productId);
+
+            if (existingCartItem != null)
+            {
+                var newQuantity = existingCartItem.Quantity + quantity;
+                if (newQuantity > product.StockQuantity)
+                {
+                    return Json(new { success = false, message = "Cannot add more than available stock." });
+                }
+                existingCartItem.Quantity = newQuantity;
+            }
+            else
+            {
+                var cartItem = new CartItem
+                {
+                    UserId = userId,
+                    ProductId = productId,
+                    Quantity = quantity,
+                    CreatedAt = DateTime.UtcNow
+                };
+                db.CartItems.Add(cartItem);
+            }
+
+            db.SaveChanges();
+
+            var cartCount = db.CartItems
+                .Where(c => c.UserId == userId)
+                .Sum(c => (int?)c.Quantity) ?? 0;
+
+            return Json(new { success = true, message = "Product added to cart.", cartCount = cartCount });
+        }
+
         // GET: Cart/Count (AJAX)
         public JsonResult Count()
         {

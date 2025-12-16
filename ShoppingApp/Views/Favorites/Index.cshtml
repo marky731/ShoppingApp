@@ -26,7 +26,7 @@
                 <div class="col-xs-6 col-sm-4 col-md-3">
                     <div class="product-card panel panel-default">
                         <div class="product-image">
-                            <a href="@Url.Action("Details", "Products", new { slug = product.Slug })">
+                            <a href="@Url.Action("Details", "Products", new { id = product.Slug })">
                                 @if (!string.IsNullOrEmpty(product.ImageUrl))
                                 {
                                     <img src="@product.ImageUrl" alt="@product.Name" class="img-responsive" />
@@ -40,13 +40,13 @@
                             {
                                 <span class="discount-badge">-@product.DiscountPercentage%</span>
                             }
-                            <button type="button" class="btn-favorite active" data-product-id="@product.Id" title="Remove from favorites">
+                            <button type="button" class="btn-unfavorite" data-product-id="@product.Id" title="Remove from favorites">
                                 <span class="glyphicon glyphicon-heart"></span>
                             </button>
                         </div>
                         <div class="panel-body">
                             <h4 class="product-name">
-                                <a href="@Url.Action("Details", "Products", new { slug = product.Slug })">@product.Name</a>
+                                <a href="@Url.Action("Details", "Products", new { id = product.Slug })">@product.Name</a>
                             </h4>
                             <p class="product-shop text-muted">
                                 <small>by @product.ShopName</small>
@@ -97,13 +97,13 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            // Toggle favorite
-            $('.btn-favorite').click(function () {
+            // Remove from favorites
+            $('.btn-unfavorite').click(function () {
                 var btn = $(this);
                 var productId = btn.data('product-id');
 
-                $.post('@Url.Action("Toggle", "Favorites")', { productId: productId }, function (result) {
-                    if (result.success && !result.isFavorite) {
+                $.post('@Url.Action("Remove", "Favorites")', { productId: productId }, function (result) {
+                    if (result.success) {
                         btn.closest('.col-xs-6').fadeOut(300, function () {
                             $(this).remove();
                             if ($('.product-card').length === 0) {
@@ -117,10 +117,15 @@
             // Add to cart
             $('.btn-add-cart').click(function () {
                 var productId = $(this).data('product-id');
-                $.post('@Url.Action("Add", "Cart")', { productId: productId, quantity: 1 }, function (result) {
+                $.post('@Url.Action("AddJson", "Cart")', { productId: productId, quantity: 1 }, function (result) {
                     if (result.success) {
-                        updateCartCount(result.cartCount);
+                        // Update cart count in navbar
+                        if (result.cartCount > 0) {
+                            $('.cart-count').text(result.cartCount).show();
+                        }
                         alert('Product added to cart!');
+                    } else {
+                        alert(result.message || 'Failed to add product to cart.');
                     }
                 });
             });

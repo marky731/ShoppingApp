@@ -228,6 +228,35 @@ footer ul li {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+/* Product card favorite button */
+.product-image {
+    position: relative;
+}
+
+.btn-unfavorite,
+.btn-favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    cursor: pointer;
+    color: #d9534f;
+    font-size: 18px;
+    line-height: 36px;
+    text-align: center;
+}
+
+.btn-unfavorite:hover,
+.btn-favorite:hover {
+    background: #fff;
+    color: #c9302c;
+}
+
 /* Loading spinner */
 .loading {
     display: none;

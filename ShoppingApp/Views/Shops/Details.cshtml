@@ -62,7 +62,7 @@
                 <div class="panel-body">
                     @using (Html.BeginForm("Details", "Shops", FormMethod.Get))
                     {
-                        <input type="hidden" name="slug" value="@Model.Slug" />
+                        <input type="hidden" name="id" value="@Model.ShopId" />
 
                         <div class="form-group">
                             <label>Search</label>
@@ -98,7 +98,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
-                        <a href="@Url.Action("Details", "Shops", new { slug = Model.Slug })" class="btn btn-default btn-block">Clear Filters</a>
+                        <a href="@Url.Action("Details", "Shops", new { id = Model.ShopId })" class="btn btn-default btn-block">Clear Filters</a>
                     }
                 </div>
             </div>
@@ -124,7 +124,7 @@
                             @for (int i = 1; i <= Model.TotalPages; i++)
                             {
                                 <li class="@(i == Model.CurrentPage ? "active" : "")">
-                                    <a href="@Url.Action("Details", "Shops", new { slug = Model.Slug, page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice, sortBy = ViewBag.SortBy })">@i</a>
+                                    <a href="@Url.Action("Details", "Shops", new { id = Model.ShopId, page = i, search = ViewBag.Search, categoryId = ViewBag.CategoryId, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice, sortBy = ViewBag.SortBy })">@i</a>
                                 </li>
                             }
                         </ul>

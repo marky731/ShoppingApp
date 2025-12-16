@@ -4,7 +4,10 @@
 {
     var userId = User.Identity.GetUserId();
     <li>
-        @Html.ActionLink("Cart", "Index", "Cart", new { area = "" }, new { @class = "" })
+        <a href="@Url.Action("Index", "Cart", new { area = "" })">
+            <span class="glyphicon glyphicon-shopping-cart"></span> Cart
+            <span class="badge cart-count" style="display:none;"></span>
+        </a>
     </li>
     <li>
         @Html.ActionLink("Favorites", "Index", "Favorites", new { area = "" }, null)
