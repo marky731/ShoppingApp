@@ -31,13 +31,12 @@
                 <th>Role</th>
                 <th>Status</th>
                 <th>Joined</th>
-                <th style="width: 40px;"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var user in Model)
             {
-                <tr class="clickable" data-href="@Url.Action("Details", new { id = user.Id })">
+                <tr>
                     <td class="text-muted">@user.Id.Substring(0, Math.Min(6, user.Id.Length))</td>
                     <td><strong>@user.FirstName @user.LastName</strong></td>
                     <td class="text-muted">@user.Email</td>
@@ -69,9 +68,6 @@
                         }
                     </td>
                     <td class="text-muted">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                    <td>
-                        <span class="glyphicon glyphicon-chevron-right row-chevron"></span>
-                    </td>
                 </tr>
             }
         </tbody>

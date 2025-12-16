@@ -227,7 +227,7 @@ a:hover {
     gap: 4px;
 }
 
-.nav-icons > li > a {
+.nav-icons > li > a:not(.btn) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -238,12 +238,12 @@ a:hover {
     transition: var(--transition);
 }
 
-.nav-icons > li > a:hover {
+.nav-icons > li > a:not(.btn):hover {
     background-color: var(--bg-light);
     color: var(--primary-black);
 }
 
-.nav-icons > li > a .glyphicon {
+.nav-icons > li > a:not(.btn) .glyphicon {
     font-size: 18px;
 }
 
@@ -394,11 +394,25 @@ a:hover {
 
 /* Login/Register buttons */
 .nav-icons > li > .btn-link {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: auto;
     padding: 8px 12px;
     color: var(--text-dark);
+    background: transparent;
+}
+
+.nav-icons > li > .btn-link:hover {
+    background: transparent;
+    color: var(--primary-black);
 }
 
 .nav-icons > li > .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: auto;
     padding: 8px 16px;
 }
 
@@ -447,7 +461,7 @@ a:hover {
     }
 }
 
-/* Role Badge */
+/* Role Badge in profile dropdown */
 .role-badge {
     display: inline-block;
     padding: 3px 10px;
@@ -471,6 +485,51 @@ a:hover {
 .role-badge.customer {
     background-color: var(--bg-gray);
     color: var(--text-muted);
+}
+
+/* Nav Role Badge (clickable badge in header) */
+.nav-role-badge {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.nav-role-badge .role-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.nav-role-badge .role-link.admin {
+    background-color: var(--danger-red);
+    color: white;
+}
+
+.nav-role-badge .role-link.admin:hover {
+    background-color: #dc2626;
+    color: white;
+}
+
+.nav-role-badge .role-link.seller {
+    background-color: var(--success-green);
+    color: white;
+}
+
+.nav-role-badge .role-link.seller:hover {
+    background-color: #059669;
+    color: white;
+}
+
+.nav-role-badge .role-link .glyphicon {
+    font-size: 12px;
 }
 
 /* ===============================================
@@ -501,6 +560,32 @@ a:hover {
     font-size: 16px;
     font-weight: 600;
     border-radius: var(--radius-md);
+}
+
+/* Hero Animation */
+@keyframes heroFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-animate {
+    animation: heroFadeInUp 0.6s ease-out forwards;
+}
+
+.hero-animate-delay {
+    animation-delay: 0.15s;
+    opacity: 0;
+}
+
+.hero-animate-delay-2 {
+    animation-delay: 0.3s;
+    opacity: 0;
 }
 
 /* ===============================================
@@ -560,6 +645,32 @@ a:hover {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 24px;
     margin-bottom: 40px;
+}
+
+.product-grid-small {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.product-grid-small .product-card {
+    max-width: 100%;
+}
+
+.product-grid-small .product-card-image {
+    height: 180px;
+}
+
+.product-grid-small .product-card-title {
+    font-size: 14px;
+}
+
+.product-grid-small .product-card-price {
+    font-size: 16px;
+}
+
+.product-grid-small .btn-add-cart {
+    padding: 8px 16px;
+    font-size: 13px;
 }
 
 .product-card {
@@ -1838,4 +1949,99 @@ tr.clickable td:last-child {
 
 .tab-content {
     padding: 24px 0;
+}
+
+/* ===============================================
+   Modern Page Header with Action Button
+   =============================================== */
+.page-header-modern {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.page-header-modern h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Modern Buttons */
+.btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-modern-primary {
+    background-color: var(--primary-black);
+    color: white;
+}
+
+.btn-modern-primary:hover {
+    background-color: var(--primary-dark);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-modern-success {
+    background-color: var(--success-green);
+    color: white;
+}
+
+.btn-modern-success:hover {
+    background-color: #059669;
+    color: white;
+    text-decoration: none;
+}
+
+/* Modern Badges */
+.badge-modern {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-active {
+    background-color: var(--success-bg);
+    color: var(--success-green);
+}
+
+.badge-inactive {
+    background-color: var(--bg-gray);
+    color: var(--text-muted);
+}
+
+/* Fix Select/Dropdown styling */
+select.form-control {
+    height: auto;
+    min-height: 38px;
+    padding: 8px 12px;
+    padding-right: 30px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+}
+
+select.form-control option {
+    padding: 8px 12px;
 }

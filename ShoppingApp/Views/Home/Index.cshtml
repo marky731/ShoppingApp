@@ -25,34 +25,17 @@
 <div class="hero-minimal">
     @if (Request.IsAuthenticated)
     {
-        <h1>Welcome back, @userName!</h1>
-        if (isAdmin)
-        {
-            <p>Manage your platform from the admin dashboard.</p>
-            <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="btn btn-primary btn-hero">
-                Go to Admin Dashboard
-            </a>
-        }
-        else if (isSeller)
-        {
-            <p>Manage your shop and products from the seller dashboard.</p>
-            <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })" class="btn btn-primary btn-hero">
-                Go to Seller Dashboard
-            </a>
-        }
-        else
-        {
-            <p>Discover amazing products from our curated collection.</p>
-            <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero">
-                Shop Now
-            </a>
-        }
+        <h1 class="hero-animate">Welcome back, @userName!</h1>
+        <p class="hero-animate hero-animate-delay">Discover amazing products from our curated collection.</p>
+        <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero hero-animate hero-animate-delay-2">
+            Shop Now
+        </a>
     }
     else
     {
-        <h1>Welcome to MINIMALSHOP</h1>
-        <p>Discover amazing products from our curated collection.</p>
-        <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero">
+        <h1 class="hero-animate">Welcome to MINIMALSHOP</h1>
+        <p class="hero-animate hero-animate-delay">Discover amazing products from our curated collection.</p>
+        <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-hero hero-animate hero-animate-delay-2">
             Shop Now
         </a>
     }

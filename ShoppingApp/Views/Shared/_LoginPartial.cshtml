@@ -27,6 +27,24 @@
         userRole = "Seller";
     }
 
+    // Admin Badge
+    if (User.IsInRole("admin"))
+    {
+        <li class="nav-role-badge">
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="role-link admin" title="Admin Dashboard">
+                <span class="glyphicon glyphicon-cog"></span> Admin
+            </a>
+        </li>
+    }
+    else if (User.IsInRole("seller"))
+    {
+        <li class="nav-role-badge">
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Seller" })" class="role-link seller" title="Seller Dashboard">
+                <span class="glyphicon glyphicon-briefcase"></span> Seller
+            </a>
+        </li>
+    }
+
     <!-- Favorites -->
     <li>
         <a href="@Url.Action("Index", "Favorites", new { area = "" })" title="Favorites">

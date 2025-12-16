@@ -79,7 +79,7 @@ namespace ShoppingApp.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    return await RedirectAfterLogin(user, returnUrl);
                 case SignInStatus.LockedOut:
                     ModelState.AddModelError("", "Account locked out. Please try again later.");
                     return View(model);
@@ -212,6 +212,30 @@ namespace ShoppingApp.Controllers
             {
                 return Redirect(returnUrl);
             }
+            return RedirectToAction("Index", "Home");
+        }
+
+        private async Task<ActionResult> RedirectAfterLogin(ApplicationUser user, string returnUrl)
+        {
+            // If there's a specific return URL, use it
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            // Check user roles and redirect accordingly
+            var roles = await UserManager.GetRolesAsync(user.Id);
+
+            if (roles.Contains("admin"))
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            }
+
+            if (roles.Contains("seller"))
+            {
+                return RedirectToAction("Index", "Dashboard", new { area = "Seller" });
+            }
+
             return RedirectToAction("Index", "Home");
         }
 
